@@ -1,9 +1,25 @@
 public class Customer {
-    public MoneyTransfer moneyTransfer;
-    public Settings settings;
-    public BalanceCheck balanceCheck;
+    private int customerId;
+    private String name;
+    private String username;
+    private String password;
 
-    public Customer() {
+    public Customer(){
+    }
 
+    public int getCustomerId(){
+        return this.customerId;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public void setUserName(String username){
+        this.username = username;
+    }
+
+    public void setPassword(String password){
+        this.password = password;
     }
 }

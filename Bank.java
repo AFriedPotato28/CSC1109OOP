@@ -1,5 +1,7 @@
-public class Bank {
-    public static void main(String[] args) {
+import java.util.ArrayList;
+import java.util.Scanner;
 
-    }
+public class Bank {
+    private String name;
+
 }
