@@ -4,7 +4,12 @@ public class Customer {
     private String username;
     private String password;
 
-    public Customer(){
+    // Constructor
+    public Customer(int customerId, String name, String username, String password){
+        this.customerId = customerId;
+        this.name = name;
+        this.username = username;
+        this.password = password;
     }
 
     public int getCustomerId(){

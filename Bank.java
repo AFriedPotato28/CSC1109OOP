@@ -7,7 +7,6 @@ public class Bank {
     private ArrayList<Account> accounts;
     private ArrayList<Loan> loans;
     private ArrayList<creditCard> creditCards;
-    // add Security class later
 
     public Bank(String name){
         this.name = name;
@@ -15,7 +14,6 @@ public class Bank {
         this.accounts = new ArrayList<>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
-        // add Security class later
     }
 
     public void addCustomer(Customer customer){
@@ -32,5 +30,10 @@ public class Bank {
 
     public void removeAccount(Account account){
         accounts.remove(account);
+    }
+
+
+    public static void main(String[] args) {
+
     }
 }
