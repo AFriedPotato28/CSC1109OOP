@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class Bank {
     private String name;
@@ -24,16 +23,15 @@ public class Bank {
         customers.remove(customer);
     }
 
-    public void addAccount(Account account){
-        accounts.add(account);
+    public void addAccount(Customer customer,Account account){
+        if (this.accounts.get(customer)){
+            this.accounts.put(customer,account);
+        }
+
     }
 
     public void removeAccount(Account account){
         accounts.remove(account);
     }
 
-
-    public static void main(String[] args) {
-
-    }
 }

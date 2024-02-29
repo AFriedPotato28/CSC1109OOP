@@ -36,3 +36,7 @@ replay_pid*
 
 # ignore javadoc folder
 javadoc
+
+# ignore IntelliJ files
+/.idea/
+/CSC1109OOP.iml

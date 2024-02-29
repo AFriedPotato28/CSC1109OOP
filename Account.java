@@ -12,8 +12,9 @@ public class Account {
     /**
      * Constructs a new Account object.
      */
-    public Account(){}
+    public Account(){
 
+    }
     /**
      * Retrieves the account ID.
      * @return The account ID.
