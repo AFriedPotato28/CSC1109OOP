@@ -15,8 +15,24 @@ public class Bank {
         this.creditCards = new ArrayList<>();
     }
 
-    public void addCustomer(Customer customer){
-        customers.add(customer);
+    public void addCustomer(Customer customer,String name,String username, String password){
+        int customerSize = this.customers.size();
+        boolean usernameExists = false;
+
+        for (Customer cust : this.customers) {
+            if (cust.getUserName().equalsIgnoreCase(username)) {
+                System.out.println("Customer account already exists for username");
+                usernameExists = true;
+                break;
+            }
+        }
+    
+        if(!usernameExists){
+            this.customers.add(customerSize,customer);
+            customer.createCustomerAccount(customerSize + 1, name, username, password);
+            System.out.println("New Account has been created");
+        }
+
     }
 
     public void removeCustomer(Customer customer){
@@ -24,9 +40,6 @@ public class Bank {
     }
 
     public void addAccount(Customer customer,Account account){
-        if (this.accounts.get(customer)){
-            this.accounts.put(customer,account);
-        }
 
     }
 

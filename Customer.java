@@ -14,6 +14,10 @@ public class Customer {
     public Customer(){
     }
 
+    public String getUserName(){
+        return this.username;
+    }
+
     /**
      * Retrieves the customer ID
      * @return The customer ID
@@ -31,18 +35,18 @@ public class Customer {
     }
 
     /**
-     * Set the username of the customer
-     * @param username The username of the customer
-     */
-    public void setUserName(String username){
-        this.username = username;
-    }
-
-    /**
      * Set the password of the customer
      * @param password The password of the customer
      */
     public void setPassword(String password){
         this.password = password;
     }
+
+    public void createCustomerAccount(int customerID,String name,String username,String password){
+        this.customerId = customerID;
+        this.name = name;
+        this.username = username;
+        this.password = password;
+    }
+
 }
