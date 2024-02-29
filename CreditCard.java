@@ -34,6 +34,10 @@ public class CreditCard {
      * The credit limit set for the credit card.
      */
     private int creditLimit;
+    /**
+     * Constructs a new CreditCard object.
+     */
+    public CreditCard(){}
 
     /**
      * Retrieves the credit card number.

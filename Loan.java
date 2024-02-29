@@ -2,7 +2,6 @@
  * Represents a Loan with information such as loan ID, loan amount, interest rate, loan duration, and customer details.
  */
 public class Loan {
-
     /**
      * The unique identifier for the loan.
      */
@@ -27,6 +26,11 @@ public class Loan {
      * The customer applying for the loan.
      */
     private Customer customer;
+
+    /**
+     * Constructs a new Loan object.
+     */
+    public Loan(){}
 
     /**
      * Gets the unique identifier for the loan.

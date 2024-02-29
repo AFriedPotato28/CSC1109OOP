@@ -6,7 +6,7 @@ public class Bank {
     private ArrayList<Customer> customers;
     private ArrayList<Account> accounts;
     private ArrayList<Loan> loans;
-    private ArrayList<creditCard> creditCards;
+    private ArrayList<CreditCard> creditCards;
 
     public Bank(String name){
         this.name = name;
