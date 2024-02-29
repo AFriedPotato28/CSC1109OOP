@@ -24,7 +24,7 @@ public class Account {
 
     /**
      * Retrieves the current balance of the account.
-     * @return The balance.
+     * @return The balance of the account.
      */
     public double getBalance(){
         return this.balance;
