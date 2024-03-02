@@ -46,6 +46,8 @@ public class Security{
      * @return True if user enters correct OTP, false otherwise
      */
     public boolean authenticateWithOTP(String username, String otp){
+        // implementation of authentication with OTP goes here
+        return false;
     }
 
     /**
