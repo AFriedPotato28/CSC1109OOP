@@ -6,9 +6,8 @@ import java.util.regex.Pattern;
 
 /**
  * Represents the security system of the bank and its functions such as user registration, authentication, password reset, and OTP generation.
- * Security Class polyporphism from Bank class
  */
-public class Security extends Bank{
+public class Security{
     /**
      * Map for storing the username and password of the users.
      */
@@ -17,10 +16,19 @@ public class Security extends Bank{
 
     /**
      * Constructs a new Security object.
-     * @param name The name of the bank.
      */
-    public Security(String name){
-        super(name);
+    public Security(){
+    }
+
+    /**
+     * Constructs a new Security object with the provided initial password and OTP maps.
+     *
+     * @param initialPasswordMap A Map containing username-password pairs to initialize the security system.
+     * @param initialOtpMap A Map containing username-OTP pairs to initialize the security system.
+     */
+    public Security(Map<String,String> initialPasswordMap, Map<String,Integer>initialOtpMap){
+        this.passwordMap = initialPasswordMap;
+        this.otpMap = initialOtpMap;
     }
 
     /**
@@ -32,9 +40,10 @@ public class Security extends Bank{
     }
 
     /**
-     * Authenticats a user with the Bank using OTP.
+     * Authenticates a user with the Bank using One-Time Password (OTP).
      * @param username The username of the user.
      * @param otp The OTP entered by the user.
+     * @return True if user enters correct OTP, false otherwise
      */
     public boolean authenticateWithOTP(String username, String otp){
     }
@@ -44,15 +53,21 @@ public class Security extends Bank{
      * @param username The username of the user.
      * @return The generated OTP.
      */
-    public String generateOTP(String username){
+    public int generateOTP(String username){
+        int otp = 0;
+        // implementation of the otp generation goes here
+        return otp;
     }
 
     /**
      * Resets the password of the user.
      * @param username The username of the user.
      * @param newPassword The new password to be set.
+     * @return True if the password is valid, false otherwise.
      */
     public boolean resetPassword(String username, String newPassword){
+        // implementation of the reset password goes here
+        return false;
     }
 
     /**
@@ -61,7 +76,7 @@ public class Security extends Bank{
      * @return True if the password is valid, false otherwise.
      */
     public boolean validatePassword(String password){
-        /**
+        /*
          * The password must contain at least one digit [0-9].
          * The password must contain at least one lowercase letter [a-z].
          * The password must contain at least one uppercase letter [A-Z].
@@ -70,15 +85,15 @@ public class Security extends Bank{
          * The password must be less than 20 characters.
          */
         String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
-        /**
+        /*
          * Compile the regular expression to the pattern
          */
         Pattern pattern = Pattern.compile(regexPassword);
-        /**
+        /*
          * Create a matcher object using the pattern
          */
         Matcher matcher = pattern.matcher(password);
-        /**
+        /*
          * Check if the password matches the pattern
          * Return true if it matches, false otherwise
          */
@@ -92,13 +107,14 @@ public class Security extends Bank{
      */
     public void logActivity(String user, int activityNumber){
         LocalDateTime dateTimeObj = LocalDateTime.now();
-        /**
+        /*
          * Format the date and time
          * The format is dd-MM-yyyy HH:mm:ss
          */
         DateTimeFormatter dateTimeFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         String formattedDt = dateTimeObj.format(dateTimeFormatObj);
-        /**
+
+        /*
          * Log the activity based on the activity number
          * 1 - User logged in
          * 2 - User initiate bank transfer
@@ -109,41 +125,25 @@ public class Security extends Bank{
          */
         switch (activityNumber){
             case 1:
-                /**
-                 * Log the user login activity
-                 */
+                // Log the user login activity
                 System.out.println("User logged in at " + formattedDt);
-                /**
-                 * Break the switch statement if the activity number is 1
-                 */
+                // Break the switch statement if the activity number is 1
                 break;
             case 2:
-                /**
-                 * Log the user bank transfer activity
-                 */
+                // Log the user bank transfer activity
                 System.out.println("User initiate bank transfer " + formattedDt);
-                /** 
-                 * Break the switch statement if the activity number is 2
-                 */
+                // Break the switch statement if the activity number is 2
                 break;
             case 3:
-                /**
-                 * Log the user logout activity
-                 */
+                // Log the user logout activity
                 System.out.println("User logged out at " + formattedDt);
-                /**
-                 * Break the switch statement if the activity number is 3
-                 */
+                // Break the switch statement if the activity number is 3
                 break;
             case 4:
-                /**
-                 * Log the user deposit activity
-                 */
+                // Log the user deposit activity
                 System.out.println("User initiate deposit at " + formattedDt);
             case 5:
-                /**
-                 * Log the user withdraw activity
-                 */
+                // Log the user withdraw activity
                 System.out.println("User initiate withdraw at " + formattedDt);
         }
     }

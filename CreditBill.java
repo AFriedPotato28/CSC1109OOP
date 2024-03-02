@@ -1,12 +1,12 @@
 import java.util.Date;
 
-public class CreditBill extends CreditCard {
+public class CreditBill {
+    private CreditCard creditCard;
     private Date date;
     private double billAmount;
     private double amountPaid;
 
     public CreditBill(){
-        super();
     }
 
     public void getDueDate(){}
