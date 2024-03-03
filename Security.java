@@ -33,29 +33,29 @@ public class Security{
 
     /**
      * Registers a new user with the bank.
-     * @param username The username of the new registered user.
+     * @param accountID The accountID of the newly registered user.
      * @param password The password of the newly registered user.
      */
-    public void registerUser(String username, String password){
+    public void registerUser(int accountID, String password){
     }
 
     /**
      * Authenticates a user with the Bank using One-Time Password (OTP).
-     * @param username The username of the user.
+     * @param accountID The account ID of the user.
      * @param otp The OTP entered by the user.
-     * @return True if user enters correct OTP, false otherwise
+     * @return True if user enters correct OTP, false otherwise.
      */
-    public boolean authenticateWithOTP(String username, String otp){
+    public boolean authenticateWithOTP(int accountID, String otp){
         // implementation of authentication with OTP goes here
         return false;
     }
 
     /**
      * Generates an OTP for the user.
-     * @param username The username of the user.
+     * @param accountID The accountID of the user.
      * @return The generated OTP.
      */
-    public int generateOTP(String username){
+    public int generateOTP(int accountID){
         int otp = 0;
         // implementation of the otp generation goes here
         return otp;
@@ -63,11 +63,11 @@ public class Security{
 
     /**
      * Resets the password of the user.
-     * @param username The username of the user.
+     * @param accountID The account ID of the user.
      * @param newPassword The new password to be set.
      * @return True if the password is valid, false otherwise.
      */
-    public boolean resetPassword(String username, String newPassword){
+    public boolean resetPassword(int accountID, String newPassword){
         // implementation of the reset password goes here
         return false;
     }
@@ -104,10 +104,10 @@ public class Security{
 
     /**
      * Logs the activity of the user.
-     * @param user The username of the user.
+     * @param accountID The accountID of the user.
      * @param activityNumber The activity number to be logged.
      */
-    public void logActivity(String user, int activityNumber){
+    public void logActivity(int accountID, int activityNumber){
         LocalDateTime dateTimeObj = LocalDateTime.now();
         /*
          * Format the date and time

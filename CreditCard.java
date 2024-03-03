@@ -13,7 +13,7 @@ public class CreditCard {
     /**
      * The expiry date of the credit card.
      */
-    private Date expiryDate = new Date();
+    private Date expiryDate;
 
     /**
      * The Card Verification Value (CVV) of the credit card.
@@ -38,6 +38,25 @@ public class CreditCard {
      * Constructs a new CreditCard object.
      */
     public CreditCard(){}
+
+    /**
+     * Constructs a new CreditCard object with the specified card number, expiry date, CVV, customer, balance, and credit limit.
+     * @param cardNumber The card number associated with the credit card.
+     * @param expiryDate The expiry date of the credit card.
+     * @param CVV The Card Verification Value (CVV) of the credit card.
+     * @param customer The customer associated with the credit card.
+     * @param balance The current balance on the credit card.
+     * @param creditLimit The credit limit set for the credit card.
+     */
+    public CreditCard(String cardNumber, Date expiryDate, int CVV, Customer customer, double balance, int creditLimit) {
+        this.cardNumber = cardNumber;
+        this.expiryDate = expiryDate;
+        this.CVV = CVV;
+        this.customer = customer;
+        this.balance = balance;
+        this.creditLimit = creditLimit;
+    }
+
 
     /**
      * Retrieves the credit card number.
@@ -80,6 +99,36 @@ public class CreditCard {
     }
 
     /**
+     * Generates a unique and valid credit card number.
+     *
+     * @return A String representing the generated credit card number.
+     */
+    public String generateCardNumber() {
+        // Logic to generate a unique and valid card number
+        return "";
+    }
+
+    /**
+     * Generates a CVV (Card Verification Value) code for a credit card.
+     *
+     * @return An integer representing the generated CVV code.
+     */
+    public int generateCVV() {
+        // Logic to generate a CVV code
+        return 0;
+    }
+
+    /**
+     * Generates an expiry date for a credit card.
+     *
+     * @return A Date object representing the generated expiry date.
+     */
+    public Date generateExpiryDate() {
+        // Logic to generate an expiry date
+        return new Date();
+    }
+
+    /**
      * Attempts to pay the credit card bill with the specified payment amount.
      * @param paymentAmount The amount to be paid.
      * @return True if the payment is successful, False otherwise.
@@ -98,3 +147,4 @@ public class CreditCard {
         return false;
     }
 }
+
