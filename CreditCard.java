@@ -56,14 +56,6 @@ public class CreditCard {
     }
 
     /**
-     * Retrieves the CVV of the credit card.
-     * @return The CVV.
-     */
-    public int getCVV() {
-        return this.CVV;
-    }
-
-    /**
      * Retrieves the customer associated with the account.
      * @return The customer object.
      */
