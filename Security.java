@@ -86,7 +86,7 @@ public class Security{
          * The password must be eight characters or longer.
          * The password must be less than 20 characters.
          */
-        String regexPassword = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
+        String regexPassword = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,20}$";
         /*
          * Compile the regular expression to the pattern
          */

@@ -95,7 +95,7 @@ public class Account {
      * @return True if the transfer was successful, false otherwise.
      */
     public boolean transfer(Account toAccount, double amount){
-        if (this.balance < amount){
+        if(this.balance < amount){
             return false;
         }
         return true;
