@@ -1,4 +1,8 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
+import java.io.IOException;
 
 public class Bank {
     private String name;
@@ -15,8 +19,40 @@ public class Bank {
         this.creditCards = new ArrayList<>();
     }
 
+    public void populateCustomersList(){
+        //Read data from csv to find out size
+        boolean firstLine = true;
+        try(BufferedReader bur = new BufferedReader(new FileReader("MOCK_DATA.csv"))){
+            String sLine;
+            while((sLine = bur.readLine()) !=null){
+                if(firstLine){
+                    firstLine= false;
+                    continue;
+                }
+                String[] data = sLine.split(",");
+                int id = Integer.parseInt(data[0]);
+                String customerName = data[1];
+                String customerUsername = data[2];
+                String customerPassword = data[3];
+
+                Customer newCustomer = new Customer(id, customerName, customerUsername, customerPassword);
+                this.customers.add(newCustomer);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void addCustomer(Customer customer,String name,String username, String password){
+        //check if customer ArrayList is loaded
+        if(this.customers.isEmpty()){
+            populateCustomersList();
+        }
+
         int customerSize = this.customers.size();
+        System.out.println("Initial Customer Size: "+customerSize);
         boolean usernameExists = false;
 
         for (Customer cust : this.customers) {
@@ -31,6 +67,7 @@ public class Bank {
             this.customers.add(customerSize,customer);
             customer.createCustomerAccount(customerSize + 1, name, username, password);
             System.out.println("New Account has been created");
+            System.out.println("There is a total of "+customerSize+" in the list");
         }
 
     }

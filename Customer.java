@@ -1,3 +1,8 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
+
 /**
  * Represent a customer associated with the Bank
  * Each customer has a Customer ID, name, username and password.
@@ -7,11 +12,18 @@ public class Customer {
     private String name;
     private String username;
     private String password;
+    private String filepath = "MOCK_DATA.csv";
     
     /**
      * Construct a Customer object.
      */
     public Customer(){
+    }
+    public Customer(int id, String name, String username, String password){
+        this.customerId = id;
+        this.name = name;
+        this.username = username;
+        this.password = password;
     }
 
     public String getUserName(){
@@ -19,8 +31,8 @@ public class Customer {
     }
 
     /**
-     * Retrieves the customer ID
-     * @return The customer ID
+     * Retrieves the customer id
+     * @return The customer id
      */
     public int getCustomerId(){
         return this.customerId;
@@ -42,11 +54,42 @@ public class Customer {
         this.password = password;
     }
 
-    public void createCustomerAccount(int customerID,String name,String username,String password){
+    public void createCustomerAccount(int customerID,String name,String username,String password) {
         this.customerId = customerID;
         this.name = name;
         this.username = username;
         this.password = password;
-    }
+        String[] dataToAppend = {this.name, this.username, this.password};
 
+        //append data to next row
+        try (FileWriter writer = new FileWriter(filepath, true)) {  // Append mode
+
+            // Build CSV line with proper escaping for commas
+            StringBuilder csvline = new StringBuilder();
+            csvline.append(this.customerId).append(',');
+            for (String value: dataToAppend){
+                csvline.append(escapeDoubleQuotes(value)).append(',');
+            }
+            csvline.deleteCharAt(csvline.length()-1);
+            csvline.append("\n");
+            writer.append(csvline.toString());
+        } catch (IOException e) {
+            System.err.println("Error appending to CSV: " + e.getMessage());
+        }
+
+    }
+    private static String escapeDoubleQuotes(String str) {
+        if (str == null) {
+            return ""; // Handle null values
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char ch : str.toCharArray()) {
+            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
+                sb.append('\\'); // Escape special characters
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
 }

@@ -3,8 +3,8 @@ import java.util.Scanner;
 public class BankSystem {
 
     public static void main(String[] args) {
-            
         Bank bank = new Bank("Random");
+        Security security = new Security();
 
         Scanner scanner = new Scanner(System.in);
         int choice;
@@ -23,6 +23,10 @@ public class BankSystem {
                     String name = promptInput("Please enter your name:", scanner);
                     String username = promptInput("Please enter your username:",scanner);
                     String password = promptInput("Please enter your password:",scanner);
+                    while(!security.validatePassword(password)){
+                        System.out.println("Did not meet password requirements");
+                        password = promptInput("Please enter your password:",scanner);
+                    }
                     bank.addCustomer(new Customer(),name,username,password);
 
             }
