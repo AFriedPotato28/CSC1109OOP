@@ -4,16 +4,20 @@
  */
 public class Account {
     private int accountId;
+    private int customerId;
     private String accountType;
     private double balance;
-    private Customer customer;
     private double transactionLimit;
 
     /**
      * Constructs a new Account object.
      */
-    public Account(){
-
+    public Account(int accountId, int customerId, String accountType, double balance, double transactionLimit) {
+        this.accountId = accountId;
+        this.customerId = customerId;
+        this.accountType = accountType;
+        this.balance = balance;
+        this.transactionLimit = transactionLimit;
     }
     /**
      * Retrieves the account ID.
@@ -43,8 +47,8 @@ public class Account {
      * Retrieves the customer associated with the account.
      * @return The customer object.
      */
-    public Customer getCustomer(){
-        return this.customer;
+    public int getCustomer(){
+        return this.customerId;
     }
 
     /**

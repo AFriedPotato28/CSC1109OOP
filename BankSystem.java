@@ -27,7 +27,15 @@ public class BankSystem {
                         System.out.println("Did not meet password requirements");
                         password = promptInput("Please enter your password:",scanner);
                     }
-                    bank.addCustomer(new Customer(),name,username,password);
+                    String accountType = promptInput("Please enter either 1:Savings Account, 2: Normal Account", scanner);
+
+                    while (!accountType.equals("1")  && !accountType.equals("2")){
+                        System.out.println("Did not choose account type");
+                        accountType = promptInput("Please enter either 1:Savings Account, 2: Normal Account", scanner);
+                    }
+
+
+                    bank.addCustomer(new Customer(),name,username,password,accountType);
 
             }
 

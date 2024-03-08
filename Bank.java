@@ -2,33 +2,33 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.io.IOException;
 
 public class Bank {
     private String name;
     private ArrayList<Customer> customers;
-    private ArrayList<Account> accounts;
+    private HashMap<Integer,List<Account>> accounts;
     private ArrayList<Loan> loans;
     private ArrayList<CreditCard> creditCards;
 
     public Bank(String name){
         this.name = name;
         this.customers = new ArrayList<>();
-        this.accounts = new ArrayList<>();
+        this.accounts = new HashMap<Integer,List<Account>>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
     }
 
     public void populateCustomersList(){
         //Read data from csv to find out size
-        boolean firstLine = true;
+       
         try(BufferedReader bur = new BufferedReader(new FileReader("MOCK_DATA.csv"))){
             String sLine;
+            bur.readLine();
             while((sLine = bur.readLine()) !=null){
-                if(firstLine){
-                    firstLine= false;
-                    continue;
-                }
                 String[] data = sLine.split(",");
                 int id = Integer.parseInt(data[0]);
                 String customerName = data[1];
@@ -45,7 +45,7 @@ public class Bank {
         }
     }
 
-    public void addCustomer(Customer customer,String name,String username, String password){
+    public void addCustomer(Customer customer,String name,String username, String password, String accountType){
         //check if customer ArrayList is loaded
         if(this.customers.isEmpty()){
             populateCustomersList();
@@ -54,10 +54,11 @@ public class Bank {
         int customerSize = this.customers.size();
         System.out.println("Initial Customer Size: "+customerSize);
         boolean usernameExists = false;
-
+        int userId = 0;
         for (Customer cust : this.customers) {
             if (cust.getUserName().equalsIgnoreCase(username)) {
                 System.out.println("Customer account already exists for username");
+                userId = cust.getCustomerId();
                 usernameExists = true;
                 break;
             }
@@ -66,22 +67,55 @@ public class Bank {
         if(!usernameExists){
             this.customers.add(customerSize,customer);
             customer.createCustomerAccount(customerSize + 1, name, username, password);
+            userId = (customerSize + 1);
             System.out.println("New Account has been created");
-            System.out.println("There is a total of "+customerSize+" in the list");
+            System.out.println("There is a total of "+(customerSize + 1) +" in the list");
         }
-
+        
+        addAccount(userId, accountType);
     }
 
     public void removeCustomer(Customer customer){
         customers.remove(customer);
     }
 
-    public void addAccount(Customer customer,Account account){
+    public void addAccount(Integer customerID,String accountType){
+        
+        boolean customerIdExists = false;
+        int sizeOfAccount = this.accounts.size();
+        
+        if (accountType.equals("1")){
+            accountType = "Savings";
+        }else{
+            accountType = "Normal";
+        }    
+    
+        Account account = new Account(sizeOfAccount + 1,customerID, accountType, 0 , 0);
 
+        for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
+            if(entry.getKey() == customerID){
+                customerIdExists = true;
+            }
+
+            List<Account> value = entry.getValue();
+
+            for (Account accountItems : value){
+                if(accountItems.getAccountType().equalsIgnoreCase(accountType)){
+                    return;
+                };                
+            }
+
+        }      
+        
+        if (!customerIdExists){
+            this.accounts.put(customerID, new ArrayList<>());
+        }
+        
+        this.accounts.get(customerID).add(account);
     }
 
     public void removeAccount(Account account){
-        accounts.remove(account);
+       // accounts.remove(account);
     }
 
 }
