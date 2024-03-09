@@ -1,13 +1,14 @@
-id,name,username,password
-1,Gianni Noyes,gnoyes0,fW1$tq+r+F\r{
-2,Dyanna Mickelwright,dmickelwright1,pL2=*Iz&A_W&%
-3,Celestyna Core,ccore2,kE6.#eR|=
-4,Hilton Ferns,hferns3,"bF5,g=IyF_c3"
-5,Gwenni Buddles,gbuddles4,nX0+v6DjM8iV
-6,Philippe Zecchinii,pzecchinii5,wK1%nLc{7t
-7,Nicola Schole,nschole6,"rN3!<WFcCC*0W,gv"
-8,Nicol Noseworthy,nnoseworthy7,rM3`AmVK&
-9,Ase Binden,abinden8,vH8{0&d$yy+0=
-10,Fremont Gottschalk,fgottschalk9,"kB5@3f,Ii0i~"
-11,iure,eioqheiwqh,Rfufhej353^
-12,Sadge,Sadge,Sadge123@
+id,name,username,password,salt
+1,Gianni Noyes,gnoyes0,fW1$tq+r+F\r{,123
+2,Dyanna Mickelwright,dmickelwright1,pL2=*Iz&A_W&%,123
+3,Celestyna Core,ccore2,kE6.#eR|=,123
+4,Hilton Ferns,hferns3,"bF5,g=IyF_c3",123
+5,Gwenni Buddles,gbuddles4,nX0+v6DjM8iV,123
+6,Philippe Zecchinii,pzecchinii5,wK1%nLc{7t,123
+7,Nicola Schole,nschole6,"rN3!<WFcCC*0W,gv",123
+8,Nicol Noseworthy,nnoseworthy7,rM3`AmVK&,123
+9,Ase Binden,abinden8,vH8{0&d$yy+0=,123
+10,Fremont Gottschalk,fgottschalk9,"kB5@3f,Ii0i~",123
+11,iure,eioqheiwqh,Rfufhej353^,132
+12,Sadge,Sadge,Sadge123@,123
+13,javaC,javaC,sz810XChpMTastm1jywZltK5octzcLHBLzixAQ+R2lE=,2coaE/dAxS+7v3fggoq1Tw==

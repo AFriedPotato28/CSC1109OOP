@@ -65,9 +65,10 @@ public class Account {
      * @return True if the transaction limit was successfully set, false otherwise.
      */
     public boolean setTransactionLimit(double amount){
-        if( amount > 1000){
+        if (amount < 500){
             return false;
         }
+
         this.transactionLimit = amount;
         return true;
     }
@@ -99,7 +100,7 @@ public class Account {
      * @return True if the transfer was successful, false otherwise.
      */
     public boolean transfer(Account toAccount, double amount){
-        if(this.balance < amount){
+        if(this.balance < amount && amount > this.transactionLimit){
             return false;
         }
         return true;

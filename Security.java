@@ -1,8 +1,16 @@
+import java.util.Base64;
 import java.util.Map;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 /**
  * Represents the security system of the bank and its functions such as user registration, authentication, password reset, and OTP generation.
@@ -45,8 +53,11 @@ public class Security{
      * @param otp The OTP entered by the user.
      * @return True if user enters correct OTP, false otherwise.
      */
-    public boolean authenticateWithOTP(int accountID, String otp){
+    public boolean authenticateWithOTP(String username, int otp){
         // implementation of authentication with OTP goes here
+        if (otpMap.containsKey(username) && otpMap.containsValue(otp)){
+            return true;
+        }
         return false;
     }
 
@@ -55,8 +66,11 @@ public class Security{
      * @param accountID The accountID of the user.
      * @return The generated OTP.
      */
-    public int generateOTP(int accountID){
-        int otp = 0;
+    public int generateOTP(String username){
+        SecureRandom rand = new SecureRandom();
+        int otp = rand.nextInt(1000000);
+        //Store inside OTP map to validate
+        otpMap.put(username,otp);
         // implementation of the otp generation goes here
         return otp;
     }
@@ -67,7 +81,7 @@ public class Security{
      * @param newPassword The new password to be set.
      * @return True if the password is valid, false otherwise.
      */
-    public boolean resetPassword(int accountID, String newPassword){
+    public boolean resetPassword(int username, String newPassword){
         // implementation of the reset password goes here
         return false;
     }
@@ -82,7 +96,7 @@ public class Security{
          * The password must contain at least one digit [0-9].
          * The password must contain at least one lowercase letter [a-z].
          * The password must contain at least one uppercase letter [A-Z].
-         * The password must contain at least one special character [!@#&()–[{}]:;',?/*~$^+=<>].
+         * The password must contain at least one special character [*[@#$%^&+=!].
          * The password must be eight characters or longer.
          * The password must be less than 20 characters.
          */
@@ -150,5 +164,25 @@ public class Security{
         }
     }
 
+    public static String hashPasword(String password, String Salt){
+       
+        try {
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), Salt.getBytes(), 65536, 256);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            // Handle the error appropriately
+            throw new RuntimeException("Error during password hashing", e);
+        }
+    }
+
+    public static String generateSalt(){
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        return Base64.getEncoder().encodeToString(salt);
+    } 
 
 }

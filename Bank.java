@@ -13,6 +13,7 @@ public class Bank {
     private HashMap<Integer,List<Account>> accounts;
     private ArrayList<Loan> loans;
     private ArrayList<CreditCard> creditCards;
+    private Security securityInstance;
 
     public Bank(String name){
         this.name = name;
@@ -34,8 +35,9 @@ public class Bank {
                 String customerName = data[1];
                 String customerUsername = data[2];
                 String customerPassword = data[3];
+                String Salt = data[4];
 
-                Customer newCustomer = new Customer(id, customerName, customerUsername, customerPassword);
+                Customer newCustomer = new Customer(id, customerName, customerUsername, customerPassword,Salt);
                 this.customers.add(newCustomer);
             }
         } catch (FileNotFoundException e) {
@@ -65,8 +67,11 @@ public class Bank {
         }
     
         if(!usernameExists){
+            String salt = Security.generateSalt();
+            String hashPassword = Security.hashPasword(password,salt);
+
             this.customers.add(customerSize,customer);
-            customer.createCustomerAccount(customerSize + 1, name, username, password);
+            customer.createCustomerAccount(customerSize + 1, name, username, hashPassword,salt);
             userId = (customerSize + 1);
             System.out.println("New Account has been created");
             System.out.println("There is a total of "+(customerSize + 1) +" in the list");
@@ -115,15 +120,13 @@ public class Bank {
 
         
         boolean customerIdExists = false;
-        int sizeOfAccount = this.accounts.size();
+        int sizeOfAccount = 0;
         
         if (accountType.equals("1")){
             accountType = "Savings";
         }else{
             accountType = "Normal";
         }    
-    
-        Account account = new Account((sizeOfAccount + 1),customerID, accountType, 0 , 0);
 
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             if(entry.getKey() == customerID){
@@ -131,6 +134,7 @@ public class Bank {
             }
 
             List<Account> value = entry.getValue();
+            sizeOfAccount = value.size();
 
             for (Account accountItems : value){
                 if(accountItems.getAccountType().equalsIgnoreCase(accountType)){
@@ -138,18 +142,18 @@ public class Bank {
                 };                
             }
 
-        }      
+        } 
+
+        Account account = new Account((sizeOfAccount + 1),customerID, accountType, 0 , 0);
         
         if (!customerIdExists){
             this.accounts.put(customerID, new ArrayList<>());
         }
         
         this.accounts.get(customerID).add(account);
-
-        System.out.println(this.accounts);
     }
 
-    public void removeAccount(Account account){
+    public void removeAccount(int customerID){
        // accounts.remove(account);
     }
 

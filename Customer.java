@@ -12,6 +12,7 @@ public class Customer {
     private String name;
     private String username;
     private String password;
+    private String salt;
     private String filepath = "MOCK_DATA.csv";
     
     /**
@@ -19,11 +20,13 @@ public class Customer {
      */
     public Customer(){
     }
-    public Customer(int id, String name, String username, String password){
+    public Customer(int id, String name, String username, String password,String salt){
         this.customerId = id;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.salt = salt;
+
     }
 
     public String getUserName(){
@@ -54,12 +57,13 @@ public class Customer {
         this.password = password;
     }
 
-    public void createCustomerAccount(int customerID,String name,String username,String password) {
+    public void createCustomerAccount(int customerID,String name,String username,String password,String Salt) {
         this.customerId = customerID;
         this.name = name;
         this.username = username;
         this.password = password;
-        String[] dataToAppend = {this.name, this.username, this.password};
+        this.salt = Salt;
+        String[] dataToAppend = {this.name, this.username, this.password,this.salt};
 
         //append data to next row
         try (FileWriter writer = new FileWriter(filepath, true)) {  // Append mode

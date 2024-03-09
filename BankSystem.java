@@ -1,15 +1,15 @@
 import java.util.Scanner;
 
 public class BankSystem {
-
     public static void main(String[] args) {
         Bank bank = new Bank("Random");
-        Security security = new Security();
+        Security securityInstance = new Security();
 
         Scanner scanner = new Scanner(System.in);
         int choice;
 
         do{
+            
             System.out.println("\nChoose an action:");
             System.out.println("1. Create new Account");
             System.out.println("2. Login");
@@ -23,7 +23,7 @@ public class BankSystem {
                     String name = promptInput("Please enter your name:", scanner);
                     String username = promptInput("Please enter your username:",scanner);
                     String password = promptInput("Please enter your password:",scanner);
-                    while(!security.validatePassword(password)){
+                    while(!securityInstance.validatePassword(password)){
                         System.out.println("Did not meet password requirements");
                         password = promptInput("Please enter your password:",scanner);
                     }
@@ -35,7 +35,19 @@ public class BankSystem {
                     }
 
                     bank.addCustomer(new Customer(),name,username,password,accountType);
+                case 2:
+                    String loginUsername = promptInput("Please enter your username", scanner);
+                    String loginPassword = promptInput("Please enter your password", scanner);
 
+                    while (loginUsername.equals("") && loginPassword.equals("")){
+                        System.out.println("Wrong Crediential Informations");
+                        loginUsername = promptInput("Please enter your username", scanner);
+                        loginPassword = promptInput("Please enter your password", scanner);
+                    
+                    }
+                default:
+                    System.out.println("Please enter between 1 or 2");
+                    break;
             }
 
         }
@@ -44,10 +56,16 @@ public class BankSystem {
         scanner.close();
     }
 
+    
+
+    /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt,Scanner scanner) {
         System.out.println(prompt);
         return scanner.next();
     }
+
+
+
 }
     
 
