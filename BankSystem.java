@@ -34,7 +34,6 @@ public class BankSystem {
                         accountType = promptInput("Please enter either 1:Savings Account, 2: Normal Account", scanner);
                     }
 
-
                     bank.addCustomer(new Customer(),name,username,password,accountType);
 
             }

@@ -79,7 +79,40 @@ public class Bank {
         customers.remove(customer);
     }
 
+    public void populateAccountList(){
+        try(BufferedReader bur = new BufferedReader(new FileReader("Account_Data.csv"))){
+            String sLine;
+            bur.readLine();
+            while((sLine = bur.readLine()) !=null){
+                String[] data = sLine.split(",");
+                int customerID = Integer.parseInt(data[0]);
+                int AccountID = Integer.parseInt(data[1]);
+                String accountType = data[2];
+                double balance = Double.parseDouble(data[3]);
+                double transactionLimit = Double.parseDouble(data[4]);
+
+                Account account = new Account(AccountID + 1,customerID, accountType, balance , transactionLimit);
+
+                if (!this.accounts.containsKey(customerID)){
+                    this.accounts.put(customerID, new ArrayList<>());
+                }
+
+                this.accounts.get(customerID).add(account);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public void addAccount(Integer customerID,String accountType){
+
+        if(this.accounts.isEmpty()){
+            populateAccountList();
+        }
+
         
         boolean customerIdExists = false;
         int sizeOfAccount = this.accounts.size();
@@ -90,7 +123,7 @@ public class Bank {
             accountType = "Normal";
         }    
     
-        Account account = new Account(sizeOfAccount + 1,customerID, accountType, 0 , 0);
+        Account account = new Account((sizeOfAccount + 1),customerID, accountType, 0 , 0);
 
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             if(entry.getKey() == customerID){
@@ -112,6 +145,8 @@ public class Bank {
         }
         
         this.accounts.get(customerID).add(account);
+
+        System.out.println(this.accounts);
     }
 
     public void removeAccount(Account account){

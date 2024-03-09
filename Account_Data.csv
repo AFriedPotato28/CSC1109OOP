@@ -1,0 +1,2 @@
+CustomerID,AccountID,accountType,balance,transactionLimit
+11,1,"Normal",1000,0
