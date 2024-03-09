@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+
 /**
  * Represents a bank account associated with a customer.
  * Each account has an account ID, type, balance, associated customer, and transaction limit.
@@ -8,6 +11,7 @@ public class Account {
     private String accountType;
     private double balance;
     private double transactionLimit;
+    private String filepath = "Account_Data.csv";
 
     /**
      * Constructs a new Account object.
@@ -105,4 +109,53 @@ public class Account {
         }
         return true;
     }
+
+    public void createAccountDetails(int customerID,int accountId,String accountType,double balance,double transactionLimit) {
+        this.customerId = customerID;
+        this.accountId = accountId;
+        this.accountType = accountType;
+        this.balance = balance;
+        this.transactionLimit = transactionLimit;
+        int[] integerDataToAppend = {this.customerId, this.accountId};
+        double[] doubleDataToAppend = {this.balance, this.transactionLimit};
+    
+        //append data to next row
+        try (FileWriter writer = new FileWriter(filepath, true)) {  // Append mode
+
+            // Build CSV line with proper escaping for commas
+            StringBuilder csvline = new StringBuilder();
+            for (int value: integerDataToAppend){
+                csvline.append(value).append(',');
+            }
+          
+            csvline.append(escapeDoubleQuotes(this.accountType)).append(',');
+
+            for (double value: doubleDataToAppend){
+                csvline.append(value).append(',');
+            }
+            
+            csvline.deleteCharAt(csvline.length()-1);
+            csvline.append("\r\n");
+            writer.append(csvline.toString());
+        } catch (IOException e) {
+            System.err.println("Error appending to CSV: " + e.getMessage());
+        }
+
+    }
+
+    private static String escapeDoubleQuotes(String str) {
+        if (str == null) {
+            return ""; // Handle null values
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char ch : str.toCharArray()) {
+            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
+                sb.append('\\'); // Escape special characters
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+
 }

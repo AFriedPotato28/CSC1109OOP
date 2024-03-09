@@ -13,7 +13,6 @@ public class Bank {
     private HashMap<Integer,List<Account>> accounts;
     private ArrayList<Loan> loans;
     private ArrayList<CreditCard> creditCards;
-    private Security securityInstance;
 
     public Bank(String name){
         this.name = name;
@@ -44,6 +43,8 @@ public class Bank {
             e.printStackTrace();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (ArrayIndexOutOfBoundsException e){
+            throw new RuntimeException(e);
         }
     }
 
@@ -62,7 +63,6 @@ public class Bank {
                 System.out.println("Customer account already exists for username");
                 userId = cust.getCustomerId();
                 usernameExists = true;
-                break;
             }
         }
     
@@ -72,7 +72,6 @@ public class Bank {
 
             this.customers.add(customerSize,customer);
             customer.createCustomerAccount(customerSize + 1, name, username, hashPassword,salt);
-            userId = (customerSize + 1);
             System.out.println("New Account has been created");
             System.out.println("There is a total of "+(customerSize + 1) +" in the list");
         }
@@ -96,7 +95,7 @@ public class Bank {
                 double balance = Double.parseDouble(data[3]);
                 double transactionLimit = Double.parseDouble(data[4]);
 
-                Account account = new Account(AccountID + 1,customerID, accountType, balance , transactionLimit);
+                Account account = new Account(AccountID,customerID, accountType, balance , transactionLimit);
 
                 if (!this.accounts.containsKey(customerID)){
                     this.accounts.put(customerID, new ArrayList<>());
@@ -107,6 +106,8 @@ public class Bank {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ArrayIndexOutOfBoundsException e){
             throw new RuntimeException(e);
         }
     }
@@ -120,6 +121,7 @@ public class Bank {
 
         
         boolean customerIdExists = false;
+        boolean accountTypeExists = false;
         int sizeOfAccount = 0;
         
         if (accountType.equals("1")){
@@ -138,6 +140,7 @@ public class Bank {
 
             for (Account accountItems : value){
                 if(accountItems.getAccountType().equalsIgnoreCase(accountType)){
+                    accountTypeExists = true;
                     return;
                 };                
             }
@@ -150,7 +153,11 @@ public class Bank {
             this.accounts.put(customerID, new ArrayList<>());
         }
         
-        this.accounts.get(customerID).add(account);
+        if (!accountTypeExists){
+            this.accounts.get(customerID).add(account);
+            account.createAccountDetails(customerID, (sizeOfAccount + 1), accountType, 0, 0);
+        }
+        
     }
 
     public void removeAccount(int customerID){

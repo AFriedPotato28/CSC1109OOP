@@ -165,7 +165,6 @@ public class Security{
     }
 
     public static String hashPasword(String password, String Salt){
-       
         try {
             KeySpec spec = new PBEKeySpec(password.toCharArray(), Salt.getBytes(), 65536, 256);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
@@ -181,7 +180,6 @@ public class Security{
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
-
         return Base64.getEncoder().encodeToString(salt);
     } 
 

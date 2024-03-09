@@ -35,6 +35,7 @@ public class BankSystem {
                     }
 
                     bank.addCustomer(new Customer(),name,username,password,accountType);
+                    break;
                 case 2:
                     String loginUsername = promptInput("Please enter your username", scanner);
                     String loginPassword = promptInput("Please enter your password", scanner);
@@ -46,7 +47,9 @@ public class BankSystem {
                     
                     }
                 default:
-                    System.out.println("Please enter between 1 or 2");
+                    if (choice != 0 ){
+                        System.out.println("Please enter between 1 or 2");
+                    }
                     break;
             }
 

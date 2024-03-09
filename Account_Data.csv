@@ -1,2 +1,2 @@
 CustomerID,AccountID,accountType,balance,transactionLimit
-11,1,"Normal",1000,0
+12,2,Savings,0.0,0.0
