@@ -1,4 +1,5 @@
 *.md
+*.csv
 
 # Default ignored files
 /shelf/

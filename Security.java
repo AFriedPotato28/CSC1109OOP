@@ -100,7 +100,7 @@ public class Security{
          * The password must be eight characters or longer.
          * The password must be less than 20 characters.
          */
-        String regexPassword = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,20}$";
+        String regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@#$%^&+=!]).{8,20}$";
         /*
          * Compile the regular expression to the pattern
          */
@@ -166,10 +166,12 @@ public class Security{
 
     public static String hashPasword(String password, String Salt){
         try {
+            
             KeySpec spec = new PBEKeySpec(password.toCharArray(), Salt.getBytes(), 65536, 256);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             byte[] hash = factory.generateSecret(spec).getEncoded();
             return Base64.getEncoder().encodeToString(hash);
+
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             // Handle the error appropriately
             throw new RuntimeException("Error during password hashing", e);

@@ -1,5 +1,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Represents a bank account associated with a customer.
@@ -116,34 +118,23 @@ public class Account {
         this.accountType = accountType;
         this.balance = balance;
         this.transactionLimit = transactionLimit;
-        int[] integerDataToAppend = {this.customerId, this.accountId};
-        double[] doubleDataToAppend = {this.balance, this.transactionLimit};
+        String[] dataToAppend = {String.valueOf(this.customerId), String.valueOf(this.accountId),accountType,String.valueOf(this.balance),String.valueOf(this.transactionLimit)};
+
+        String csvLine = Arrays.stream(dataToAppend)
+                                .map(this::escapeDoubleQuotes)
+                                .collect(Collectors.joining(","));
     
         //append data to next row
         try (FileWriter writer = new FileWriter(filepath, true)) {  // Append mode
-
-            // Build CSV line with proper escaping for commas
-            StringBuilder csvline = new StringBuilder();
-            for (int value: integerDataToAppend){
-                csvline.append(value).append(',');
-            }
-          
-            csvline.append(escapeDoubleQuotes(this.accountType)).append(',');
-
-            for (double value: doubleDataToAppend){
-                csvline.append(value).append(',');
-            }
-            
-            csvline.deleteCharAt(csvline.length()-1);
-            csvline.append("\r\n");
-            writer.append(csvline.toString());
+            writer.append("\n");
+            writer.append(csvLine);
         } catch (IOException e) {
             System.err.println("Error appending to CSV: " + e.getMessage());
         }
 
     }
 
-    private static String escapeDoubleQuotes(String str) {
+    private String escapeDoubleQuotes(String str) {
         if (str == null) {
             return ""; // Handle null values
         }

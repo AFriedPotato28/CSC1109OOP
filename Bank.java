@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.io.IOException;
 
 public class Bank {
@@ -20,6 +21,9 @@ public class Bank {
         this.accounts = new HashMap<Integer,List<Account>>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
+
+        populateCustomersList();
+        populateAccountList();
     }
 
     public void populateCustomersList(){
@@ -48,34 +52,25 @@ public class Bank {
         }
     }
 
-    public void addCustomer(Customer customer,String name,String username, String password, String accountType){
-        //check if customer ArrayList is loaded
-        if(this.customers.isEmpty()){
-            populateCustomersList();
-        }
-
+    public void addCustomer(Customer customer, String name,String username, String password, String accountType){
         int customerSize = this.customers.size();
-        System.out.println("Initial Customer Size: "+customerSize);
-        boolean usernameExists = false;
-        int userId = 0;
-        for (Customer cust : this.customers) {
-            if (cust.getUserName().equalsIgnoreCase(username)) {
-                System.out.println("Customer account already exists for username");
-                userId = cust.getCustomerId();
-                usernameExists = true;
-            }
-        }
-    
-        if(!usernameExists){
+        System.out.println("Initial Customer Size: " + customerSize);
+
+        Optional<Customer> custOptional = this.customers.stream().filter((cust) -> cust.getUserName().equalsIgnoreCase(username)).findFirst();
+        int userId = !custOptional.isEmpty() ? custOptional.get().getCustomerId() : customerSize + 1;
+        
+        if(!custOptional.isEmpty()) {
+            System.out.println("Customer account already exists for username");
+        }else{
             String salt = Security.generateSalt();
             String hashPassword = Security.hashPasword(password,salt);
 
             this.customers.add(customerSize,customer);
-            customer.createCustomerAccount(customerSize + 1, name, username, hashPassword,salt);
+            customer.createCustomerAccount(userId, name, username, hashPassword, salt);
             System.out.println("New Account has been created");
             System.out.println("There is a total of "+(customerSize + 1) +" in the list");
         }
-        
+
         addAccount(userId, accountType);
     }
 
@@ -115,21 +110,10 @@ public class Bank {
 
     public void addAccount(Integer customerID,String accountType){
 
-        if(this.accounts.isEmpty()){
-            populateAccountList();
-        }
-
-        
         boolean customerIdExists = false;
-        boolean accountTypeExists = false;
         int sizeOfAccount = 0;
-        
-        if (accountType.equals("1")){
-            accountType = "Savings";
-        }else{
-            accountType = "Normal";
-        }    
-
+        accountType = accountType.equals("1") ? "Savings" : "Normal";
+      
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             if(entry.getKey() == customerID){
                 customerIdExists = true;
@@ -140,7 +124,6 @@ public class Bank {
 
             for (Account accountItems : value){
                 if(accountItems.getAccountType().equalsIgnoreCase(accountType)){
-                    accountTypeExists = true;
                     return;
                 };                
             }
@@ -152,16 +135,30 @@ public class Bank {
         if (!customerIdExists){
             this.accounts.put(customerID, new ArrayList<>());
         }
+
+        System.out.println("Testing");
         
-        if (!accountTypeExists){
-            this.accounts.get(customerID).add(account);
-            account.createAccountDetails(customerID, (sizeOfAccount + 1), accountType, 0, 0);
-        }
+        this.accounts.get(customerID).add(account);
+        account.createAccountDetails(customerID, (sizeOfAccount + 1), accountType, 0, 0);
+        
         
     }
 
     public void removeAccount(int customerID){
        // accounts.remove(account);
+    }
+
+    public boolean validateLogin(String loginUsername, String loginPassword) {
+        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(loginUsername)).findFirst();
+        if(customerOptional.isEmpty()) {
+            return false;
+        }
+        Customer customer = customerOptional.get();
+        String hashedPw = Security.hashPasword(loginPassword, customer.getSalt());
+        if(!customer.getPassword().equals(hashedPw)) {
+            return false;
+        }
+        return true;
     }
 
 }

@@ -12,7 +12,7 @@ public class BankSystem {
             
             System.out.println("\nChoose an action:");
             System.out.println("1. Create new Account");
-            System.out.println("2. Login");
+            System.out.println("2. Login to Account");
             System.out.println("0. Exit");
 
             System.out.println("Enter your choice: ");
@@ -40,15 +40,15 @@ public class BankSystem {
                     String loginUsername = promptInput("Please enter your username", scanner);
                     String loginPassword = promptInput("Please enter your password", scanner);
 
-                    while (loginUsername.equals("") && loginPassword.equals("")){
+                    while (!bank.validateLogin(loginUsername,loginPassword)){
                         System.out.println("Wrong Crediential Informations");
                         loginUsername = promptInput("Please enter your username", scanner);
                         loginPassword = promptInput("Please enter your password", scanner);
-                    
                     }
+                    break;
                 default:
                     if (choice != 0 ){
-                        System.out.println("Please enter between 1 or 2");
+                        System.out.println("Please enter between 1 : Creating Account or 2: Login Account");
                     }
                     break;
             }
