@@ -10,7 +10,7 @@ public class BankSystem {
         String userInfo = "";
         
         do{
-            if (userInfo.equals("")){
+            if (!bank.getUsername(userInfo)){
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Create new Account");
                 System.out.println("2. Login to Account");
@@ -34,13 +34,26 @@ public class BankSystem {
                     }
             }else{
                 System.out.println("\nChoose an action:");
-                System.out.println("1. Transfer ");
+                System.out.println("1. Transfer");
                 System.out.println("2. Apply/Cancel Credit Card");
                 System.out.println("3. Apply/Repay Loan");
+                System.out.println("4. Reset Password");
+                System.out.println("5. Log out");
                 System.out.println("0. Exit");
                     
                 System.out.println("Enter your choice: ");
                 choice = scanner.nextInt();
+
+                switch(choice){
+                    case 1:
+                    case 2:
+                    case 3:
+                    case 4:
+                        resetPassword(scanner,bank,userInfo);
+                    case 5:
+                        userInfo = "";
+                    default:
+                }
             }
             
         } while(choice != 0);
@@ -48,6 +61,8 @@ public class BankSystem {
         scanner.close();
         
     }
+   
+
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt,Scanner scanner) {
         System.out.println(prompt);
@@ -83,6 +98,7 @@ public class BankSystem {
         }
 
         bank.generateOTP(loginUsername);
+        bank.setLoginDetails(loginUsername, loginPassword);
         int attemptOfTries = 1;
         String OTP = promptInput("Please enter your OTP", scanner); 
         
@@ -93,7 +109,7 @@ public class BankSystem {
                 System.out.println("You have tried more than 3 tries to authenticate");
                 break;
             }
-
+            //Things to be fixed how to break this loop 
             System.out.println("You have " + (3-attemptOfTries) + " attempts left");
             attemptOfTries++;
         }
@@ -103,6 +119,23 @@ public class BankSystem {
         }
 
         return "";
+    }
+     
+    private static void resetPassword(Scanner scanner, Bank bank,String userInfo) {
+        String currentPassword = promptInput("Please enter your current password", scanner);
+
+        if (!bank.authenticateDetails(userInfo, currentPassword)){
+            currentPassword = promptInput("Please re-enter your current password", scanner);
+        }
+
+        String newPassword = promptInput("Please enter your new password", scanner);
+        String checkNewPassword = promptInput("Please re-enter your new password", scanner);
+
+        if (!newPassword.equals(checkNewPassword)){
+            checkNewPassword = promptInput("Please re-enter your new password", scanner);
+        }
+        
+        bank.resetPassword(userInfo,newPassword);
     }
 }
     

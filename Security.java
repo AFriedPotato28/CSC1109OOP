@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -29,25 +28,6 @@ public class Security{
     public Security(){
         otpMap = new HashMap<String, Integer>();
         passwordMap = new HashMap<String, String>();
-    }
-
-    /**
-     * Constructs a new Security object with the provided initial password and OTP maps.
-     *
-     * @param initialPasswordMap A Map containing username-password pairs to initialize the security system.
-     * @param initialOtpMap A Map containing username-OTP pairs to initialize the security system.
-     */
-    public Security(Map<String,String> initialPasswordMap, Map<String,Integer>initialOtpMap){
-        this.passwordMap = initialPasswordMap;
-        this.otpMap = initialOtpMap;
-    }
-
-    /**
-     * Registers a new user with the bank.
-     * @param accountID The accountID of the newly registered user.
-     * @param password The password of the newly registered user.
-     */
-    public void registerUser(int accountID, String password){
     }
 
     /**
@@ -86,7 +66,7 @@ public class Security{
      * @param newPassword The new password to be set.
      * @return True if the password is valid, false otherwise.
      */
-    public boolean resetPassword(int username, String newPassword){
+    public boolean resetPassword(String username, String newPassword){
         // implementation of the reset password goes here
         return false;
     }
@@ -190,4 +170,24 @@ public class Security{
         return Base64.getEncoder().encodeToString(salt);
     } 
 
+    public void setLoginAccount(String username, String password){
+        passwordMap.put(username, password);
+    }
+
+    public boolean authenticateUser (String username, String password,String salt){
+        String hashPass = hashPasword(password, salt);
+        if (passwordMap.containsKey(username) && passwordMap.containsKey(hashPass)){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean getAccount(String Username){
+
+        if (passwordMap.containsKey(Username)){
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -1,4 +1,6 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -163,11 +165,34 @@ public class Bank {
         return true;
     }
 
-    public int generateOTP(String loginUsername) {
+    public int generateOTP(String loginUsername) { 
         return securityInstance.generateOTP(loginUsername);
     }
 
     public boolean authenticateOTP(String loginUsername, int OTP){
         return securityInstance.authenticateWithOTP(loginUsername, OTP);
     }
+
+    public boolean getUsername(String username){
+        return securityInstance.getAccount(username);
+    }
+
+    public void setLoginDetails(String username, String password){
+        securityInstance.setLoginAccount(username, password);
+    }
+
+    public boolean authenticateDetails (String username, String password){
+        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
+        Customer customer = customerOptional.get();
+        return securityInstance.authenticateUser(username, password,customer.getSalt());
+    }
+
+    public void resetPassword(String userInfo, String newPassword) {
+        String Salt = Security.generateSalt();
+        newPassword = Security.hashPasword(newPassword, Salt);
+
+        securityInstance.setLoginAccount(userInfo, newPassword);
+    }
+
+
 }
