@@ -3,7 +3,7 @@ import java.util.Date;
 /**
  * Represents a Credit Card with information such as card number, expiry date, CVV, customer details, balance, and credit limit.
  */
-public class CreditCard {
+public class CreditCard extends CreditCardGenerator {
 
     /**
      * The card number associated with the credit card.
@@ -37,7 +37,7 @@ public class CreditCard {
     /**
      * Constructs a new CreditCard object.
      */
-    public CreditCard(){}
+    public CreditCard(){ }
 
     /**
      * Constructs a new CreditCard object with the specified card number, expiry date, CVV, customer, balance, and credit limit.
@@ -48,10 +48,7 @@ public class CreditCard {
      * @param balance The current balance on the credit card.
      * @param creditLimit The credit limit set for the credit card.
      */
-    public CreditCard(String cardNumber, Date expiryDate, int CVV, Customer customer, double balance, int creditLimit) {
-        this.cardNumber = cardNumber;
-        this.expiryDate = expiryDate;
-        this.CVV = CVV;
+    public CreditCard(Customer customer, double balance, int creditLimit) {
         this.customer = customer;
         this.balance = balance;
         this.creditLimit = creditLimit;

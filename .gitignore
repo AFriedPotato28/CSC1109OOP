@@ -1,6 +1,9 @@
 *.md
 *.csv
 
+Account_Data.csv
+MOCK_DATA.csv
+
 # Default ignored files
 /shelf/
 /workspace.xml

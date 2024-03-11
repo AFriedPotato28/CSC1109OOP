@@ -11,9 +11,25 @@ public class CreditCardGenerator {
      *
      * @return A String representing the generated credit card number.
      */
-    public String generateCardNumber() {
+    public String generateCardNumber(int accountNo) {
         // Logic to generate a unique and valid card number
-        return "";
+        StringBuilder creditNo = new StringBuilder();
+
+        String zeros = getZeros(accountNo);
+        
+        creditNo.append("412345" + zeros + String.valueOf(accountNo) + "1" ); 
+
+        return creditNo.toString();
+    }
+
+    private String getZeros(int accountNo) {
+        StringBuilder zeros = new StringBuilder();
+        int zeroToGenerate = 9 - String.valueOf(accountNo).length();
+        for (int i = 0; i < zeroToGenerate; i ++ ){
+            zeros.append("0");
+        }
+        
+        return zeros.toString();
     }
 
     /**
@@ -21,7 +37,7 @@ public class CreditCardGenerator {
      *
      * @return An integer representing the generated CVV code.
      */
-    public static int generateCVV() {
+    public int generateCVV() {
         // Logic to generate a CVV code
         SecureRandom random = new SecureRandom();
         String code = String.format("%03d", random.nextInt(1000));
@@ -33,7 +49,7 @@ public class CreditCardGenerator {
      *
      * @return A Date object representing the generated expiry date.
      */
-    public static YearMonth generateExpiryDate() {
+    public YearMonth generateExpiryDate() {
         // Logic to generate an expiry date
         YearMonth yearMonth = YearMonth.now();
         

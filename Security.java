@@ -57,6 +57,7 @@ public class Security{
      * @return True if user enters correct OTP, false otherwise.
      */
     public boolean authenticateWithOTP(String username, int otp){
+        
         // implementation of authentication with OTP goes here
         if (otpMap.containsKey(username) && otpMap.containsValue(otp)){
             return true;
@@ -74,6 +75,7 @@ public class Security{
         int otp = rand.nextInt(1000000);
         //Store inside OTP map to validate
         otpMap.put(username,otp);
+        System.out.println(otp);
         // implementation of the otp generation goes here
         return otp;
     }
