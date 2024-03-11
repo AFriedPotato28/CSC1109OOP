@@ -1,4 +1,6 @@
-import java.util.Date;
+import java.security.SecureRandom;
+import java.time.Period;
+import java.time.YearMonth;
 
 /**
  * Utility class for generating credit card information such as card numbers, CVV codes, and expiry dates.
@@ -19,9 +21,11 @@ public class CreditCardGenerator {
      *
      * @return An integer representing the generated CVV code.
      */
-    public int generateCVV() {
+    public static int generateCVV() {
         // Logic to generate a CVV code
-        return 0;
+        SecureRandom random = new SecureRandom();
+        String code = String.format("%03d", random.nextInt(1000));
+        return Integer.parseInt(code);
     }
 
     /**
@@ -29,8 +33,10 @@ public class CreditCardGenerator {
      *
      * @return A Date object representing the generated expiry date.
      */
-    public Date generateExpiryDate() {
+    public static YearMonth generateExpiryDate() {
         // Logic to generate an expiry date
-        return new Date();
+        YearMonth yearMonth = YearMonth.now();
+        
+        return yearMonth.plus(Period.of(5,0,0));
     }
 }

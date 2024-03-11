@@ -1,4 +1,5 @@
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -26,6 +27,8 @@ public class Security{
      * Constructs a new Security object.
      */
     public Security(){
+        otpMap = new HashMap<String, Integer>();
+        passwordMap = new HashMap<String, String>();
     }
 
     /**

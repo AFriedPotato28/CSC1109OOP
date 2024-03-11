@@ -14,6 +14,7 @@ public class Bank {
     private HashMap<Integer,List<Account>> accounts;
     private ArrayList<Loan> loans;
     private ArrayList<CreditCard> creditCards;
+    private Security securityInstance;
 
     public Bank(String name){
         this.name = name;
@@ -21,6 +22,7 @@ public class Bank {
         this.accounts = new HashMap<Integer,List<Account>>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
+        securityInstance = new Security();
 
         populateCustomersList();
         populateAccountList();
@@ -161,4 +163,11 @@ public class Bank {
         return true;
     }
 
+    public int generateOTP(String loginUsername) {
+        return securityInstance.generateOTP(loginUsername);
+    }
+
+    public boolean authenticateOTP(String loginUsername, int OTP){
+        return securityInstance.authenticateWithOTP(loginUsername, OTP);
+    }
 }
