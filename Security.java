@@ -1,7 +1,11 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -10,6 +14,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -97,14 +103,6 @@ public class Security{
      * @param activityNumber The activity number to be logged.
      */
     public void logActivity(int accountID, int activityNumber){
-        LocalDateTime dateTimeObj = LocalDateTime.now();
-        /*
-         * Format the date and time
-         * The format is dd-MM-yyyy HH:mm:ss
-         */
-        DateTimeFormatter dateTimeFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String formattedDt = dateTimeObj.format(dateTimeFormatObj);
-
         /*
          * Log the activity based on the activity number
          * 1 - User logged in
@@ -116,33 +114,66 @@ public class Security{
          */
         switch (activityNumber){
             case 1:
-                // Log the user login activity
-                System.out.println("User logged in at " + formattedDt);
-                // Break the switch statement if the activity number is 1
+                generateCSV("Login",accountID);
                 break;
             case 2:
                 // Log the user bank transfer activity
-                System.out.println("User initiate bank transfer " + formattedDt);
+                System.out.println("User initiate bank transfer ");
                 // Break the switch statement if the activity number is 2
                 break;
             case 3:
                 // Log the user logout activity
-                System.out.println("User logged out at " + formattedDt);
+                System.out.println("User logged out at " );
                 // Break the switch statement if the activity number is 3
                 break;
             case 4:
                 // Log the user deposit activity
-                System.out.println("User initiate deposit at " + formattedDt);
+                System.out.println("User initiate deposit at " );
             case 5:
                 // Log the user withdraw activity
-                System.out.println("User initiate withdraw at " + formattedDt);
+                System.out.println("User initiate withdraw at ");
         }
     }
 
-    public void generateCSV(String activity, DateTimeFormatter Date){
+    private String escapeDoubleQuotes(String str) {
+        if (str == null) {
+            return ""; // Handle null values
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char ch : str.toCharArray()) {
+            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
+                sb.append('\\'); // Escape special characters
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
+    }
+
+    public void generateCSV(String activity,int customerId){
         String fileName = "Log-Tracking.csv";
 
+        LocalDateTime dateTimeObj = LocalDateTime.now();
+        /*
+         * Format the date and time
+         * The format is dd-MM-yyyy HH:mm:ss
+         */
+        DateTimeFormatter dateFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        DateTimeFormatter timeFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
+        String formattedDt = dateTimeObj.format(dateFormatObj);
+        String formattedTime = dateTimeObj.format(timeFormatObj);
 
+        String[] dataToAppend = { String.valueOf(customerId),formattedDt,formattedTime,activity};
+
+        String csvLine = Arrays.stream(dataToAppend)
+                        .map(this::escapeDoubleQuotes)
+                        .collect(Collectors.joining(","));
+
+       try( FileWriter writer = new FileWriter(fileName,true)){
+            writer.append("\n" + csvLine);
+       } catch (IOException e) {
+           System.out.println(e.getMessage());
+       }
     }
 
 

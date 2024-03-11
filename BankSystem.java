@@ -11,6 +11,8 @@ public class BankSystem {
         
         do{
             if (!bank.getUsername(userInfo)){
+                
+                bank.welcomeMessage();
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Create new Account");
                 System.out.println("2. Login to Account");
@@ -38,7 +40,8 @@ public class BankSystem {
                 System.out.println("2. Apply/Cancel Credit Card");
                 System.out.println("3. Apply/Repay Loan");
                 System.out.println("4. Reset Password");
-                System.out.println("5. Log out");
+                System.out.println("5. Settings");
+                System.out.println("6. Log out");
                 System.out.println("0. Exit");
                     
                 System.out.println("Enter your choice: ");
@@ -52,6 +55,7 @@ public class BankSystem {
                         resetPassword(scanner,bank,securityInstance,userInfo);
                         break;
                     case 5:
+                    case 6:
                         userInfo = "";
                         break;
                     default:
@@ -118,6 +122,7 @@ public class BankSystem {
         }
         
         if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))){
+            securityInstance.logActivity(bank.retrieveUserID(loginUsername),1);
             return loginUsername;
         }
 

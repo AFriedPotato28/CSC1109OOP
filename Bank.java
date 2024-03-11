@@ -33,6 +33,10 @@ public class Bank {
         populateAccountList();
     }
 
+    public void welcomeMessage(){
+        System.out.println("Welcome to " + this.name + " Bank");
+    }
+
     public void populateCustomersList(){
         //Read data from csv to find out size
        
@@ -174,6 +178,12 @@ public class Bank {
 
     public boolean getUsername(String username){
         return securityInstance.getAccount(username);
+    }
+
+    public int retrieveUserID(String username){
+        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
+        Customer customer = customerOptional.get(); 
+        return customer.getCustomerId();
     }
 
     public void setLoginDetails(String username, String password){
