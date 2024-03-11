@@ -49,10 +49,13 @@ public class BankSystem {
                     case 2:
                     case 3:
                     case 4:
-                        resetPassword(scanner,bank,userInfo);
+                        resetPassword(scanner,bank,securityInstance,userInfo);
+                        break;
                     case 5:
                         userInfo = "";
+                        break;
                     default:
+                        break;
                 }
             }
             
@@ -121,18 +124,24 @@ public class BankSystem {
         return "";
     }
      
-    private static void resetPassword(Scanner scanner, Bank bank,String userInfo) {
+    private static void resetPassword(Scanner scanner, Bank bank,Security securityInstance,String userInfo) {
         String currentPassword = promptInput("Please enter your current password", scanner);
 
-        if (!bank.authenticateDetails(userInfo, currentPassword)){
+        while (!bank.authenticateDetails(userInfo, currentPassword)){
             currentPassword = promptInput("Please re-enter your current password", scanner);
         }
 
         String newPassword = promptInput("Please enter your new password", scanner);
+      
+        while(!securityInstance.validatePassword(newPassword)){
+            System.out.println("You did not meet password requirements");
+            newPassword = promptInput("Please re-enter your new password", scanner);
+        }
+
         String checkNewPassword = promptInput("Please re-enter your new password", scanner);
 
-        if (!newPassword.equals(checkNewPassword)){
-            checkNewPassword = promptInput("Please re-enter your new password", scanner);
+        while (!newPassword.equals(checkNewPassword)){
+            checkNewPassword = promptInput("Please re-enter your password again", scanner);
         }
         
         bank.resetPassword(userInfo,newPassword);

@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,17 +59,6 @@ public class Security{
         System.out.println(otp);
         // implementation of the otp generation goes here
         return otp;
-    }
-
-    /**
-     * Resets the password of the user.
-     * @param accountID The account ID of the user.
-     * @param newPassword The new password to be set.
-     * @return True if the password is valid, false otherwise.
-     */
-    public boolean resetPassword(String username, String newPassword){
-        // implementation of the reset password goes here
-        return false;
     }
 
     /**
@@ -149,6 +139,13 @@ public class Security{
         }
     }
 
+    public void generateCSV(String activity, DateTimeFormatter Date){
+        String fileName = "Log-Tracking.csv";
+
+
+    }
+
+
     public static String hashPasword(String password, String Salt){
         try {
             
@@ -170,13 +167,38 @@ public class Security{
         return Base64.getEncoder().encodeToString(salt);
     } 
 
-    public void setLoginAccount(String username, String password){
-        passwordMap.put(username, password);
+     /**
+     * Resets the password of the user.
+     * @param username The username of an account.
+     * @param newPassword The new password to be set.
+     * @return True if the password is valid, false otherwise.
+     */
+    public ArrayList<String> resetPassword(String username, String newPassword){
+
+        String salt = generateSalt();
+        String hashedPassword = hashPasword(newPassword, salt);
+        setLoginAccount(username,newPassword,salt);
+        ArrayList<String> result = new ArrayList<String>();
+        result.add(hashedPassword);
+        result.add(salt);
+
+        return result;
+    }
+
+
+    public void setLoginAccount(String username, String password,String salt){
+        String hashPass = hashPasword(password, salt);
+
+        if (!passwordMap.isEmpty()){
+            passwordMap.replace(username, hashPass);
+        }
+        
+        passwordMap.put(username,hashPass);
     }
 
     public boolean authenticateUser (String username, String password,String salt){
         String hashPass = hashPasword(password, salt);
-        if (passwordMap.containsKey(username) && passwordMap.containsKey(hashPass)){
+        if (passwordMap.containsKey(username) && passwordMap.containsValue(hashPass)){
             return true;
         }
         return false;

@@ -3,11 +3,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.io.IOException;
 
 public class Bank {
@@ -58,7 +61,6 @@ public class Bank {
 
     public void addCustomer(Customer customer, String name,String username, String password, String accountType){
         int customerSize = this.customers.size();
-        System.out.println("Initial Customer Size: " + customerSize);
 
         Optional<Customer> custOptional = this.customers.stream().filter((cust) -> cust.getUserName().equalsIgnoreCase(username)).findFirst();
         int userId = !custOptional.isEmpty() ? custOptional.get().getCustomerId() : customerSize + 1;
@@ -140,12 +142,8 @@ public class Bank {
             this.accounts.put(customerID, new ArrayList<>());
         }
 
-        System.out.println("Testing");
-        
         this.accounts.get(customerID).add(account);
         account.createAccountDetails(customerID, (sizeOfAccount + 1), accountType, 0, 0);
-        
-        
     }
 
     public void removeAccount(int customerID){
@@ -157,6 +155,7 @@ public class Bank {
         if(customerOptional.isEmpty()) {
             return false;
         }
+        
         Customer customer = customerOptional.get();
         String hashedPw = Security.hashPasword(loginPassword, customer.getSalt());
         if(!customer.getPassword().equals(hashedPw)) {
@@ -178,7 +177,9 @@ public class Bank {
     }
 
     public void setLoginDetails(String username, String password){
-        securityInstance.setLoginAccount(username, password);
+        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
+        Customer customer = customerOptional.get();
+        securityInstance.setLoginAccount(username, password,customer.getSalt());
     }
 
     public boolean authenticateDetails (String username, String password){
@@ -188,10 +189,71 @@ public class Bank {
     }
 
     public void resetPassword(String userInfo, String newPassword) {
-        String Salt = Security.generateSalt();
-        newPassword = Security.hashPasword(newPassword, Salt);
+        ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
+        updateCSV(userInfo,HashedPasswordandSalt);
+    }
 
-        securityInstance.setLoginAccount(userInfo, newPassword);
+    public void updateCSV(String userInfo,ArrayList<String> HashedPasswordandSalt){
+
+        String fileName = "MOCK_DATA.csv";
+        String tempFile = "temp.csv";
+        File oldFile = new File(fileName);
+        File newFile = new File(tempFile);
+
+        String[] titleToAppend = {"id","name","username","password","salt"};
+        String csvLine = Arrays.stream(titleToAppend)
+                                .map(this::escapeDoubleQuotes)
+                                .collect(Collectors.joining(","));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
+            writer.append(csvLine);
+            for (Customer cust : this.customers){
+                int customerId = cust.getCustomerId();
+                String customerName = cust.getName();
+                String customerUserName = cust.getUserName();
+                String customerPassword = cust.getPassword();
+                String customerSalt = cust.getSalt();
+
+                if(cust.getUserName().equals(userInfo)){
+                    customerPassword = HashedPasswordandSalt.get(0);
+                    customerSalt = HashedPasswordandSalt.get(1);
+                }
+
+                String[] datatoAppend = {String.valueOf(customerId),customerName,customerUserName,customerPassword,customerSalt};
+                csvLine = Arrays.stream(datatoAppend).map(this::escapeDoubleQuotes)
+                        .collect(Collectors.joining(","));
+
+                writer.append("\n" + csvLine);
+            }
+            writer.close();
+        }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        if(oldFile.delete()){
+            if(!newFile.renameTo(oldFile)){
+                System.out.println("Done deleting old file " + oldFile);
+            }
+            this.customers.clear();
+            populateCustomersList();
+        }
+
+    }
+
+    private String escapeDoubleQuotes(String str) {
+        if (str == null) {
+            return ""; // Handle null values
+        }
+        StringBuilder sb = new StringBuilder();
+        for (char ch : str.toCharArray()) {
+            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
+                sb.append('\\'); // Escape special characters
+            } else {
+                sb.append(ch);
+            }
+        }
+        return sb.toString();
     }
 
 
