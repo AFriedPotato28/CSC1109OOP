@@ -1,3 +1,4 @@
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class BankSystem {
@@ -53,6 +54,7 @@ public class BankSystem {
                     case 2:
                         break;
                     case 3:
+                        applyrepayloan(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -261,6 +263,30 @@ public class BankSystem {
         };
 
         return false;
+    }
+
+    private static void applyrepayloan(Scanner scanner, Bank bank, String userInfo){
+        System.out.println("1. Apply Loan");
+        System.out.println("2. Repay Loan");
+        System.out.println("3. Exit ");
+
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+                int newLoanNumber = bank.getCustomerLoans(bank.retrieveUserID(userInfo));
+                double loanAmount = Double.parseDouble(promptInput("Please enter amount to loan", scanner));
+                int loanDuration = Integer.parseInt(promptInput("Please enter the amount of days for loan", scanner));
+                bank.applyLoan(bank.retrieveUserID(userInfo),newLoanNumber, loanAmount, loanDuration);
+                break;
+            case 2:
+                break;
+            default:
+                if (choice != 0){
+                    System.out.println("Please enter between 1 : Apply Loan or 2: Repay Loan");
+                }
+                break;
+        }
+
     }
 
     // private static void removeAccount() {

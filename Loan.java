@@ -1,7 +1,7 @@
 /**
  * Represents a Loan with information such as loan ID, loan amount, interest rate, loan duration, and customer details.
  */
-public class Loan {
+public class Loan extends Account{
     /**
      * The unique identifier for the loan.
      */
@@ -21,18 +21,13 @@ public class Loan {
     /**
      * The interest rate associated with the loan.
      */
-    private double interestRate;
+    private double interestRate = 0.05;
 
     /**
      * The duration of the loan in months.
      */
     private int loanDuration;
 
-  
-    /**
-     * Constructs a new Loan object.
-     */
-    public Loan(){}
 
     /**
      * Constructs a new Loan object with the specified details.
@@ -42,9 +37,9 @@ public class Loan {
      * @param loanDuration The duration of the loan in months.
      * @param customer The customer associated with the loan.
      */
-    public Loan(int loanId,int customerID,double loanAmount, int loanDuration){
+    public Loan(int loanId, int customerId, double loanAmount, int loanDuration){
+        super(customerId);
         this.loanId = loanId;
-        this.customerID = customerID;
         this.loanAmount = loanAmount;
         this.interestRate = 0.05; // Interest rate for this bank (5%)
         this.loanDuration = loanDuration;
@@ -57,6 +52,9 @@ public class Loan {
      */
     public int getLoanId() {
         return this.loanId;
+    }
+    public int getCustomerId(){
+        return this.customerId;
     }
 
     /**
@@ -98,6 +96,13 @@ public class Loan {
      */
     public void setLoanDuration(int loanDuration) {
         this.loanDuration = loanDuration;
+    }
+
+    public void setCustomerId(int customerId){
+        this.customerId = customerId;
+    }
+    public void setLoanId(int loanId){
+        this.loanId = loanId;
     }
 
     /**

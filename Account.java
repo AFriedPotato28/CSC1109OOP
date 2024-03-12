@@ -20,6 +20,10 @@ public class Account implements csv_help {
         this.transactionLimit = transactionLimit;
     }
 
+    public Account(int customerId){
+        this.customerId = customerId;
+    }
+
     /**
      * Retrieves the account number.
      *
