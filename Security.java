@@ -1,20 +1,18 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.Key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -100,7 +98,7 @@ public class Security implements csv_help {
         return matcher.matches();
     }
 
-    public static String hashPasword(String password, String Salt) {
+    public static String hashPassword(String password, String Salt) {
         try {
 
             KeySpec spec = new PBEKeySpec(password.toCharArray(), Salt.getBytes(), 65536, 256);
@@ -121,6 +119,37 @@ public class Security implements csv_help {
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    // Encryption method for CVV
+    public static String encryptCVV(String cvv) throws Exception {
+        Key key = generateKey();
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        byte[] encryptedBytes = cipher.doFinal(cvv.getBytes());
+        return Base64.getEncoder().encodeToString(encryptedBytes);
+    }
+
+    // Decryption method for CVV
+    public static String decryptCVV(String encryptedCVV) throws Exception {
+        Key key = generateKey();
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, key);
+        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedCVV));
+        return new String(decryptedBytes);
+    }
+
+    // Generate secret key
+    private static SecretKey generateKey() throws NoSuchAlgorithmException {
+        // Create a KeyGenerator object for AES
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+
+        // Set the key length (128, 192, or 256 bits)
+        int keySize = 128; // Change to 192 or 256 for larger key sizes
+        keyGen.init(keySize);
+
+        // Generate a secret key
+        return keyGen.generateKey();
+    }
+
     /**
      * Resets the password of the user.
      * 
@@ -131,7 +160,7 @@ public class Security implements csv_help {
     public ArrayList<String> resetPassword(String username, String newPassword) {
 
         String salt = generateSalt();
-        String hashedPassword = hashPasword(newPassword, salt);
+        String hashedPassword = hashPassword(newPassword, salt);
         setLoginAccount(username, newPassword, salt);
         ArrayList<String> result = new ArrayList<String>();
         result.add(hashedPassword);
@@ -141,7 +170,7 @@ public class Security implements csv_help {
     }
 
     public void setLoginAccount(String username, String password, String salt) {
-        String hashPass = hashPasword(password, salt);
+        String hashPass = hashPassword(password, salt);
 
         if (!passwordMap.isEmpty()) {
             passwordMap.replace(username, hashPass);
@@ -151,7 +180,7 @@ public class Security implements csv_help {
     }
 
     public boolean authenticateUser(String username, String password, String salt) {
-        String hashPass = hashPasword(password, salt);
+        String hashPass = hashPassword(password, salt);
         if (passwordMap.containsKey(username) && passwordMap.containsValue(hashPass)) {
             return true;
         }

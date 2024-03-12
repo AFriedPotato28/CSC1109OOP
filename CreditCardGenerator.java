@@ -5,35 +5,58 @@ import java.time.YearMonth;
 /**
  * Utility class for generating credit card information such as card numbers, CVV codes, and expiry dates.
  */
-public interface CreditCardGenerator {
+public final class CreditCardGenerator {
     // issue identifier number
-    String IIN = "4";
-
+    private static final String IIN = "4";
     // ID of the bank
-    String BANK_ID = "12345";
+    private static final String BANK_ID = "12345";
+
+    private CreditCardGenerator() {
+        // Private constructor to prevent instantiation
+    }
 
     /**
      * Generates a unique and valid credit card number.
      */
-    public default String generateCardNumber(int accountNo) {
+    public static String generateCardNumber(int accountNo) {
         // Logic to generate a unique and valid card number
-        StringBuilder creditNo = new StringBuilder();
+        StringBuilder cardNumber = new StringBuilder();
 
         String zeros = getZeros(accountNo);
 
-        creditNo.append(IIN + BANK_ID).append(zeros).append(String.valueOf(accountNo)).append("1");
+        cardNumber.append(IIN).append(BANK_ID).append(zeros).append(String.valueOf(accountNo));
+        int checkDigit = calculateCheckDigit(cardNumber.toString());
+        cardNumber.append(checkDigit);
 
-        return creditNo.toString();
+        return cardNumber.toString();
     }
 
-    private String getZeros(int accountNo) {
+    private static String getZeros(int accountNo) {
         StringBuilder zeros = new StringBuilder();
         int zeroToGenerate = 9 - String.valueOf(accountNo).length();
         for (int i = 0; i < zeroToGenerate; i++) {
             zeros.append("0");
         }
-
         return zeros.toString();
+    }
+
+    // Calculates the check digit for the given card number using the Luhn algorithm
+    private static int calculateCheckDigit(String cardNumber) {
+        int sum = 0;
+        boolean alternate = false;
+        for (int i = cardNumber.length() - 1; i >= 0; i--) {
+            int digit = Character.getNumericValue(cardNumber.charAt(i));
+            if (alternate) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+            alternate = !alternate;
+        }
+        int remainder = sum % 10;
+        return (remainder == 0) ? 0 : (10 - remainder);
     }
 
     /**
@@ -41,7 +64,7 @@ public interface CreditCardGenerator {
      *
      * @return An integer representing the generated CVV code.
      */
-    public default int generateCVV() {
+    public static int generateCVV() {
         // Logic to generate a CVV code
         SecureRandom random = new SecureRandom();
         String code = String.format("%03d", random.nextInt(1000));
@@ -53,10 +76,9 @@ public interface CreditCardGenerator {
      *
      * @return A Date object representing the generated expiry date.
      */
-    public default YearMonth generateExpiryDate() {
+    public static YearMonth generateExpiryDate() {
         // Logic to generate an expiry date
         YearMonth yearMonth = YearMonth.now();
-
         return yearMonth.plus(Period.of(5, 0, 0));
     }
 }

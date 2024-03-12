@@ -38,9 +38,9 @@ public class BankSystem {
             } else {
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Transfer / Withdraw / Deposit");
-                System.out.println("2. Apply/Cancel Credit Card");
+                System.out.println("2. Credit Card Options");
                 System.out.println("3. Apply/Repay Loan");
-                System.out.println("4. Settings");
+                System.out.println("4. Account Settings");
                 System.out.println("5. Log out");
                 System.out.println("0. Exit");
 
@@ -52,9 +52,10 @@ public class BankSystem {
                         transferOrWithDraworDeposit(scanner, bank, securityInstance, userInfo);
                         break;
                     case 2:
+                        creditCardOptions(scanner, bank, bank.retrieveUserID(userInfo));
                         break;
                     case 3:
-                        applyrepayloan(scanner, bank, userInfo);
+                        applyRepayLoan(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -135,7 +136,7 @@ public class BankSystem {
     }
 
     /**
-     * 
+     *
      * @param scanner
      * @param bank
      * @param securityInstance
@@ -165,13 +166,13 @@ public class BankSystem {
     }
 
     /**
-     * 
+     *
      * @param scanner
      * @param bank
      * @param securityInstance
      * @param userInfo
-     * 
-     * 
+     *
+     *
      */
 
     private static void settings(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
@@ -210,12 +211,12 @@ public class BankSystem {
     }
 
     /**
-     * 
+     *
      * @param scanner
      * @param bank
      * @param securityInstance
      * @param userInfo
-     * 
+     *
      */
 
     private static void changeTransactionLimit(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
@@ -231,7 +232,7 @@ public class BankSystem {
     //         }
     //         System.out.println("0.Exit");
     //         System.out.print("Enter choice: ");
-            
+
     //         accountChoice = scanner.nextInt();
 
     //         if (accountChoice > 0 && accountChoice <= accounts.size()) {
@@ -243,7 +244,7 @@ public class BankSystem {
     //             System.out.println("Invalid Choice. Please try again");
     //         }
     //     } while (accountChoice != 0);
-        
+
     // }
 
     private static boolean createAccount(Scanner scanner,Bank bank,String username) {
@@ -265,7 +266,7 @@ public class BankSystem {
         return false;
     }
 
-    private static void applyrepayloan(Scanner scanner, Bank bank, String userInfo){
+    private static void applyRepayLoan(Scanner scanner, Bank bank, String userInfo){
         System.out.println("1. Apply Loan");
         System.out.println("2. Repay Loan");
         System.out.println("3. Back ");
@@ -288,6 +289,35 @@ public class BankSystem {
         }
 
     }
+
+    private static void creditCardOptions(Scanner scanner, Bank bank, int customerId){
+        System.out.println("1. Apply Credit Card");
+        System.out.println("2. Cancel Credit Card");
+        System.out.println("3. Pay Credit Card Bill");
+
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+                int newCreditCardId = bank.getCustomerCreditCards(customerId);
+                int accountNo = bank.retrieveAccountNo(customerId);
+                int annualIncome;
+                do {
+                    annualIncome = Integer.parseInt(promptInput("Please enter your annual income: ", scanner));
+                    if (annualIncome < 15000) {
+                        System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                    }
+                } while(annualIncome < 15000);
+                bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+                break;
+            case 2, 3:
+                break;
+            default:
+                if(choice != 0) {
+                    System.out.println("Please enter a number between 1-3!");
+                }
+                break;
+            }
+        }
 
     // private static void removeAccount() {
     //     System.out.println("Remove an Account");
@@ -312,7 +342,7 @@ public class BankSystem {
     // }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
-            String userInfo) {
+                                                    String userInfo) {
 
         int accountChoice = -1;
 

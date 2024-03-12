@@ -1,11 +1,12 @@
 import java.io.*;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Bank implements csv_help{
+public class Bank implements csv_help {
     private String name;
     private ArrayList<Customer> customers;
     private HashMap<Integer, List<Account>> accounts;
@@ -55,29 +56,29 @@ public class Bank implements csv_help{
         }
     }
 
-    public void addCustomer(Customer customer,String accountType){
+    public void addCustomer(Customer customer, String accountType) {
         int customerSize = this.customers.size();
         Optional<Customer> custOptional = this.customers.stream().filter((cust) -> cust.getUserName().equalsIgnoreCase(customer.getUserName())).findFirst();
-        
-        if(!custOptional.isEmpty()) {
+
+        if (!custOptional.isEmpty()) {
             System.out.println("Customer account already exists for username");
         } else {
             String salt = Security.generateSalt();
-            String hashPassword = Security.hashPasword(customer.getPassword(),salt);
+            String hashPassword = Security.hashPassword(customer.getPassword(), salt);
             customer.setItems(customerSize + 1, hashPassword, salt);
-            
-            this.customers.add(customerSize,customer);
+
+            this.customers.add(customerSize, customer);
             customer.createCustomerAccount(customer);
             System.out.println("New Customer has been created");
-            System.out.println("There is a total of "+(customerSize + 1) +" in the list");
+            System.out.println("There is a total of " + (customerSize + 1) + " in the list");
         }
 
         int userId = !custOptional.isEmpty() ? custOptional.get().getCustomerId() : this.customers.size();
-        addAccount(userId,accountType);
+        addAccount(userId, accountType);
     }
 
-    public void populateAccountList(){
-        try(BufferedReader bur = new BufferedReader(new FileReader("Account_Data.csv"))){
+    public void populateAccountList() {
+        try (BufferedReader bur = new BufferedReader(new FileReader("Account_Data.csv"))) {
             String sLine;
             bur.readLine();
             while ((sLine = bur.readLine()) != null) {
@@ -106,25 +107,26 @@ public class Bank implements csv_help{
     }
 
 
-    public boolean addAccount(Integer customerID,String accountType){
+    public boolean addAccount(Integer customerID, String accountType) {
 
         boolean customerIdExists = false;
         boolean accountTypeExists = false;
         int sizeOfAccount = 0;
         accountType = accountType.equals("1") ? "Savings" : "Normal";
-  
+
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             List<Account> accounts = entry.getValue();
             sizeOfAccount = accounts.size();
-            if(entry.getKey() == customerID ){
+            if (entry.getKey() == customerID) {
                 customerIdExists = true;
-                for (Account account : accounts){
-                    if(account.getAccountType().equalsIgnoreCase(accountType)){
+                for (Account account : accounts) {
+                    if (account.getAccountType().equalsIgnoreCase(accountType)) {
                         accountTypeExists = true;
-                    };                
+                    }
+                    ;
                 }
             }
-        } 
+        }
 
         Account account = new Account((sizeOfAccount + 1), customerID, accountType, 0, 0);
 
@@ -176,13 +178,62 @@ public class Bank implements csv_help{
     }
 
     public void updateLoantoCsv(Loan newloan) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data.csv", true));) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data.csv", true))) {
             //Append object to csv
             String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + "," + newloan.getInterestRate() + "," + newloan.getLoanDuration();
             bw.write(loanData);
             bw.newLine();
 
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int getCustomerCreditCards(int customerId) {
+        int creditCardCount = 0;
+        try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
+            String sLine;
+            br.readLine();
+            while ((sLine = br.readLine()) != null) {
+                String[] data = sLine.split(",");
+                if (Integer.parseInt(data[1]) == customerId) {
+                    int creditCardId = Integer.parseInt(data[0]);
+                    int accountNo = Integer.parseInt(data[2]);
+                    String cardNumber = data[3];
+                    int cvv = Integer.parseInt(Security.decryptCVV(data[4]));
+                    YearMonth expiration_date = YearMonth.parse(data[5]);
+                    double balance = Double.parseDouble(data[6]);
+                    int creditLimit = Integer.parseInt(data[7]);
+
+                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, creditLimit, cardNumber, cvv, expiration_date);
+                    this.creditCards.add(creditCard);
+                }
+                creditCardCount++;
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found!" + e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return creditCardCount + 1;
+    }
+
+    public void applyCreditCard(int newCreditCardId, int customerId, int accountNo, int annualIncome) {
+        CreditCard creditCard = new CreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+        updateCreditCardToCSV(creditCard);
+    }
+
+    public void updateCreditCardToCSV(CreditCard creditCard) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
+            String[] dataToAppend = {String.valueOf(creditCard.getCreditCardId()),
+                    String.valueOf(creditCard.getCustomerId()),
+                    String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
+                    creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
+                    String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getCreditLimit())};
+            String line = String.join(",", dataToAppend);
+            bw.write(line);
+            bw.newLine();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -194,7 +245,7 @@ public class Bank implements csv_help{
         }
 
         Customer customer = customerOptional.get();
-        String hashedPw = Security.hashPasword(loginPassword, customer.getSalt());
+        String hashedPw = Security.hashPassword(loginPassword, customer.getSalt());
         if (!customer.getPassword().equals(hashedPw)) {
             return false;
         }
@@ -219,6 +270,17 @@ public class Bank implements csv_help{
         return customer.getCustomerId();
     }
 
+    public int retrieveAccountNo(int customerId) {
+        for (List<Account> accountList : this.accounts.values()) {
+            for (Account account : accountList) {
+                if (account.getCustomerId() == customerId) {
+                    return account.getAccountNo();
+                }
+            }
+        }
+        return -1; // Return -1 if no account is found for the given customer ID
+    }
+
     public void setLoginDetails(String username, String password) {
         Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
         Customer customer = customerOptional.get();
@@ -233,25 +295,25 @@ public class Bank implements csv_help{
 
     public void resetPassword(String userInfo, String newPassword) {
         ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
-        boolean success = updateCSV(userInfo,this.customers,HashedPasswordandSalt);
+        boolean success = updateCSV(userInfo, this.customers, HashedPasswordandSalt);
 
-        if (success){
+        if (success) {
             this.customers.clear();
             populateCustomersList();
         }
     }
 
-    public void logOut(String name){
+    public void logOut(String name) {
         int ID = retrieveUserID(name);
-        securityInstance.logActivity(ID,3);
+        securityInstance.logActivity(ID, 3);
     }
-    
-    public void removeAccount(int customerID){
+
+    public void removeAccount(int customerID) {
         accounts.remove(customerID);
-     }
- 
-     public void removeCustomer(Customer customer){
+    }
+
+    public void removeCustomer(Customer customer) {
         customers.remove(customer);
-     }
+    }
 
 }
