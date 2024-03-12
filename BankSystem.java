@@ -127,7 +127,7 @@ public class BankSystem {
 
         if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
             securityInstance.logActivity(bank.retrieveUserID(loginUsername), 1);
-            bank.setLoans(bank.retrieveUserID(loginUsername));
+
             return loginUsername;
         }
 
@@ -268,7 +268,7 @@ public class BankSystem {
     private static void applyrepayloan(Scanner scanner, Bank bank, String userInfo){
         System.out.println("1. Apply Loan");
         System.out.println("2. Repay Loan");
-        System.out.println("3. Exit ");
+        System.out.println("3. Back ");
 
         int choice = scanner.nextInt();
         switch (choice){

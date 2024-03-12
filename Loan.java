@@ -21,7 +21,7 @@ public class Loan extends Account{
     /**
      * The interest rate associated with the loan.
      */
-    private double interestRate = 0.05;
+    private double interestRate;
 
     /**
      * The duration of the loan in months.
@@ -35,7 +35,7 @@ public class Loan extends Account{
      * @param loanId The unique identifier of the loan.
      * @param loanAmount The amount of the loan.
      * @param loanDuration The duration of the loan in months.
-     * @param customer The customer associated with the loan.
+     * @param customerId The customer id associated with loan class.
      */
     public Loan(int loanId, int customerId, double loanAmount, int loanDuration){
         super(customerId);
@@ -53,9 +53,7 @@ public class Loan extends Account{
     public int getLoanId() {
         return this.loanId;
     }
-    public int getCustomerId(){
-        return this.customerId;
-    }
+
 
     /**
      * Gets the amount of the loan.
@@ -98,9 +96,7 @@ public class Loan extends Account{
         this.loanDuration = loanDuration;
     }
 
-    public void setCustomerId(int customerId){
-        this.customerId = customerId;
-    }
+
     public void setLoanId(int loanId){
         this.loanId = loanId;
     }

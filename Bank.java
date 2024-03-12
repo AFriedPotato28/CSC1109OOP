@@ -1,12 +1,9 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.io.IOException;
 
 public class Bank implements csv_help{
     private String name;
@@ -134,17 +131,12 @@ public class Bank implements csv_help{
         if (!customerIdExists) {
             this.accounts.put(customerID, new ArrayList<>());
         }
-        if (!accountTypeExists){
+        if (!accountTypeExists) {
             this.accounts.get(customerID).add(account);
-            account.generateCSVtoAccount(customerID,account);
+            account.generateCSVtoAccount(customerID, account);
             return true;
-
-        this.accounts.get(customerID).add(account);
-        account.createAccountDetails(customerID, (sizeOfAccount + 1), accountType, 0, 0);
-    }
-
-    public void removeAccount(int customerID) {
-        // accounts.remove(account);
+        }
+        return false;
     }
 
     public int getCustomerLoans(int customerId) {
@@ -169,13 +161,11 @@ public class Bank implements csv_help{
             }
             return loanCount + 1;
 
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 
     public void applyLoan(int customerId, int newLoanNumber, double loanAmount, int loanDuration) {
@@ -263,27 +253,5 @@ public class Bank implements csv_help{
      public void removeCustomer(Customer customer){
         customers.remove(customer);
      }
- 
-     public void setLoans(int customerId){
-        try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))){
-            String sLine;
-            
-            br.readLine();
-            while((sLine = br.readLine()) != null){
-                String[] data = sLine.split(",");
-                if(Integer.parseInt(data[1]) == customerId){
-                    int loanId = Integer.parseInt(data[0]);
-                    double loanAmount = Double.parseDouble(data[2]);
-                    int loanDuration = Integer.parseInt(data[4]);
 
-                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
-                    this.loans.add(loan);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

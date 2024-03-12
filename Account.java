@@ -56,7 +56,7 @@ public class Account implements csv_help {
      *
      * @return The customer object.
      */
-    public int getCustomer() {
+    protected int getCustomerId() {
         return this.customerId;
     }
 
