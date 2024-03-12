@@ -1,9 +1,9 @@
-import java.util.Date;
+import java.time.YearMonth;
 
 /**
  * Represents a Credit Card with information such as card number, expiry date, CVV, customer details, balance, and credit limit.
  */
-public class CreditCard extends CreditCardGenerator {
+public class CreditCard extends Account implements CreditCardGenerator {
 
     /**
      * The card number associated with the credit card.
@@ -13,7 +13,7 @@ public class CreditCard extends CreditCardGenerator {
     /**
      * The expiry date of the credit card.
      */
-    private Date expiryDate;
+    private YearMonth expiryDate;
 
     /**
      * The Card Verification Value (CVV) of the credit card.
@@ -21,9 +21,14 @@ public class CreditCard extends CreditCardGenerator {
     private int CVV;
 
     /**
-     * The customer associated with the credit card.
+     * The customer ID associated with the credit card.
      */
-    private Customer customer;
+    private int customerId;
+
+    /**
+     * The account number associated with the credit card
+     */
+    private int accountNo;
 
     /**
      * The current balance on the credit card.
@@ -34,24 +39,23 @@ public class CreditCard extends CreditCardGenerator {
      * The credit limit set for the credit card.
      */
     private int creditLimit;
-    /**
-     * Constructs a new CreditCard object.
-     */
-    public CreditCard(){ }
 
     /**
      * Constructs a new CreditCard object with the specified card number, expiry date, CVV, customer, balance, and credit limit.
-     * @param cardNumber The card number associated with the credit card.
-     * @param expiryDate The expiry date of the credit card.
-     * @param CVV The Card Verification Value (CVV) of the credit card.
-     * @param customer The customer associated with the credit card.
+     * @param customerId The customer ID associated with the credit card.
+     * @param accountNo The account number associated with the credit card.
      * @param balance The current balance on the credit card.
      * @param creditLimit The credit limit set for the credit card.
      */
-    public CreditCard(Customer customer, double balance, int creditLimit) {
-        this.customer = customer;
+    public CreditCard(int customerId, int accountNo, double balance, int creditLimit) {
+        super(customerId);
+        this.accountNo = accountNo;
         this.balance = balance;
         this.creditLimit = creditLimit;
+
+        this.cardNumber = generateCardNumber(accountNo);
+        this.CVV = generateCVV();
+        this.expiryDate = generateExpiryDate();
     }
 
 
@@ -67,16 +71,8 @@ public class CreditCard extends CreditCardGenerator {
      * Retrieves the expiry date of the credit card.
      * @return The expiry date of the credit card.
      */
-    public Date getExpiryDate() {
+    public YearMonth getExpiryDate() {
         return this.expiryDate;
-    }
-
-    /**
-     * Retrieves the customer associated with the account.
-     * @return The customer object.
-     */
-    public Customer getCustomer() {
-        return this.customer;
     }
 
     /**
