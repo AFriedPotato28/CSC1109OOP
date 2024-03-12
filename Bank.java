@@ -1,9 +1,5 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.io.IOException;
 
 public class Bank {
     private String name;
@@ -152,6 +147,29 @@ public class Bank {
 
     public void removeAccount(int customerID){
        // accounts.remove(account);
+    }
+
+    public void setLoans(int customerId){
+        try{
+            String sLine;
+            BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"));
+            br.readLine();
+            while((sLine = br.readLine()) != null){
+                String[] data = sLine.split(",");
+                if(Integer.parseInt(data[1]) == customerId){
+                    int loanId = Integer.parseInt(data[0]);
+                    double loanAmount = Double.parseDouble(data[2]);
+                    int loanDuration = Integer.parseInt(data[4]);
+
+                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
+                    this.loans.add(loan);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean validateLogin(String loginUsername, String loginPassword) {

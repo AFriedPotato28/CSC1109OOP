@@ -27,6 +27,7 @@ public class BankSystem {
                         break;
                     case 2:
                         userInfo = loginToAccount(scanner, bank, securityInstance);
+                        bank.setLoans(bank.retrieveUserID(userInfo));
                         break;
                     default:
                         if (choice != 0){
