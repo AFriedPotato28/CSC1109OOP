@@ -196,7 +196,10 @@ public class BankSystem {
                 case 3:
                     //checkBalance(scanner,userInfo);
                 case 4:
-                    //createAccount();
+                    boolean success = createAccount(scanner,bank,userInfo);
+                    if (success) {
+                        System.out.println("Account created successfully!");
+                    }
                 case 5:
                     //removeAccount();
             }
@@ -241,17 +244,24 @@ public class BankSystem {
         
     // }
 
-    // private static void createAccount(Scanner scanner,Bank bank,String username) {
-    //     // bro in bank you dont expect user to know their customer iD haha create a function at bank to do this function brb i go do something else
-    //     bank.retrieveUserID(username); 
-    //     System.out.println("Creating a new Account:");
-    //     System.out.println("Enter account type you wish to create: ");
-    //     System.out.println("1. Savings");
-    //     System.out.println("2. Normal");
+    private static boolean createAccount(Scanner scanner,Bank bank,String username) {
 
-    //     // put 1 or 2 for the account type if not user will anyhow enter i comment off your thing first ah
-    
-    // }
+        System.out.println("Creating a new Account:");
+        System.out.println("Enter account type you wish to create: ");
+        System.out.println("1. Savings");
+        System.out.println("2. Normal");
+        String accountType = promptInput("Choose between 1 or 2", scanner);
+
+        while (!accountType.equals("1") && !accountType.equals("2")) {
+            accountType = promptInput("Choose between 1 or 2", scanner);
+        }
+
+        if(bank.addAccount(bank.retrieveUserID(username), accountType)){
+            return true;
+        };
+
+        return false;
+    }
 
     // private static void removeAccount() {
     //     System.out.println("Remove an Account");

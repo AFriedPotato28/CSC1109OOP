@@ -85,8 +85,8 @@ public class Bank implements csv_help{
             bur.readLine();
             while((sLine = bur.readLine()) !=null){
                 String[] data = sLine.split(",");
-                int customerID = Integer.parseInt(data[0]);
-                int AccountID = Integer.parseInt(data[1]);
+                int AccountID = Integer.parseInt(data[0]);
+                int customerID = Integer.parseInt(data[1]);
                 String accountType = data[2];
                 double balance = Double.parseDouble(data[3]);
                 double transactionLimit = Double.parseDouble(data[4]);
@@ -109,24 +109,21 @@ public class Bank implements csv_help{
     }
 
 
-    public void addAccount(Integer customerID,String accountType){
+    public boolean addAccount(Integer customerID,String accountType){
 
         boolean customerIdExists = false;
+        boolean accountTypeExists = false;
         int sizeOfAccount = 0;
         accountType = accountType.equals("1") ? "Savings" : "Normal";
-      
+  
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             List<Account> accounts = entry.getValue();
             sizeOfAccount = accounts.size();
-            
             if(entry.getKey() == customerID ){
                 customerIdExists = true;
-            }
-
-            if(!customerIdExists){
                 for (Account account : accounts){
-                    if( account.getAccountType().equalsIgnoreCase(accountType)){
-                        return;
+                    if(account.getAccountType().equalsIgnoreCase(accountType)){
+                        accountTypeExists = true;
                     };                
                 }
             }
@@ -137,9 +134,12 @@ public class Bank implements csv_help{
         if (!customerIdExists){
             this.accounts.put(customerID, new ArrayList<>());
         }
-
-        this.accounts.get(customerID).add(account);
-        account.generateCSVtoAccount(customerID,account);
+        if (!accountTypeExists){
+            this.accounts.get(customerID).add(account);
+            account.generateCSVtoAccount(customerID,account);
+            return true;
+        }
+        return false;
     }
 
     public boolean validateLogin(String loginUsername, String loginPassword) {
@@ -231,6 +231,4 @@ public class Bank implements csv_help{
             throw new RuntimeException(e);
         }
     }
-
-
 }
