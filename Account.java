@@ -1,19 +1,13 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 /**
  * Represents a bank account associated with a customer.
  * Each account has an account ID, type, balance, associated customer, and transaction limit.
  */
-public class Account {
+public class Account implements csv_help {
     private int accountNo;
     private int customerId;
     private String accountType;
     private double balance;
     private double transactionLimit;
-    private String filepath = "Account_Data.csv";
 
     /**
      * Constructs a new Account object.
@@ -120,43 +114,5 @@ public class Account {
             return false;
         }
         return true;
-    }
-
-    public void createAccountDetails(int customerID, int accountNo, String accountType, double balance, double transactionLimit) {
-        this.customerId = customerID;
-        this.accountNo = accountNo;
-        this.accountType = accountType;
-        this.balance = balance;
-        this.transactionLimit = transactionLimit;
-        String[] dataToAppend = {String.valueOf(this.customerId), String.valueOf(this.accountNo), accountType, String.valueOf(this.balance), String.valueOf(this.transactionLimit)};
-
-        String csvLine = Arrays.stream(dataToAppend)
-                .map(this::escapeDoubleQuotes)
-                .collect(Collectors.joining(","));
-
-        //append data to next row
-        try (FileWriter writer = new FileWriter(filepath, true)) {  // Append mode
-            writer.append("\n");
-            writer.append(csvLine);
-        } catch (IOException e) {
-            System.err.println("Error appending to CSV: " + e.getMessage());
-        }
-
-    }
-
-    private String escapeDoubleQuotes(String str) {
-        if (str == null) {
-            return ""; // Handle null values
-        }
-        StringBuilder sb = new StringBuilder();
-        for (char ch : str.toCharArray()) {
-            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
-                sb.append('\\'); // Escape special characters
-            } else {
-                sb.append(ch);
-            }
-        }
-        return sb.toString();
-    }
-
+    }  
 }

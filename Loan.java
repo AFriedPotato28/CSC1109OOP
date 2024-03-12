@@ -8,9 +8,10 @@ public class Loan {
     private int loanId;
 
     /**
-     * The customer ID associated with the loan
+     * The customer applying for the loan.
      */
-    private int customerId;
+    private int customerID;
+
 
     /**
      * The amount of the loan.
@@ -27,6 +28,7 @@ public class Loan {
      */
     private int loanDuration;
 
+  
     /**
      * Constructs a new Loan object.
      */
@@ -36,16 +38,17 @@ public class Loan {
      * Constructs a new Loan object with the specified details.
      *
      * @param loanId The unique identifier of the loan.
-     * @param customerId The customer ID associated with the loan.
      * @param loanAmount The amount of the loan.
      * @param loanDuration The duration of the loan in months.
+     * @param customer The customer associated with the loan.
      */
-    public Loan(int loanId, int customerId, double loanAmount, int loanDuration){
+    public Loan(int loanId,int customerID,double loanAmount, int loanDuration){
         this.loanId = loanId;
-        this.customerId = customerId;
+        this.customerID = customerID;
         this.loanAmount = loanAmount;
         this.interestRate = 0.05; // Interest rate for this bank (5%)
         this.loanDuration = loanDuration;
+
     }
 
     /**
@@ -104,4 +107,9 @@ public class Loan {
     public double calculateAmount() {
         return this.loanAmount;
     }
+
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
+    }
+
 }

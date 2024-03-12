@@ -3,7 +3,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -20,9 +19,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 /**
- * Represents the security system of the bank and its functions such as user registration, authentication, password reset, and OTP generation.
+ * Represents the security system of the bank and its functions such as user
+ * registration, authentication, password reset, and OTP generation.
  */
-public class Security{
+public class Security implements csv_help {
     /**
      * Map for storing the username and password of the users.
      */
@@ -32,21 +32,22 @@ public class Security{
     /**
      * Constructs a new Security object.
      */
-    public Security(){
+    public Security() {
         otpMap = new HashMap<String, Integer>();
         passwordMap = new HashMap<String, String>();
     }
 
     /**
      * Authenticates a user with the Bank using One-Time Password (OTP).
+     * 
      * @param accountID The account ID of the user.
-     * @param otp The OTP entered by the user.
+     * @param otp       The OTP entered by the user.
      * @return True if user enters correct OTP, false otherwise.
      */
-    public boolean authenticateWithOTP(String username, int otp){
-        
+    public boolean authenticateWithOTP(String username, int otp) {
+
         // implementation of authentication with OTP goes here
-        if (otpMap.containsKey(username) && otpMap.containsValue(otp)){
+        if (otpMap.containsKey(username) && otpMap.containsValue(otp)) {
             return true;
         }
         return false;
@@ -54,14 +55,15 @@ public class Security{
 
     /**
      * Generates an OTP for the user.
+     * 
      * @param accountID The accountID of the user.
      * @return The generated OTP.
      */
-    public int generateOTP(String username){
+    public int generateOTP(String username) {
         SecureRandom rand = new SecureRandom();
         int otp = rand.nextInt(1000000);
-        //Store inside OTP map to validate
-        otpMap.put(username,otp);
+        // Store inside OTP map to validate
+        otpMap.put(username, otp);
         System.out.println(otp);
         // implementation of the otp generation goes here
         return otp;
@@ -69,10 +71,11 @@ public class Security{
 
     /**
      * Validates the password of the user.
+     * 
      * @param password The password to be validated.
      * @return True if the password is valid, false otherwise.
      */
-    public boolean validatePassword(String password){
+    public boolean validatePassword(String password) {
         /*
          * The password must contain at least one digit [0-9].
          * The password must contain at least one lowercase letter [a-z].
@@ -97,89 +100,9 @@ public class Security{
         return matcher.matches();
     }
 
-    /**
-     * Logs the activity of the user.
-     * @param accountID The accountID of the user.
-     * @param activityNumber The activity number to be logged.
-     */
-    public void logActivity(int accountID, int activityNumber){
-        /*
-         * Log the activity based on the activity number
-         * 1 - User logged in
-         * 2 - User initiate bank transfer
-         * 3 - User logged out
-         * 4 - User initiate deposit
-         * 5 - User initiate withdraw
-         * Show the activity and the date and time
-         */
-        switch (activityNumber){
-            case 1:
-                generateCSV("Login",accountID);
-                break;
-            case 2:
-                // Log the user bank transfer activity
-                System.out.println("User initiate bank transfer ");
-                // Break the switch statement if the activity number is 2
-                break;
-            case 3:
-                // Log the user logout activity
-                System.out.println("User logged out at " );
-                // Break the switch statement if the activity number is 3
-                break;
-            case 4:
-                // Log the user deposit activity
-                System.out.println("User initiate deposit at " );
-            case 5:
-                // Log the user withdraw activity
-                System.out.println("User initiate withdraw at ");
-        }
-    }
-
-    private String escapeDoubleQuotes(String str) {
-        if (str == null) {
-            return ""; // Handle null values
-        }
-        StringBuilder sb = new StringBuilder();
-        for (char ch : str.toCharArray()) {
-            if (ch == '"' || ch == '\\' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\0' || ch == '\f') {
-                sb.append('\\'); // Escape special characters
-            } else {
-                sb.append(ch);
-            }
-        }
-        return sb.toString();
-    }
-
-    public void generateCSV(String activity,int customerId){
-        String fileName = "Log-Tracking.csv";
-
-        LocalDateTime dateTimeObj = LocalDateTime.now();
-        /*
-         * Format the date and time
-         * The format is dd-MM-yyyy HH:mm:ss
-         */
-        DateTimeFormatter dateFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        DateTimeFormatter timeFormatObj = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedDt = dateTimeObj.format(dateFormatObj);
-        String formattedTime = dateTimeObj.format(timeFormatObj);
-
-        String[] dataToAppend = { String.valueOf(customerId),formattedDt,formattedTime,activity};
-
-        String csvLine = Arrays.stream(dataToAppend)
-                        .map(this::escapeDoubleQuotes)
-                        .collect(Collectors.joining(","));
-
-       try( FileWriter writer = new FileWriter(fileName,true)){
-            writer.append("\n" + csvLine);
-       } catch (IOException e) {
-           System.out.println(e.getMessage());
-       }
-    }
-
-
-    public static String hashPasword(String password, String Salt){
+    public static String hashPasword(String password, String Salt) {
         try {
-            
+
             KeySpec spec = new PBEKeySpec(password.toCharArray(), Salt.getBytes(), 65536, 256);
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             byte[] hash = factory.generateSecret(spec).getEncoded();
@@ -191,24 +114,25 @@ public class Security{
         }
     }
 
-    public static String generateSalt(){
+    public static String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
-    } 
+    }
 
-     /**
+    /**
      * Resets the password of the user.
-     * @param username The username of an account.
+     * 
+     * @param username    The username of an account.
      * @param newPassword The new password to be set.
      * @return True if the password is valid, false otherwise.
      */
-    public ArrayList<String> resetPassword(String username, String newPassword){
+    public ArrayList<String> resetPassword(String username, String newPassword) {
 
         String salt = generateSalt();
         String hashedPassword = hashPasword(newPassword, salt);
-        setLoginAccount(username,newPassword,salt);
+        setLoginAccount(username, newPassword, salt);
         ArrayList<String> result = new ArrayList<String>();
         result.add(hashedPassword);
         result.add(salt);
@@ -216,28 +140,27 @@ public class Security{
         return result;
     }
 
-
-    public void setLoginAccount(String username, String password,String salt){
+    public void setLoginAccount(String username, String password, String salt) {
         String hashPass = hashPasword(password, salt);
 
-        if (!passwordMap.isEmpty()){
+        if (!passwordMap.isEmpty()) {
             passwordMap.replace(username, hashPass);
         }
-        
-        passwordMap.put(username,hashPass);
+
+        passwordMap.put(username, hashPass);
     }
 
-    public boolean authenticateUser (String username, String password,String salt){
+    public boolean authenticateUser(String username, String password, String salt) {
         String hashPass = hashPasword(password, salt);
-        if (passwordMap.containsKey(username) && passwordMap.containsValue(hashPass)){
+        if (passwordMap.containsKey(username) && passwordMap.containsValue(hashPass)) {
             return true;
         }
         return false;
     }
 
-    public boolean getAccount(String Username){
+    public boolean getAccount(String Username) {
 
-        if (passwordMap.containsKey(Username)){
+        if (passwordMap.containsKey(Username)) {
             return true;
         }
 
