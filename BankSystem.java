@@ -55,7 +55,7 @@ public class BankSystem {
                         creditCardOptions(scanner, bank, userInfo);
                         break;
                     case 3:
-                        //LoanOptions(scanner, bank, userInfo);
+                        loanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -332,14 +332,16 @@ public class BankSystem {
     }
 
     private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo){
+        int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+
         System.out.println("1. Apply Credit Card");
         System.out.println("2. Cancel Credit Card");
         System.out.println("3. Pay Credit Card Bill");
 
+
         int choice = scanner.nextInt();
         switch (choice){
             case 1:
-                int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
                 int newCreditCardId = bank.getCustomerCreditCards(customerId);
                 int accountNo = bank.getAccountNo(userInfo);
                 int annualIncome;
@@ -360,6 +362,33 @@ public class BankSystem {
                 }
                 break;
         }
+    }
+
+    private static void loanOptions(Scanner scanner, Bank bank, String userInfo){
+        int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+
+        System.out.println("1. Apply Loan");
+        System.out.println("2. Repay Loan");
+        System.out.println("3. Exit ");
+
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+
+                int newLoanNumber = bank.getCustomerLoans(customerId);
+                double loanAmount = Double.parseDouble(promptInput("Please enter amount to loan", scanner));
+                int loanDuration = Integer.parseInt(promptInput("Please enter the amount of days for loan", scanner));
+                bank.applyLoan(customerId,newLoanNumber, loanAmount, loanDuration);
+                break;
+            case 2:
+                break;
+            default:
+                if (choice != 0){
+                    System.out.println("Please enter between 1 : Apply Loan or 2: Repay Loan");
+                }
+                break;
+        }
+
     }
 
 }
