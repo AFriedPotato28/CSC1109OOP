@@ -392,6 +392,8 @@ public class Bank {
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             if(this.account.withdraw(money)){
                 csv_help.updateCSVOfAccount(accounts, account);
+                securityInstance.logActivity(this.account.getCustomerId(), 5);
+                return;
             };
         }
     }
@@ -401,6 +403,8 @@ public class Bank {
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             this.account.deposit(money);
             csv_help.updateCSVOfAccount(accounts, this.account);
+            securityInstance.logActivity(this.account.getCustomerId(),4);
+            return;
         }
     }
 
@@ -420,6 +424,7 @@ public class Bank {
 
         if(this.account.transfer(accountRecipient, money)){
             csv_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
+            securityInstance.logActivity(this.account.getCustomerId(),2);
         }
     } 
     
