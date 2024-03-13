@@ -1,10 +1,8 @@
 import java.io.*;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.time.LocalDate;
+import java.time.Duration;
 
 public class Bank {
     private String name;
@@ -291,18 +289,17 @@ public class Bank {
         int loanCount = 0;
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))){
             String sLine;
-            
+            this.loans.clear();
             br.readLine();
             while ((sLine = br.readLine()) != null) {
                 String[] data = sLine.split(",");
                 if (Integer.parseInt(data[1]) == customerId) {
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
-                    int loanDuration = Integer.parseInt(data[4]);
+                    LocalDate loanDuration = LocalDate.parse(data[4]);
 
                     Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
                     this.loans.add(loan);
-                    System.out.println("Loan Amount: " + loanAmount + ", Loan Duration: " + loanDuration);
 
                 }
                 loanCount++;
@@ -316,9 +313,9 @@ public class Bank {
         }
     }
 
-    public void applyLoan(int customerId, int newLoanNumber, double loanAmount, int loanDuration) {
+    public void applyLoan(int customerId, int newLoanNumber, double loanAmount) {
         getCustomerLoans(customerId);
-
+        LocalDate loanDuration = calculateLoanDuration(loanAmount);
         Loan newloan = new Loan(newLoanNumber, customerId, loanAmount, loanDuration);
         updateLoantoCsv(newloan);
     }
@@ -334,27 +331,65 @@ public class Bank {
             throw new RuntimeException(e);
         }
     }
+
  
-     public void setLoans(int customerId){
+     public void getLoans(int customerId){
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))){
             String sLine;
-            
+            this.loans.clear();
             br.readLine();
             while((sLine = br.readLine()) != null){
                 String[] data = sLine.split(",");
                 if(Integer.parseInt(data[1]) == customerId){
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
-                    int loanDuration = Integer.parseInt(data[4]);
+                    LocalDate loanDuration = LocalDate.parse(data[4]);
 
                     Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
                     this.loans.add(loan);
                 }
             }
+
+            System.out.println();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public void updateOverdueLoans(){
+        LocalDate dateNow = LocalDate.now();
+        for(Loan loan: this.loans){
+            if(dateNow.isAfter(loan.getLoanDuration())){
+                double newLoanAmount = loan.getLoanAmount() * (1+loan.getInterestRate());
+                LocalDate newLoanDuration = calculateLoanDuration(newLoanAmount);
+
+                loan.setLoanAmount(newLoanAmount);
+                loan.setLoanDuration(newLoanDuration);
+            }
+        }
+    }
+
+    public void printLoans(){
+        for(Loan loan: this.loans){
+            System.out.println("Loan amount: " +loan.getLoanAmount()+" Loan Deadline: "+loan.getLoanDuration());
+        }
+
+    }
+    public LocalDate calculateLoanDuration(double loanAmount){
+        LocalDate currentDate = LocalDate.now();
+        if (loanAmount > 50000){
+            return currentDate.plusDays(60);
+        }
+        else if(loanAmount>30000){
+            return currentDate.plusDays(50);
+        }
+        else if(loanAmount>20000){
+            return currentDate.plusDays(40);
+        }
+        else{
+            return currentDate.plusDays(3);
         }
     }
     /** no more loans */

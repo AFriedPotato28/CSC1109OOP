@@ -1,3 +1,4 @@
 AccountNo,CustomerID,accountType,balance,transactionLimit
-1,1,Savings,370.0,1000.0
-2,2,Savings,70.0,1000.0
+1,1,Savings,0.0,9000.0
+2,2,Savings,40000.0,500.0
+2,3,Savings,40000.0,500.0

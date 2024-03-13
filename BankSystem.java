@@ -7,6 +7,7 @@ public class BankSystem {
         Bank bank = new Bank("Matthias");
         Security securityInstance = new Security();
 
+
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
         String userInfo = "";
@@ -56,7 +57,8 @@ public class BankSystem {
                         creditCardOptions(scanner, bank, userInfo);
                         break;
                     case 3:
-                        //loanOptions(scanner, bank, userInfo);
+                        bank.updateOverdueLoans();
+                        loanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -405,48 +407,53 @@ public class BankSystem {
         }
     }
 
-    // private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
-    //     int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+    private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
+        int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+        bank.getLoans(customerId);
 
     //     System.out.println("1. Apply Loan");
     //     System.out.println("2. Repay Loan");
     //     System.out.println("3. Exit ");
 
-    //     int choice = scanner.nextInt();
-    //     switch (choice) {
-    //         case 1:
-    //             //do try catch in a case where they type something unparsable, break
-    //             int newLoanNumber = bank.getCustomerLoans(customerId);
-    //             double monthlyIncome = Double.parseDouble(promptInput("Please enter annual income to check availability of loan", scanner));
-    //             if (monthlyIncome == 'b'){
-    //                 break;
-    //             }
-    //             double loanAmount;
-    //             do {
-    //                 loanAmount = Double.parseDouble(promptInput("Please enter amount to loan", scanner));
-    //                 if(loanAmount == 'b'){
-    //                     break;
-    //                 }
-    //                 if (loanAmount > monthlyIncome*2){
-    //                     System.out.println("Unsuccessful. You can only loan up to: $"+monthlyIncome*2);
-    //                 }
-    //             }while (loanAmount > monthlyIncome*2);
-    //             //int loanDuration = loan.calculateDate(loanAmount);
-    //            // if(loanDuration == 'b') {
-    //                 break;
-    //             }
-    //             //bank.applyLoan(customerId, newLoanNumber, loanAmount, loanDuration);
-    //             break;
-    //         case 2:
-    //             // retrieve data base on customer id to store the loans in the array, let user
-    //             // choose which loans they want to pay back,
-    //             break;
-    //         default:
-    //             if (choice != 0) {
-    //                 System.out.println("Please enter between 1 : Apply Loan or 2: Repay Loan");
-    //             }
-    //             break;
-    //     }
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                int newLoanNumber = bank.getCustomerLoans(customerId);
+                double bankBalance = bank.getBalance(userInfo);
+                double loanAmount = 0.0;
+                boolean valid = false;
+                bank.printLoans();
+                do {
+                    loanAmount = Double.parseDouble(promptInput("Please enter amount to loan. Enter -1 to exit", scanner));
+                    if (loanAmount == -1.0) {
+                        System.out.println("Exiting...");
+                        break;
+                    }
+                    try {
+                        if (loanAmount <= 0) {
+                            System.out.println("Invalid input, loan amount must be a positive number");
+                        } else if (loanAmount>bankBalance*2) {
+                            System.out.println("Unsuccessful, you can only loan up to: "+bankBalance*2);
+                        }
+                        else {
+                            bank.applyLoan(customerId, newLoanNumber, loanAmount);
+                        }
+                    }catch (NumberFormatException e){
+                        System.out.println("Entered an invalid input");
+                        loanAmount = -2;
+                    }
+                } while (loanAmount <= 0);
+                break;
+            case 2:
+                // retrieve data base on customer id to store the loans in the array, let user
+                // choose which loans they want to pay back,
+                break;
+            default:
+                if (choice != 0) {
+                    System.out.println("Please enter between 1 : Apply Loan or 2: Repay Loan");
+                }
+                break;
+        }
 
     // }
 

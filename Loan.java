@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+
 /**
  * Represents a Loan with information such as loan ID, loan amount, interest rate, loan duration, and customer details.
  */
@@ -26,7 +28,7 @@ public class Loan extends Account{
     /**
      * The duration of the loan in months.
      */
-    private int loanDuration;
+    private LocalDate loanDuration;
 
 
     /**
@@ -37,7 +39,7 @@ public class Loan extends Account{
      * @param loanDuration The duration of the loan in months.
      * @param customerId The customer id associated with loan class.
      */
-    public Loan(int loanId, int customerId, double loanAmount, int loanDuration){
+    public Loan(int loanId, int customerId, double loanAmount, LocalDate loanDuration){
         super(customerId);
         this.loanId = loanId;
         this.loanAmount = loanAmount;
@@ -75,7 +77,7 @@ public class Loan extends Account{
      * Retrieves the duration of the loan in months.
      * @return The loan duration.
      */
-    public int getLoanDuration() {
+    public LocalDate getLoanDuration() {
         return this.loanDuration;
     }
 
@@ -92,7 +94,7 @@ public class Loan extends Account{
      * Sets the duration of the loan in months.
      * @param loanDuration The loan duration to be set.
      */
-    public void setLoanDuration(int loanDuration) {
+    public void setLoanDuration(LocalDate loanDuration) {
         this.loanDuration = loanDuration;
     }
 
@@ -109,20 +111,6 @@ public class Loan extends Account{
         return this.loanAmount;
     }
 
-    public int calculateDate(double loanAmount){
-        if (loanAmount > 50000){
-            return 60;
-        }
-        else if(loanAmount>30000){
-            return 50;
-        }
-        else if(loanAmount>20000){
-            return 40;
-        }
-        else{
-            return 30;
-        }
-    }
 
     public void setCustomerID(int customerID) {
         this.customerID = customerID;
