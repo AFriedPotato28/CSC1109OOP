@@ -13,6 +13,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -187,12 +189,52 @@ public class Security implements csv_help {
         return false;
     }
 
-    public boolean getAccount(String Username) {
+    public boolean validateUsername(String Username) {
 
         if (passwordMap.containsKey(Username)) {
             return true;
         }
 
         return false;
+    }
+
+
+      /**
+     * Logs the activity of the user.
+     * 
+     * @param accountID      The accountID of the user.
+     * @param activityNumber The activity number to be logged.
+     */
+    public void logActivity(int accountID, int activityNumber) {
+        /*
+         * Log the activity based on the activity number
+         * 1 - User logged in
+         * 2 - User initiate bank transfer
+         * 3 - User logged out
+         * 4 - User initiate deposit
+         * 5 - User initiate withdraw
+         * Show the activity and the date and time
+         */
+        switch (activityNumber) {
+            case 1:
+                generateCSVofSecurity("Login", accountID);
+                break;
+            case 2:
+                // Log the user bank transfer activity
+                generateCSVofSecurity("Transfer Initialized", accountID);
+                // Break the switch statement if the activity number is 2
+                break;
+            case 3:
+                // Log the user logout activity
+                // Break the switch statement if the activity number is 3
+                generateCSVofSecurity("Logout", accountID);
+                break;
+            case 4:
+                // Log the user deposit activity
+                generateCSVofSecurity("Deposit", accountID);
+            case 5:
+                // Log the user withdraw activity
+                generateCSVofSecurity("Withdraw", accountID);
+        }
     }
 }

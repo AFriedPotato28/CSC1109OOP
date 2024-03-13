@@ -6,6 +6,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public interface csv_help {
@@ -17,7 +20,7 @@ public interface csv_help {
      * @return 
      * 
      */
-    public default boolean updateCSV(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
+    public default boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
 
         String fileName = "MOCK_DATA.csv";
         String tempFile = "temp.csv";
@@ -28,6 +31,7 @@ public interface csv_help {
         String csvLine = Arrays.stream(titleToAppend)
                                 .map(this::escapeDoubleQuotes)
                                 .collect(Collectors.joining(","));
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
             writer.append(csvLine);
             for (Customer cust : customers){
@@ -58,53 +62,65 @@ public interface csv_help {
 
         if(oldFile.delete()){
             if(newFile.renameTo(oldFile)){
-                System.out.println("Done deleting old file " + oldFile);
                 return true;
             }
         }
         return false;
     }
 
-      /**
-     * Logs the activity of the user.
-     * 
-     * @param accountID      The accountID of the user.
-     * @param activityNumber The activity number to be logged.
-     */
-    public default void logActivity(int accountID, int activityNumber) {
-        /*
-         * Log the activity based on the activity number
-         * 1 - User logged in
-         * 2 - User initiate bank transfer
-         * 3 - User logged out
-         * 4 - User initiate deposit
-         * 5 - User initiate withdraw
-         * Show the activity and the date and time
-         */
-        switch (activityNumber) {
-            case 1:
-                generateCSVofSecurity("Login", accountID);
-                break;
-            case 2:
-                // Log the user bank transfer activity
-                generateCSVofSecurity("Transfer Initialized", accountID);
-                // Break the switch statement if the activity number is 2
-                break;
-            case 3:
-                // Log the user logout activity
-                // Break the switch statement if the activity number is 3
-                generateCSVofSecurity("Logout", accountID);
-                break;
-            case 4:
-                // Log the user deposit activity
-                generateCSVofSecurity("Deposit", accountID);
-            case 5:
-                // Log the user withdraw activity
-                generateCSVofSecurity("Withdraw", accountID);
+    public default boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash, int userId){
+
+        String file = "Account_Data.csv";
+        String tempFile = "temp.csv";
+
+        File oldFile = new File(file);
+        File newFile = new File(tempFile);
+
+        String[] titleToAppend = {"AccountNo","CustomerID","accountType","balance","transactionLimit"};
+        String csvLine = Arrays.stream(titleToAppend)
+                        .map(this::escapeDoubleQuotes)
+                        .collect(Collectors.joining(","));
+
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
+            writer.append(csvLine);
+
+            for (Map.Entry<Integer, List<Account>> entry : accounts.entrySet()) {
+                List<Account> accountList = entry.getValue();
+           
+                for (Account account : accountList){
+                    int accountNo = account.getAccountNo();
+                    userId = account.getCustomerId();
+                    String accountType = account.getAccountType();
+                    double balance = account.getBalance();
+                    double transactionLimit = account.getTransactionLimit();
+
+                    if(accountStash.getAccountType().equalsIgnoreCase(accountType) && accountNo == accountStash.getAccountNo()){
+                        userId = accountStash.getCustomerId();
+                        balance = accountStash.getBalance();
+                        transactionLimit = accountStash.getTransactionLimit();
+                    }
+
+                    String[] dataToAppend = {String.valueOf(accountNo),String.valueOf(userId),
+                                            account.getAccountType(),String.valueOf(balance),String.valueOf(transactionLimit)};
+                    csvLine = Arrays.stream(dataToAppend)
+                                .map(this::escapeDoubleQuotes)
+                                .collect(Collectors.joining(","));
+                    
+                    writer.append("\n" + csvLine);
+                }            
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
+
+        if(oldFile.delete()){
+            if(newFile.renameTo(oldFile)){
+                return true;
+            }
+        }
+        return false;
     }
-
-
+    
     public default void generateCSVofSecurity(String activity, int customerId) {
         String fileName = "Log-Tracking.csv";
 
@@ -167,7 +183,6 @@ public interface csv_help {
         }
 
     }
-
 
     private String escapeDoubleQuotes(String str) {
         if (str == null) {

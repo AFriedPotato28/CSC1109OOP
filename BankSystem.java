@@ -1,4 +1,6 @@
 import java.sql.SQLOutput;
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BankSystem {
@@ -11,7 +13,7 @@ public class BankSystem {
         String userInfo = "";
 
         do {
-            if (!bank.getUsername(userInfo)) {
+            if (!bank.validateUsername(userInfo)) {
 
                 bank.welcomeMessage();
                 System.out.println("\nChoose an action:");
@@ -52,16 +54,16 @@ public class BankSystem {
                         transferOrWithDraworDeposit(scanner, bank, securityInstance, userInfo);
                         break;
                     case 2:
-                        creditCardOptions(scanner, bank, bank.retrieveUserID(userInfo));
+                        //creditCardOptions(scanner, bank, bank.retrieveUserInfo(userInfo));
                         break;
                     case 3:
-                        applyRepayLoan(scanner, bank, userInfo);
+                        //applyRepayLoan(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
                         break;
                     case 5:
-                        bank.logOut(userInfo);
+                        securityInstance.logActivity(bank.retrieveUserInfo(userInfo).getCustomerId(), 3);
                         userInfo = "";
                         break;
                     default:
@@ -75,6 +77,7 @@ public class BankSystem {
 
     }
 
+  
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
         System.out.println(prompt);
@@ -89,14 +92,8 @@ public class BankSystem {
             System.out.println("Did not meet password requirements");
             password = promptInput("Please enter your password:", scanner);
         }
-        String accountType = promptInput("Please enter either 1:Savings Account, 2: Normal Account", scanner);
 
-        while (!accountType.equals("1") && !accountType.equals("2")) {
-            System.out.println("Did not choose account type");
-            accountType = promptInput("Please enter either 1:Savings Account, 2: Normal Account", scanner);
-        }
-
-        bank.addCustomer(new Customer(0,name,username,password,""),accountType);
+        bank.addCustomer(new Customer(0,name,username,password,""));
     }
 
     private static String loginToAccount(Scanner scanner, Bank bank, Security securityInstance) {
@@ -127,8 +124,8 @@ public class BankSystem {
         }
 
         if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
-            securityInstance.logActivity(bank.retrieveUserID(loginUsername), 1);
-
+            securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
+            bank.setLoans(bank.retrieveUserInfo(loginUsername).getCustomerId());
             return loginUsername;
         }
 
@@ -184,8 +181,6 @@ public class BankSystem {
             System.out.println("1. Reset Password");
             System.out.println("2. Change Transaction Limit");
             System.out.println("3. Check Balance");
-            System.out.println("4. Add Account");
-            System.out.println("5. Remove Account");
             System.out.println("0. Exit");
 
             System.out.println("Enter your choice: ");
@@ -194,152 +189,54 @@ public class BankSystem {
             switch (accountChoice) {
                 case 1:
                     resetPassword(scanner, bank, securityInstance, userInfo);
+                    break;
                 case 2:
-                    changeTransactionLimit(scanner, bank, securityInstance, userInfo);
+                    changeTransactionLimit(scanner, bank, userInfo);
+                    break;
                 case 3:
-                    //checkBalance(scanner,userInfo);
-                case 4:
-                    boolean success = createAccount(scanner,bank,userInfo);
-                    if (success) {
-                        System.out.println("Account created successfully!");
-                    }
-                case 5:
-                    //removeAccount();
+                    checkBalance(scanner,bank,userInfo);
+                    break;
             }
         } while (accountChoice != 0);
 
     }
 
+
+    private static void checkBalance(Scanner scanner, Bank bank, String userInfo) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'checkBalance'");
+    }
+
+
     /**
      *
      * @param scanner
      * @param bank
-     * @param securityInstance
      * @param userInfo
      *
      */
 
-    private static void changeTransactionLimit(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
-    }
+    private static void changeTransactionLimit(Scanner scanner, Bank bank, String userInfo) {
 
-    // private static void checkBalance(Scanner scanner, String username) {
-    //     int accountChoice = -1;
-    //     do{
-    //         System.out.println("Choose an account to view balance: ");
-    //         int accountIndex = 1;
-    //         for (Account account : accounts) {
-    //             System.out.println(accountIndex++ + "Account Number" + account.getAccountNo());
-    //         }
-    //         System.out.println("0.Exit");
-    //         System.out.print("Enter choice: ");
+        int limit = 0;
+        boolean valid = false;
 
-    //         accountChoice = scanner.nextInt();
-
-    //         if (accountChoice > 0 && accountChoice <= accounts.size()) {
-    //             Account selectedAccount = accounts.get(accountChoice -1);
-    //             System.out.println("The balance for account" + selectedAccount.getAccountNo() + " is $" + selectedAccount.getBalance());
-    //         } else if (accountChoice == 0) {
-    //             System.out.println("Exiting balance check.");
-    //         } else {
-    //             System.out.println("Invalid Choice. Please try again");
-    //         }
-    //     } while (accountChoice != 0);
-
-    // }
-
-    private static boolean createAccount(Scanner scanner,Bank bank,String username) {
-
-        System.out.println("Creating a new Account:");
-        System.out.println("Enter account type you wish to create: ");
-        System.out.println("1. Savings");
-        System.out.println("2. Normal");
-        String accountType = promptInput("Choose between 1 or 2", scanner);
-
-        while (!accountType.equals("1") && !accountType.equals("2")) {
-            accountType = promptInput("Choose between 1 or 2", scanner);
-        }
-
-        if(bank.addAccount(bank.retrieveUserID(username), accountType)){
-            return true;
-        };
-
-        return false;
-    }
-
-    private static void applyRepayLoan(Scanner scanner, Bank bank, String userInfo){
-        System.out.println("1. Apply Loan");
-        System.out.println("2. Repay Loan");
-        System.out.println("3. Back ");
-
-        int choice = scanner.nextInt();
-        switch (choice){
-            case 1:
-                int newLoanNumber = bank.getCustomerLoans(bank.retrieveUserID(userInfo));
-                double loanAmount = Double.parseDouble(promptInput("Please enter amount to loan", scanner));
-                int loanDuration = Integer.parseInt(promptInput("Please enter the amount of days for loan", scanner));
-                bank.applyLoan(bank.retrieveUserID(userInfo),newLoanNumber, loanAmount, loanDuration);
-                break;
-            case 2:
-                break;
-            default:
-                if (choice != 0){
-                    System.out.println("Please enter between 1 : Apply Loan or 2: Repay Loan");
-                }
-                break;
-        }
-
-    }
-
-    private static void creditCardOptions(Scanner scanner, Bank bank, int customerId){
-        System.out.println("1. Apply Credit Card");
-        System.out.println("2. Cancel Credit Card");
-        System.out.println("3. Pay Credit Card Bill");
-
-        int choice = scanner.nextInt();
-        switch (choice){
-            case 1:
-                int newCreditCardId = bank.getCustomerCreditCards(customerId);
-                int accountNo = bank.retrieveAccountNo(customerId);
-                int annualIncome;
-                do {
-                    annualIncome = Integer.parseInt(promptInput("Please enter your annual income: ", scanner));
-                    if (annualIncome < 15000) {
-                        System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
-                    }
-                } while(annualIncome < 15000);
-                bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
-                break;
-            case 2, 3:
-                break;
-            default:
-                if(choice != 0) {
-                    System.out.println("Please enter a number between 1-3!");
-                }
-                break;
+        while (!valid || limit <= 500){
+            try {
+                System.out.println("Please enter a valid transaction limit and a numeric value above 500");
+                limit = scanner.nextInt();
+                valid = true;
+            } catch ( InputMismatchException e){
+                scanner.nextLine();
             }
         }
 
-    // private static void removeAccount() {
-    //     System.out.println("Remove an Account");
-    //     System.out.println("Enter Account Number to remove:");
-    //     int accountNo = scanner.nextInt();
-
-    //     Account accountToRemove = null;
-    //     for (Account account == accounts) {
-    //         if (account.getAccountNo() == accountNo) {
-    //             accountToRemove = account;
-    //             break;
-    //         }
-    //     }
-
-    //     if (accountToRemove != null) {
-    //         accounts.remove(accountToRemove);
-    //         System.out.println("Account removed.");
-    //     } else {
-    //         System.out.println("Account not found. Please try again.");
-    //     }
-
-    // }
+        if(bank.changeTransactionLimit(limit, userInfo)){
+            System.out.println("You have successfully updated your transaction limit to " + limit);
+        } else{
+            System.out.println("You have not successfully updated your transaction limit");
+        }
+    }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
                                                     String userInfo) {
@@ -358,11 +255,14 @@ public class BankSystem {
 
             switch (accountChoice) {
                 case 1:
-                    transfer();
+                    transfer(scanner,bank);
+                    break;
                 case 2:
-                    withdraw();
+                    withdraw(scanner,bank,userInfo);
+                    break;
                 case 3:
-                    deposit();
+                    deposit(scanner,bank,userInfo);
+                    break;
                 default:
                     break;
             }
@@ -370,14 +270,65 @@ public class BankSystem {
         } while (accountChoice != 0);
     }
 
-    private static void transfer() {
+    private static void transfer(Scanner scanner, Bank bank) {
+        int accountChoice = -1;
 
+        do {
+
+
+
+
+        } while (accountChoice != 0);
     }
 
-    private static void withdraw() {
+    private static void withdraw(Scanner scanner, Bank bank,String username) {
+        double money = -1.0;
+        boolean valid = false;
+        double value = -1.0;
+        
+        do{
+            try {
+                System.out.println("Please enter a valid deposit amount");
+                money = scanner.nextDouble();
+                value = bank.getBalance(username) - money;
+
+                if (bank.getBalance(username) >= money ){
+                   value = bank.getBalance(username) - money;
+                   valid = true;
+                   break;
+                }
+
+                // if (bank.getBalance(username) <= value && bank.getTransactionLimit(username) ){
+
+                // }
+
+
+            } catch (InputMismatchException e){
+            }
+        }while (!valid);
+
+        if(valid){
+            bank.withdraw(value,username);
+        }
+
+        System.out.println("You have " + value + " left in your bank.");
     }
 
-    private static void deposit() {
+    private static void deposit(Scanner scanner, Bank bank,String username) {
+        double money = -1.0;
+        boolean valid = false;
+
+        while (!valid){
+            try {
+                System.out.println("Please enter a valid deposit amount");
+                money = scanner.nextDouble();
+                valid = true;
+            } catch ( InputMismatchException e){
+                scanner.nextLine();
+            }
+        }
+        bank.deposit(money,username);
+        System.out.println("You currently have a amount of " + bank.getBalance(username) + " in your account)");
     }
 
 }
