@@ -331,6 +331,10 @@ public class Bank {
         return accountInfo;
     }
 
+    public int getAccountNo(String username){
+        return getAccountInfo(username).getAccountNo();
+    }
+
     public double getBalance(String username) {
         return getAccountInfo(username).getBalance();
     }

@@ -52,7 +52,7 @@ public class BankSystem {
                         transferOrWithDraworDeposit(scanner, bank, securityInstance, userInfo);
                         break;
                     case 2:
-                        //creditCardOptions(scanner, bank, bank.retrieveUserInfo(userInfo));
+                        creditCardOptions(scanner, bank, userInfo);
                         break;
                     case 3:
                         //LoanOptions(scanner, bank, userInfo);
@@ -75,7 +75,7 @@ public class BankSystem {
 
     }
 
-  
+
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
         System.out.println(prompt);
@@ -223,25 +223,23 @@ public class BankSystem {
             try {
                 System.out.println("Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
                 limit = scanner.nextInt();
-              
+
                 if ( limit == -1.0){
                     break;
                 }
 
                 valid = true;
-            } catch ( InputMismatchException e){
+            } catch ( InputMismatchException e) {
                 scanner.nextLine();
             }
         }
-
-        
         if(valid){
             if(bank.changeTransactionLimit(limit, userInfo)){
                 System.out.println("You have successfully updated your transaction limit to " + limit);
-            } 
+            }
         } else{
             System.out.println("You have not successfully updated your transaction limit");
-        }        
+        }
     }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
@@ -330,6 +328,37 @@ public class BankSystem {
             System.out.println("You currently have a amount of " + bank.getBalance(username) + " in your account ");
         } else {
             System.out.println("You have not updated your account and your current balance is " + bank.getBalance(username));
+        }
+    }
+
+    private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo){
+        System.out.println("1. Apply Credit Card");
+        System.out.println("2. Cancel Credit Card");
+        System.out.println("3. Pay Credit Card Bill");
+
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+                int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+                int newCreditCardId = bank.getCustomerCreditCards(customerId);
+                int accountNo = bank.getAccountNo(userInfo);
+                int annualIncome;
+                do {
+                    annualIncome = Integer.parseInt(promptInput("Please enter your annual income: ", scanner));
+                    if (annualIncome < 15000) {
+                        System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                    }
+                } while(annualIncome < 15000);
+                bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+                System.out.println("Credit Card application successful!");
+                break;
+            case 2, 3:
+                break;
+            default:
+                if(choice != 0) {
+                    System.out.println("Please enter a number between 1-3!");
+                }
+                break;
         }
     }
 
