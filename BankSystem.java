@@ -1,5 +1,3 @@
-import java.sql.SQLOutput;
-import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -41,7 +39,7 @@ public class BankSystem {
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Transfer / Withdraw / Deposit");
                 System.out.println("2. Credit Card Options");
-                System.out.println("3. Apply/Repay Loan");
+                System.out.println("3. Loan Options");
                 System.out.println("4. Account Settings");
                 System.out.println("5. Log out");
                 System.out.println("0. Exit");
@@ -57,7 +55,7 @@ public class BankSystem {
                         //creditCardOptions(scanner, bank, bank.retrieveUserInfo(userInfo));
                         break;
                     case 3:
-                        //applyRepayLoan(scanner, bank, userInfo);
+                        //LoanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -263,7 +261,7 @@ public class BankSystem {
 
             switch (accountChoice) {
                 case 1:
-                    transfer(scanner,bank);
+                    transfer(scanner,bank,userInfo);
                     break;
                 case 2:
                     withdraw(scanner,bank,userInfo);
@@ -278,22 +276,17 @@ public class BankSystem {
         } while (accountChoice != 0);
     }
 
-    private static void transfer(Scanner scanner, Bank bank) {
-        int accountChoice = -1;
-
-        do {
-
-
-
-
-        } while (accountChoice != 0);
+    private static void transfer(Scanner scanner, Bank bank, String username) {
+        double money = 0.0;
+        boolean valid = false;
+        System.out.println("You currently have " + bank.getBalance(username) + " in your bank account");
     }
 
     private static void withdraw(Scanner scanner, Bank bank,String username) {
         double money = 0.0;
         boolean valid = false;
         System.out.println("You currently have " + bank.getBalance(username) + " in your bank account");
-        
+
         while (!valid){
             try {
                 if ( money == -1.0){ break; }

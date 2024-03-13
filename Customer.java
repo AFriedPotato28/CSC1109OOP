@@ -2,7 +2,7 @@
  * Represent a customer associated with the Bank
  * Each customer has a Customer ID, name, username and password.
  */
-public class Customer implements csv_help {
+public class Customer {
     private int customerId;
     private String name;
     private String username;

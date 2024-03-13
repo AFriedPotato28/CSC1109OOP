@@ -5,9 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.io.IOException;
 
-public class Bank implements csv_help {
+public class Bank {
     private String name;
     private ArrayList<Customer> customers;
     private HashMap<Integer, List<Account>> accounts;
@@ -97,7 +96,7 @@ public class Bank implements csv_help {
             customer.setItems(customerSize + 1, hashPassword, salt);
 
             this.customers.add(customerSize, customer);
-            customer.createCustomerAccount(customer);
+            csv_help.createCustomerAccount(customer);
             System.out.println("New Customer has been created");
             System.out.println("There is a total of " + (customerSize + 1) + " in the list");
         }
@@ -134,7 +133,7 @@ public class Bank implements csv_help {
         }
         if (!accountTypeExists) {
             this.accounts.get(customerID).add(account);
-            account.generateCSVtoAccount(customerID, account);
+            csv_help.generateCSVtoAccount(customerID, account);
             return true;
         }
         return false;
@@ -236,7 +235,7 @@ public class Bank implements csv_help {
 
     public void resetPassword(String userInfo, String newPassword) {
         ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
-        boolean success = updateCSVOfCustomerData(userInfo,this.customers,HashedPasswordandSalt);
+        boolean success = csv_help.updateCSVOfCustomerData(userInfo,this.customers,HashedPasswordandSalt);
 
         if (success) {
             this.customers.clear();
@@ -345,7 +344,7 @@ public class Bank implements csv_help {
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
                                         accountInformation.getAccountType(),accountInformation.getBalance() - money,accountInformation.getTransactionLimit());
-            updateCSVOfAccount(accounts, account);
+            csv_help.updateCSVOfAccount(accounts, account);
             this.accounts.clear();
             populateAccountList();
         }
@@ -356,7 +355,7 @@ public class Bank implements csv_help {
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
                                         accountInformation.getAccountType(),accountInformation.getBalance() + money,accountInformation.getTransactionLimit());
-            updateCSVOfAccount(accounts, account);
+            csv_help.updateCSVOfAccount(accounts, account);
             this.accounts.clear();
             populateAccountList();
         }
@@ -367,7 +366,7 @@ public class Bank implements csv_help {
         if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()){
             Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
                                         accountInformation.getAccountType(),accountInformation.getBalance(),limit);
-            updateCSVOfAccount(accounts, account);
+            csv_help.updateCSVOfAccount(accounts, account);
             this.accounts.clear();
             populateAccountList();
             return true;

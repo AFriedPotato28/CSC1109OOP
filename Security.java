@@ -9,7 +9,6 @@ import java.security.spec.KeySpec;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,7 +21,7 @@ import javax.crypto.spec.PBEKeySpec;
  * Represents the security system of the bank and its functions such as user
  * registration, authentication, password reset, and OTP generation.
  */
-public class Security implements csv_help {
+public class Security {
     /**
      * Map for storing the username and password of the users.
      */
@@ -217,24 +216,24 @@ public class Security implements csv_help {
          */
         switch (activityNumber) {
             case 1:
-                generateCSVofSecurity("Login", accountID);
+                csv_help.generateCSVofSecurity("Login", accountID);
                 break;
             case 2:
                 // Log the user bank transfer activity
-                generateCSVofSecurity("Transfer Initialized", accountID);
+                csv_help.generateCSVofSecurity("Transfer Initialized", accountID);
                 // Break the switch statement if the activity number is 2
                 break;
             case 3:
                 // Log the user logout activity
                 // Break the switch statement if the activity number is 3
-                generateCSVofSecurity("Logout", accountID);
+                csv_help.generateCSVofSecurity("Logout", accountID);
                 break;
             case 4:
                 // Log the user deposit activity
-                generateCSVofSecurity("Deposit", accountID);
+                csv_help.generateCSVofSecurity("Deposit", accountID);
             case 5:
                 // Log the user withdraw activity
-                generateCSVofSecurity("Withdraw", accountID);
+                csv_help.generateCSVofSecurity("Withdraw", accountID);
         }
     }
 }

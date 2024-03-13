@@ -2,7 +2,7 @@
  * Represents a bank account associated with a customer.
  * Each account has an account ID, type, balance, associated customer, and transaction limit.
  */
-public class Account implements csv_help {
+public class Account {
     private int accountNo;
     private int customerId;
     private String accountType;

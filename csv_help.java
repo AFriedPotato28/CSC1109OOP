@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public interface csv_help {
+public final class csv_help {
     /**
      * 
      * @param userInfo the username of the account
@@ -20,7 +20,10 @@ public interface csv_help {
      * @return 
      * 
      */
-    public default boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
+
+    private csv_help(){}
+
+    public static boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
 
         String fileName = "MOCK_DATA.csv";
         String tempFile = "temp.csv";
@@ -29,7 +32,7 @@ public interface csv_help {
 
         String[] titleToAppend = {"id","name","username","password","salt"};
         String csvLine = Arrays.stream(titleToAppend)
-                                .map(this::escapeDoubleQuotes)
+                                .map(csv_help::escapeDoubleQuotes)
                                 .collect(Collectors.joining(","));
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
@@ -47,7 +50,7 @@ public interface csv_help {
                 }
 
                 String[] datatoAppend = {String.valueOf(customerId),customerName,customerUserName,customerPassword,customerSalt};
-                csvLine = Arrays.stream(datatoAppend).map(this::escapeDoubleQuotes)
+                csvLine = Arrays.stream(datatoAppend).map(csv_help::escapeDoubleQuotes)
                         .collect(Collectors.joining(","));
 
                 writer.append("\n" + csvLine);
@@ -68,7 +71,7 @@ public interface csv_help {
         return false;
     }
 
-    public default boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
+    public static boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
 
         String file = "Account_Data.csv";
         String tempFile = "temp.csv";
@@ -78,7 +81,7 @@ public interface csv_help {
 
         String[] titleToAppend = {"AccountNo","CustomerID","accountType","balance","transactionLimit"};
         String csvLine = Arrays.stream(titleToAppend)
-                        .map(this::escapeDoubleQuotes)
+                        .map(csv_help::escapeDoubleQuotes)
                         .collect(Collectors.joining(","));
 
          try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
@@ -102,7 +105,7 @@ public interface csv_help {
                     String[] dataToAppend = {String.valueOf(accountNo),String.valueOf(userId),
                                             account.getAccountType(),String.valueOf(balance),String.valueOf(transactionLimit)};
                     csvLine = Arrays.stream(dataToAppend)
-                                .map(this::escapeDoubleQuotes)
+                                .map(csv_help::escapeDoubleQuotes)
                                 .collect(Collectors.joining(","));
                     
                     writer.append("\n" + csvLine);
@@ -120,7 +123,7 @@ public interface csv_help {
         return false;
     }
     
-    public default void generateCSVofSecurity(String activity, int customerId) {
+    public static void generateCSVofSecurity(String activity, int customerId) {
         String fileName = "Log-Tracking.csv";
 
         LocalDateTime dateTimeObj = LocalDateTime.now();
@@ -136,7 +139,7 @@ public interface csv_help {
         String[] dataToAppend = { String.valueOf(customerId), formattedDt, formattedTime, activity };
 
         String csvLine = Arrays.stream(dataToAppend)
-                .map(this::escapeDoubleQuotes)
+                .map(csv_help::escapeDoubleQuotes)
                 .collect(Collectors.joining(","));
 
         try (FileWriter writer = new FileWriter(fileName, true)) {
@@ -146,14 +149,14 @@ public interface csv_help {
         }
     }
 
-    public default void createCustomerAccount(Customer customer) {
+    public static void createCustomerAccount(Customer customer) {
         String filepath = "MOCK_DATA.csv";
 
 
         String[] dataToAppend = {String.valueOf(customer.getCustomerId()),customer.getName(), customer.getUserName(), customer.getPassword(), customer.getSalt()};
 
         String csvLine = Arrays.stream(dataToAppend)
-                                .map(this::escapeDoubleQuotes)
+                                .map(csv_help::escapeDoubleQuotes)
                                 .collect(Collectors.joining(","));
 
         //append data to next row
@@ -164,13 +167,13 @@ public interface csv_help {
         }
     }
 
-    public default void generateCSVtoAccount(int customerID, Account account) {
+    public static void generateCSVtoAccount(int customerID, Account account) {
         String filepath = "Account_Data.csv";
         
         String[] dataToAppend = { String.valueOf(account.getAccountNo()),String.valueOf(customerID), account.getAccountType(), String.valueOf(account.getBalance()), String.valueOf(account.getTransactionLimit())};
 
         String csvLine = Arrays.stream(dataToAppend)
-                .map(this::escapeDoubleQuotes)
+                .map(csv_help::escapeDoubleQuotes)
                 .collect(Collectors.joining(","));
 
         //append data to next row
@@ -183,7 +186,7 @@ public interface csv_help {
 
     }
 
-    private String escapeDoubleQuotes(String str) {
+    private static String escapeDoubleQuotes(String str) {
         if (str == null) {
             return ""; // Handle null values
         }
