@@ -68,7 +68,7 @@ public interface csv_help {
         return false;
     }
 
-    public default boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash, int userId){
+    public default boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
 
         String file = "Account_Data.csv";
         String tempFile = "temp.csv";
@@ -89,13 +89,12 @@ public interface csv_help {
            
                 for (Account account : accountList){
                     int accountNo = account.getAccountNo();
-                    userId = account.getCustomerId();
+                    int userId = account.getCustomerId();
                     String accountType = account.getAccountType();
                     double balance = account.getBalance();
                     double transactionLimit = account.getTransactionLimit();
 
                     if(accountStash.getAccountType().equalsIgnoreCase(accountType) && accountNo == accountStash.getAccountNo()){
-                        userId = accountStash.getCustomerId();
                         balance = accountStash.getBalance();
                         transactionLimit = accountStash.getTransactionLimit();
                     }

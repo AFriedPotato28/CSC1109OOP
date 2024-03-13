@@ -324,24 +324,56 @@ public class Bank implements csv_help {
     }
     /** no more loans */
 
-    public double getBalance(String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getBalance'");
+    private Account getAccountInfo(String username){
+        Optional<Account> accountInformation = this.accounts.entrySet().stream()
+                                                .filter(entry -> entry.getKey() == retrieveUserInfo(username).getCustomerId())
+                                                .flatMap(entry -> entry.getValue().stream()).filter((account) -> account.getAccountType().equals("Savings")).findFirst();
+        Account accountInfo = accountInformation.get();
+        return accountInfo;
     }
 
-    public void withdraw(double value, String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'withdraw'");
+    public double getBalance(String username) {
+        return getAccountInfo(username).getBalance();
+    }
+
+    public double getTransactionLimit(String username) {
+        return getAccountInfo(username).getTransactionLimit();
+    }
+
+    public void withdraw(double money, String username) {
+        Account accountInformation = getAccountInfo(username);
+        if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
+            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
+                                        accountInformation.getAccountType(),accountInformation.getBalance() - money,accountInformation.getTransactionLimit());
+            updateCSVOfAccount(accounts, account);
+            this.accounts.clear();
+            populateAccountList();
+        }
     }
 
     public void deposit(double money, String username) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deposit'");
+        Account accountInformation = getAccountInfo(username);
+        if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
+            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
+                                        accountInformation.getAccountType(),accountInformation.getBalance() + money,accountInformation.getTransactionLimit());
+            updateCSVOfAccount(accounts, account);
+            this.accounts.clear();
+            populateAccountList();
+        }
     }
 
     public boolean changeTransactionLimit(int limit, String userInfo) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'changeTransactionLimit'");
+        Account accountInformation = getAccountInfo(userInfo);
+        if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()){
+            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
+                                        accountInformation.getAccountType(),accountInformation.getBalance(),limit);
+            updateCSVOfAccount(accounts, account);
+            this.accounts.clear();
+            populateAccountList();
+            return true;
+        }
+
+        return false;
     }
 
 

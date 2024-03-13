@@ -75,13 +75,8 @@ public class Account implements csv_help {
      * @param amount The new transaction limit to set.
      * @return True if the transaction limit was successfully set, false otherwise.
      */
-    public boolean setTransactionLimit(double amount) {
-        if (amount < 500) {
-            return false;
-        }
-
+    public void setTransactionLimit(double amount) {
         this.transactionLimit = amount;
-        return true;
     }
 
     /**

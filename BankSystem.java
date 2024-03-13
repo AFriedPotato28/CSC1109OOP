@@ -125,7 +125,6 @@ public class BankSystem {
 
         if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
             securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
-            bank.setLoans(bank.retrieveUserInfo(loginUsername).getCustomerId());
             return loginUsername;
         }
 
@@ -203,10 +202,9 @@ public class BankSystem {
 
 
     private static void checkBalance(Scanner scanner, Bank bank, String userInfo) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'checkBalance'");
+        double balance = bank.getBalance(userInfo);
+        System.out.println("Your current balance is " + balance + " left in your bank");
     }
-
 
     /**
      *
@@ -221,21 +219,31 @@ public class BankSystem {
         int limit = 0;
         boolean valid = false;
 
+        System.out.println("Your current transaction limit is " + bank.getTransactionLimit(userInfo) );
+
         while (!valid || limit <= 500){
             try {
-                System.out.println("Please enter a valid transaction limit and a numeric value above 500");
+                System.out.println("Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
                 limit = scanner.nextInt();
+              
+                if ( limit == -1.0){
+                    break;
+                }
+
                 valid = true;
             } catch ( InputMismatchException e){
                 scanner.nextLine();
             }
         }
 
-        if(bank.changeTransactionLimit(limit, userInfo)){
-            System.out.println("You have successfully updated your transaction limit to " + limit);
+        
+        if(valid){
+            if(bank.changeTransactionLimit(limit, userInfo)){
+                System.out.println("You have successfully updated your transaction limit to " + limit);
+            } 
         } else{
             System.out.println("You have not successfully updated your transaction limit");
-        }
+        }        
     }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
@@ -282,53 +290,54 @@ public class BankSystem {
     }
 
     private static void withdraw(Scanner scanner, Bank bank,String username) {
-        double money = -1.0;
+        double money = 0.0;
         boolean valid = false;
-        double value = -1.0;
+        System.out.println("You currently have " + bank.getBalance(username) + " in your bank account");
         
-        do{
+        while (!valid){
             try {
-                System.out.println("Please enter a valid deposit amount");
+                if ( money == -1.0){ break; }
+                System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
                 money = scanner.nextDouble();
-                value = bank.getBalance(username) - money;
 
-                if (bank.getBalance(username) >= money ){
-                   value = bank.getBalance(username) - money;
-                   valid = true;
-                   break;
+                if(bank.getBalance(username) >= money && money > 0.0){
+                    valid = true;
                 }
-
-                // if (bank.getBalance(username) <= value && bank.getTransactionLimit(username) ){
-
-                // }
-
-
-            } catch (InputMismatchException e){
+            } catch ( InputMismatchException e){
+                scanner.nextLine();
             }
-        }while (!valid);
-
-        if(valid){
-            bank.withdraw(value,username);
         }
 
-        System.out.println("You have " + value + " left in your bank.");
+        if (valid){
+            bank.withdraw(money, username);
+            System.out.println("You have successfully withdraw " + money + ". Currently you have value of :" + bank.getBalance(username));
+        } else{
+            System.out.println("You have failed to withdraw " + money);
+        }
+
     }
 
     private static void deposit(Scanner scanner, Bank bank,String username) {
-        double money = -1.0;
+        double money = 0.0;
         boolean valid = false;
 
         while (!valid){
             try {
-                System.out.println("Please enter a valid deposit amount");
+                if ( money == -1.0){ break; }
+                System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
                 money = scanner.nextDouble();
                 valid = true;
             } catch ( InputMismatchException e){
                 scanner.nextLine();
             }
         }
-        bank.deposit(money,username);
-        System.out.println("You currently have a amount of " + bank.getBalance(username) + " in your account)");
+
+        if (valid) {
+            bank.deposit(money,username);
+            System.out.println("You currently have a amount of " + bank.getBalance(username) + " in your account ");
+        } else {
+            System.out.println("You have not updated your account and your current balance is " + bank.getBalance(username));
+        }
     }
 
 }
