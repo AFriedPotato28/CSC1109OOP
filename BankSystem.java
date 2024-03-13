@@ -57,7 +57,6 @@ public class BankSystem {
                         creditCardOptions(scanner, bank, userInfo);
                         break;
                     case 3:
-                        bank.updateOverdueLoans();
                         loanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
@@ -411,20 +410,22 @@ public class BankSystem {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
         bank.getLoans(customerId);
 
-    //     System.out.println("1. Apply Loan");
-    //     System.out.println("2. Repay Loan");
-    //     System.out.println("3. Exit ");
+         System.out.println("1. Apply Loan");
+         System.out.println("2. Repay Loan");
+         System.out.println("3. Exit ");
 
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
                 int newLoanNumber = bank.getCustomerLoans(customerId);
-                double bankBalance = bank.getBalance(userInfo);
+                bank.updateOverdueLoans();
+                double bankBalance = bank.getBalance();
+                System.out.println("Bank balance: "+ bankBalance);
                 double loanAmount = 0.0;
                 boolean valid = false;
                 bank.printLoans();
                 do {
-                    loanAmount = Double.parseDouble(promptInput("Please enter amount to loan. Enter -1 to exit", scanner));
+                    loanAmount = Double.parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
                     if (loanAmount == -1.0) {
                         System.out.println("Exiting...");
                         break;
