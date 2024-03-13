@@ -190,6 +190,35 @@ public class Bank {
         }
     }
 
+    public void cancelCreditCard(int custId){
+        try {
+            // Read the existing CSV file
+            BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"));
+            StringBuilder csvContent = new StringBuilder();
+            String sLine;
+
+            while ((sLine = br.readLine()) != null) {
+                String[] columns = sLine.split(",");
+
+                // Assuming the data-to-delete is in the fourth column
+                if (columns.length >= 2 && !columns[1].equals(String.valueOf(custId))) {
+                    csvContent.append(sLine).append("\n");
+                }
+            }
+            br.close();
+
+            BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv"));
+            bw.write(csvContent.toString());
+            bw.close();
+
+        }catch (FileNotFoundException e) {
+            System.out.println("File not found!" + e);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     /** end creditcard */
 
     /** authentication */

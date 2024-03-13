@@ -354,7 +354,10 @@ public class BankSystem {
                 bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
                 System.out.println("Credit Card application successful!");
                 break;
-            case 2, 3:
+            case 2:
+                bank.cancelCreditCard(customerId);
+                System.out.println("All Credit Cards associated with your account has been cancelled");
+            case 3:
                 break;
             default:
                 if(choice != 0) {
