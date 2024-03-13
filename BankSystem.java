@@ -198,7 +198,7 @@ public class BankSystem {
 
 
     private static void checkBalance(Scanner scanner, Bank bank, String userInfo) {
-        double balance = bank.getBalance(userInfo);
+        double balance = bank.getBalance();
         System.out.println("Your current balance is " + balance + " left in your bank");
     }
 
@@ -213,7 +213,7 @@ public class BankSystem {
         int limit = 0;
         boolean valid = false;
 
-        System.out.println("Your current transaction limit is " + bank.getTransactionLimit(userInfo));
+        System.out.println("Your current transaction limit is " + bank.getTransactionLimit());
 
         while (!valid || limit <= 500) {
             try {
@@ -271,7 +271,7 @@ public class BankSystem {
 
     private static void transferAmount(Scanner scanner, Bank bank, String username) {
         boolean valid = false;
-        System.out.println("You currently have $" + bank.getBalance(username) + " in your bank account");
+        System.out.println("You currently have $" + bank.getBalance() + " in your bank account");
         String recipientUsername = promptInput("Please enter a recipient username: ", scanner);
     
         try {
@@ -295,7 +295,7 @@ public class BankSystem {
     
                     if (transferAmount == -1.0) return;
     
-                    if (transferAmount > 0.0 && bank.getBalance(username) >= transferAmount && bank.getTransactionLimit(recipientUsername) < transferAmount) {
+                    if (transferAmount > 0.0 && bank.getBalance() >= transferAmount && transferAmount <= bank.getTransactionLimit()) {
                         getAmounttoPaid = true;
                     }  
                 } catch (InputMismatchException | IllegalArgumentException e) {
@@ -305,10 +305,10 @@ public class BankSystem {
             }  
         } while (!getAmounttoPaid);
 
-        if (getAmounttoPaid && bank.transferAmount(transferAmount, recipientUsername)) {
-
+        if (getAmounttoPaid ) {
+            bank.transferAmount(transferAmount, recipientUsername);
             System.out.println("Successfully transferred " + transferAmount + " to " + recipientUsername + ".");
-            System.out.println("Your current balance is: " + bank.getBalance(username));
+            System.out.println("Your current balance is: " + bank.getBalance());
         } else {
             System.out.println("Transfer failed.");
         }
@@ -317,7 +317,7 @@ public class BankSystem {
     private static void withdraw(Scanner scanner, Bank bank, String username) {
         double money = 0.0;
         boolean valid = false;
-        System.out.println("You currently have " + bank.getBalance(username) + " in your bank account");
+        System.out.println("You currently have " + bank.getBalance() + " in your bank account");
 
         while (!valid) {
             try {
@@ -327,7 +327,7 @@ public class BankSystem {
                 System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
                 money = scanner.nextDouble();
 
-                if (bank.getBalance(username) >= money && money > 0.0) {
+                if (bank.getBalance() >= money && money > 0.0) {
                     valid = true;
                 }
             } catch (InputMismatchException e) {
@@ -337,7 +337,7 @@ public class BankSystem {
 
         if (valid) {
             bank.withdraw(money, username);
-            System.out.println("You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance(username));
+            System.out.println("You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
         } else{
             System.out.println("You have failed to withdraw " + money);
         }
@@ -363,9 +363,9 @@ public class BankSystem {
 
         if (valid) {
             bank.deposit(money, username);
-            System.out.println("You currently have a amount of " + bank.getBalance(username) + " in your account ");
+            System.out.println("You currently have a amount of " + bank.getBalance() + " in your account ");
         } else {
-            System.out.println("You have not updated your account and your current balance is " + bank.getBalance(username));
+            System.out.println("You have not updated your account and your current balance is " + bank.getBalance());
         }
     }
 
@@ -381,7 +381,7 @@ public class BankSystem {
         switch (choice) {
             case 1:
                 int newCreditCardId = bank.getCustomerCreditCards(customerId);
-                int accountNo = bank.getAccountNo(userInfo);
+                int accountNo = bank.getAccountNo();
                 int annualIncome;
                 do {
                     annualIncome = Integer.parseInt(promptInput("Please enter your annual income: ", scanner));

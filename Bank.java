@@ -375,15 +375,15 @@ public class Bank {
         return accountInfo;
     }
 
-    public int getAccountNo(String username){
+    public int getAccountNo(){
         return this.account.getAccountNo();
     }
 
-    public double getBalance(String username) {
+    public double getBalance() {
         return this.account.getBalance();
     }
 
-    public double getTransactionLimit(String username) {
+    public double getTransactionLimit() {
         return this.account.getTransactionLimit();
     }
 
@@ -415,9 +415,12 @@ public class Bank {
         return false;
     }
 
-    public boolean transferAmount(double money, String recipient) {
-            
-        return false;
+    public void transferAmount(double money, String recipient) {
+        Account accountRecipient = getAccountInfo(recipient);
+
+        if(this.account.transfer(accountRecipient, money)){
+            csv_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
+        }
     } 
     
 }

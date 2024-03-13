@@ -121,6 +121,8 @@ public class Account {
         if (this.balance < amount && amount > this.transactionLimit) {
             return false;
         }
+        this.balance -= amount;
+        toAccount.deposit(amount);
         return true;
     }
 }

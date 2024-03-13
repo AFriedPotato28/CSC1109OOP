@@ -71,6 +71,62 @@ public final class csv_help {
         return false;
     }
 
+    public static boolean updateCSVofTwoAccounts(HashMap<Integer,List<Account>> accounts,Account fromAccount, Account toAccount){
+
+        String file = "Account_Data.csv";
+        String tempFile = "temp.csv";
+
+        File oldFile = new File(file);
+        File newFile = new File(tempFile);
+
+        String[] titleToAppend = {"AccountNo","CustomerID","accountType","balance","transactionLimit"};
+        String csvLine = Arrays.stream(titleToAppend)
+                        .map(csv_help::escapeDoubleQuotes)
+                        .collect(Collectors.joining(","));
+
+         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
+            writer.append(csvLine);
+
+            for (Map.Entry<Integer, List<Account>> entry : accounts.entrySet()) {
+                List<Account> accountList = entry.getValue();
+           
+                for (Account account : accountList){
+                    int accountNo = account.getAccountNo();
+                    int userId = account.getCustomerId();
+                    String accountType = account.getAccountType();
+                    double balance = account.getBalance();
+                    double transactionLimit = account.getTransactionLimit();
+
+                    if(fromAccount.getAccountType().equalsIgnoreCase(accountType) && accountNo == fromAccount.getAccountNo()){
+                        balance = fromAccount.getBalance();
+                        transactionLimit = fromAccount.getTransactionLimit();
+                    } else if (toAccount.getAccountType().equalsIgnoreCase(accountType) && accountNo == toAccount.getAccountNo()){
+                        balance = toAccount.getBalance();
+                        transactionLimit = toAccount.getTransactionLimit();
+                    }
+
+                    String[] dataToAppend = {String.valueOf(accountNo),String.valueOf(userId),
+                                            account.getAccountType(),String.valueOf(balance),String.valueOf(transactionLimit)};
+                    csvLine = Arrays.stream(dataToAppend)
+                                .map(csv_help::escapeDoubleQuotes)
+                                .collect(Collectors.joining(","));
+                    
+                    writer.append("\n" + csvLine);
+                }            
+            }
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(oldFile.delete()){
+            if(newFile.renameTo(oldFile)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
 
         String file = "Account_Data.csv";
