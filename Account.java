@@ -19,9 +19,17 @@ public class Account {
         this.balance = balance;
         this.transactionLimit = transactionLimit;
     }
+    /* private intiator */
+    public Account() {}
 
-    public Account(int customerId){
-        this.customerId = customerId;
+    public Account(int customerId){}
+
+    public void populateItem(Account accounts) {
+        this.accountNo = accounts.accountNo;
+        this.customerId = accounts.customerId;
+        this.accountType = accounts.accountType;
+        this.balance = accounts.balance;
+        this.transactionLimit = accounts.transactionLimit;
     }
 
     /**
@@ -95,10 +103,11 @@ public class Account {
      * @return True if the withdrawal was successful, false otherwise.
      */
     public boolean withdraw(double amount) {
-        if (this.balance < amount) {
-            return false;
+        if (this.balance >= amount){
+            this.balance -= amount;
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**
@@ -114,5 +123,4 @@ public class Account {
         }
         return true;
     }
-
 }

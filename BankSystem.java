@@ -1,4 +1,5 @@
 import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class BankSystem {
@@ -123,6 +124,7 @@ public class BankSystem {
 
         if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
             securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
+            bank.populateAccount(loginUsername);
             return loginUsername;
         }
 
@@ -259,7 +261,7 @@ public class BankSystem {
 
             switch (accountChoice) {
                 case 1:
-                    transfer(scanner,bank,userInfo);
+                    transferAmount(scanner,bank,userInfo);
                     break;
                 case 2:
                     withdraw(scanner,bank,userInfo);
@@ -274,10 +276,49 @@ public class BankSystem {
         } while (accountChoice != 0);
     }
 
-    private static void transfer(Scanner scanner, Bank bank, String username) {
-        double money = 0.0;
+    private static void transferAmount(Scanner scanner, Bank bank, String username) {
         boolean valid = false;
-        System.out.println("You currently have " + bank.getBalance(username) + " in your bank account");
+        System.out.println("You currently have $" + bank.getBalance(username) + " in your bank account");
+        String recipientUsername = promptInput("Please enter a recipient username: ", scanner);
+    
+        try {
+            if (bank.retrieveUserInfo(recipientUsername) != null){
+                valid = true;
+            }
+        } catch (NoSuchElementException e) {
+            System.out.println("Invalid Recipient username: " + recipientUsername);
+            return;
+        }
+
+        double transferAmount = 0.0;
+        boolean getAmounttoPaid = false;
+
+        do {
+            if (valid == true) {
+                try {
+                    System.out.println("Please enter a valid transfer amount. Press -1 to exit.");
+                    transferAmount = scanner.nextDouble();
+                    scanner.nextLine();
+    
+                    if (transferAmount == -1.0) return;
+    
+                    if (transferAmount > 0.0 && bank.getBalance(username) >= transferAmount && bank.getTransactionLimit(recipientUsername) < transferAmount) {
+                        getAmounttoPaid = true;
+                    }  
+                } catch (InputMismatchException | IllegalArgumentException e) {
+                    System.out.println("That's not a valid number. Please enter a valid amount.");
+                    scanner.nextLine(); // Consume the invalid input
+                }
+            }  
+        } while (!getAmounttoPaid);
+
+        if (getAmounttoPaid && bank.transferAmount(transferAmount, recipientUsername)) {
+
+            System.out.println("Successfully transferred " + transferAmount + " to " + recipientUsername + ".");
+            System.out.println("Your current balance is: " + bank.getBalance(username));
+        } else {
+            System.out.println("Transfer failed.");
+        }
     }
 
     private static void withdraw(Scanner scanner, Bank bank,String username) {
@@ -301,7 +342,7 @@ public class BankSystem {
 
         if (valid){
             bank.withdraw(money, username);
-            System.out.println("You have successfully withdraw " + money + ". Currently you have value of :" + bank.getBalance(username));
+            System.out.println("You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance(username));
         } else{
             System.out.println("You have failed to withdraw " + money);
         }

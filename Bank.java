@@ -13,6 +13,7 @@ public class Bank {
     private ArrayList<Loan> loans;
     private ArrayList<CreditCard> creditCards;
     private Security securityInstance;
+    private Account account;
 
     public Bank(String name) {
         this.name = name;
@@ -20,6 +21,7 @@ public class Bank {
         this.accounts = new HashMap<Integer, List<Account>>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
+        this.account = new Account();
         securityInstance = new Security();
 
         populateCustomersList();
@@ -218,10 +220,11 @@ public class Bank {
     public boolean validateUsername(String username){
         return securityInstance.validateUsername(username);
     }
-
+    
+    
     public Customer retrieveUserInfo(String username){
-        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
-        Customer customer = customerOptional.get(); 
+        Optional<Customer> customerOptional = this.customers.stream().filter(customer -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
+        Customer customer = customerOptional.get();
         return customer;
     }
 
@@ -234,12 +237,16 @@ public class Bank {
     }
 
     public void resetPassword(String userInfo, String newPassword) {
+        Customer customer = retrieveUserInfo(userInfo);
+        
         ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
+        customer.setPassword(HashedPasswordandSalt.get(0));
+        customer.setSalt(HashedPasswordandSalt.get(1));
         boolean success = csv_help.updateCSVOfCustomerData(userInfo,this.customers,HashedPasswordandSalt);
+        
 
         if (success) {
-            this.customers.clear();
-            populateCustomersList();
+            this.customers.set(customer.getCustomerId(), customer);
         }
     }
     /** Final Authentication */
@@ -323,6 +330,14 @@ public class Bank {
     }
     /** no more loans */
 
+    /** Accounts **/
+    
+    public void populateAccount(String username){
+        
+        Account accounts = getAccountInfo(username);
+        this.account.populateItem(accounts);
+    }
+
     private Account getAccountInfo(String username){
         Optional<Account> accountInformation = this.accounts.entrySet().stream()
                                                 .filter(entry -> entry.getKey() == retrieveUserInfo(username).getCustomerId())
@@ -332,52 +347,50 @@ public class Bank {
     }
 
     public int getAccountNo(String username){
-        return getAccountInfo(username).getAccountNo();
+        return this.account.getAccountNo();
     }
 
     public double getBalance(String username) {
-        return getAccountInfo(username).getBalance();
+        return this.account.getBalance();
     }
 
     public double getTransactionLimit(String username) {
-        return getAccountInfo(username).getTransactionLimit();
+        return this.account.getTransactionLimit();
     }
 
     public void withdraw(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
-            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
-                                        accountInformation.getAccountType(),accountInformation.getBalance() - money,accountInformation.getTransactionLimit());
-            csv_help.updateCSVOfAccount(accounts, account);
-            this.accounts.clear();
-            populateAccountList();
+            if(this.account.withdraw(money)){
+                csv_help.updateCSVOfAccount(accounts, account);
+            };
         }
     }
 
     public void deposit(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
-            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
-                                        accountInformation.getAccountType(),accountInformation.getBalance() + money,accountInformation.getTransactionLimit());
-            csv_help.updateCSVOfAccount(accounts, account);
-            this.accounts.clear();
-            populateAccountList();
+            this.account.deposit(money);
+            csv_help.updateCSVOfAccount(accounts, this.account);
         }
     }
 
     public boolean changeTransactionLimit(int limit, String userInfo) {
         Account accountInformation = getAccountInfo(userInfo);
         if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()){
-            Account account = new Account(accountInformation.getAccountNo(),accountInformation.getCustomerId(),
-                                        accountInformation.getAccountType(),accountInformation.getBalance(),limit);
-            csv_help.updateCSVOfAccount(accounts, account);
-            this.accounts.clear();
-            populateAccountList();
+            this.account.setTransactionLimit(limit);
+            csv_help.updateCSVOfAccount(accounts, this.account);
             return true;
         }
 
         return false;
     }
 
-
+    public boolean transferAmount(double money, String recipient) {
+            
+        return false;
+    } 
+    
 }
+    
+
