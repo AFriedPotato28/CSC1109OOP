@@ -109,6 +109,21 @@ public class Loan extends Account{
         return this.loanAmount;
     }
 
+    public int calculateDate(double loanAmount){
+        if (loanAmount > 50000){
+            return 60;
+        }
+        else if(loanAmount>30000){
+            return 50;
+        }
+        else if(loanAmount>20000){
+            return 40;
+        }
+        else{
+            return 30;
+        }
+    }
+
     public void setCustomerID(int customerID) {
         this.customerID = customerID;
     }
