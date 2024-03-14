@@ -1,6 +1,6 @@
 import java.io.*;
-import java.time.YearMonth;
 import java.util.*;
+import java.time.YearMonth;
 import java.time.LocalDate;
 import java.time.Duration;
 
@@ -111,7 +111,7 @@ public class Bank {
         boolean accountTypeExists = false;
         int sizeOfAccount = 0;
         accountType = accountType.equals("1") ? "Savings" : accountType.equals("2") ?  "Credit Card" : "Loan";
-  
+
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             List<Account> accounts = entry.getValue();
             sizeOfAccount = accounts.size();
@@ -127,7 +127,7 @@ public class Bank {
         }
 
         Account account = new Account((sizeOfAccount + 1),customerID, accountType, 0 , 500);
-        
+
         if (!customerIdExists){
             this.accounts.put(customerID, new ArrayList<>());
         }
@@ -157,8 +157,8 @@ public class Bank {
                     double balance = Double.parseDouble(data[6]);
                     int creditLimit = Integer.parseInt(data[7]);
 
-                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, creditLimit, cardNumber, cvv, expiration_date);
-                    this.creditCards.add(creditCard);
+                    // CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, creditLimit, cardNumber, cvv, expiration_date);
+                    // this.creditCards.add(creditCard);
                 }
                 creditCardCount++;
             }
@@ -247,8 +247,8 @@ public class Bank {
     public boolean validateUsername(String username){
         return securityInstance.validateUsername(username);
     }
-    
-    
+
+
     public Customer retrieveUserInfo(String username){
         Optional<Customer> customerOptional = this.customers.stream().filter(customer -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
         Customer customer = customerOptional.get();
@@ -265,12 +265,12 @@ public class Bank {
 
     public void resetPassword(String userInfo, String newPassword) {
         Customer customer = retrieveUserInfo(userInfo);
-        
+
         ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
         customer.setPassword(HashedPasswordandSalt.get(0));
         customer.setSalt(HashedPasswordandSalt.get(1));
         boolean success = csv_help.updateCSVOfCustomerData(userInfo,this.customers,HashedPasswordandSalt);
-        
+
 
         if (success) {
             this.customers.set(customer.getCustomerId(), customer);
@@ -280,7 +280,7 @@ public class Bank {
 
 
     /** For Loans *
-     * 
+     *
      * @param customerId
      * @return
     */
@@ -288,19 +288,17 @@ public class Bank {
     public int getCustomerLoans(int customerId) {
         int loanCount = 0;
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))){
-            String sLine;
             this.loans.clear();
+            String sLine;
             br.readLine();
             while ((sLine = br.readLine()) != null) {
                 String[] data = sLine.split(",");
                 if (Integer.parseInt(data[1]) == customerId) {
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
-                    LocalDate loanDuration = LocalDate.parse(data[4]);
 
-                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
+                    Loan loan = new Loan(loanId, customerId, loanAmount);
                     this.loans.add(loan);
-
                 }
                 loanCount++;
             }
@@ -313,17 +311,15 @@ public class Bank {
         }
     }
 
-    public void applyLoan(int customerId, int newLoanNumber, double loanAmount) {
-        getCustomerLoans(customerId);
-        LocalDate loanDuration = calculateLoanDuration(loanAmount);
-        Loan newloan = new Loan(newLoanNumber, customerId, loanAmount, loanDuration);
+    public void applyLoan(int newLoanNumber, int customerId, double loanAmount) {
+        Loan newloan = new Loan(newLoanNumber, customerId, loanAmount);
         updateLoantoCsv(newloan);
     }
-    
+
     public void updateLoantoCsv(Loan newloan) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data.csv", true))) {
             //Append object to csv
-            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + "," + newloan.getInterestRate() + "," + newloan.getLoanDuration();
+            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + "," + newloan.getInterestRate() + "," + newloan.getLoanDueDate();
             bw.write(loanData);
             bw.newLine();
 
@@ -332,7 +328,79 @@ public class Bank {
         }
     }
 
- 
+    public void repayLoan(int repayLoanId, double repayLoanAmount) {
+        for(Loan loan: this.loans) {
+            if (loan.getLoanId() == repayLoanId) {
+                if (repayLoanAmount <= getBalance()) {
+                    this.account.withdraw(repayLoanAmount);
+                    csv_help.updateCSVOfAccount(accounts, account);
+
+                    String filePath = "Loan_Data.csv";
+                    // Read existing data from CSV file
+                    List<String[]> lines = new ArrayList<>();
+                    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                        String line;
+                        System.out.println("Existing data in the CSV file:");
+                        while ((line = reader.readLine()) != null) {
+                            StringTokenizer tokenizer = new StringTokenizer(line, ",");
+                            List<String> tokens = new ArrayList<>();
+                            while (tokenizer.hasMoreTokens()) {
+                                tokens.add(tokenizer.nextToken());
+                            }
+                            lines.add(tokens.toArray(new String[0]));
+                            // System.out.println(tokens);
+                        }
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+
+                    // Modify csv data
+                    if (!lines.isEmpty()) {
+                        for (int i = 1; i < lines.size(); i++) {
+                            //System.out.println(lines.get(i)[0]);
+                            String[] row = lines.get(i);
+                            if (Integer.parseInt(row[0]) == repayLoanId) {
+                                row[2] = String.valueOf(Double.parseDouble(row[2]) - repayLoanAmount); // subtract repaidLoanAmount from loanAmount
+                                System.out.println("\nModified data:");
+                                StringBuilder rowStr = new StringBuilder();
+                                for (String value : row) {
+                                    rowStr.append(value).append(",");
+                                }
+                                rowStr.deleteCharAt(rowStr.length() - 1); // Removes last comma
+                                System.out.println(rowStr.toString());
+                                break; // Break the loop once the row is modified
+                            }
+                        }
+                    }
+
+                    // Write the modified data back to the CSV file
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                        for (String[] row : lines) {
+                            for (int i = 0; i < row.length; i++) {
+                                writer.write(row[i]);
+                                if (i < row.length - 1) {
+                                    writer.write(",");  //if current element isn't last element, write "," to separate values in CSV file
+                                }
+                            }
+                            writer.newLine();
+                        }
+                        // System.out.println("\nCSV file has been edited successfully.");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("There is insufficient funds in your account to repay the loan by the specified amount.");
+                }
+            } else {
+                System.out.println("There is no loan with that loanID in your account.");
+            }
+        }
+    }
+
+
      public void getLoans(int customerId){
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))){
             String sLine;
@@ -343,9 +411,9 @@ public class Bank {
                 if(Integer.parseInt(data[1]) == customerId){
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
-                    LocalDate loanDuration = LocalDate.parse(data[4]);
+//                    LocalDate loanDuration = LocalDate.parse(data[4]);
 
-                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDuration);
+                    Loan loan = new Loan(loanId, customerId, loanAmount);
                     this.loans.add(loan);
                 }
             }
@@ -358,46 +426,43 @@ public class Bank {
         }
     }
 
+//    public void updateOverdueLoans(){
+//        LocalDate dateNow = LocalDate.now();
+//        for(Loan loan: this.loans){
+//            if(dateNow.isAfter(loan.getLoanDuration())){
+//                double newLoanAmount = loan.getLoanAmount() * (1+loan.getInterestRate());
+//                LocalDate newLoanDuration = calculateLoanDuration(newLoanAmount);
+//
+//                loan.setLoanAmount(newLoanAmount);
+//                loan.setLoanDuration(newLoanDuration);
+//            }
+//        }
+//    }
+
     public void updateOverdueLoans(){
         LocalDate dateNow = LocalDate.now();
         for(Loan loan: this.loans){
-            if(dateNow.isAfter(loan.getLoanDuration())){
+            if(dateNow.isAfter(loan.getLoanDueDate())){
                 double newLoanAmount = loan.getLoanAmount() * (1+loan.getInterestRate());
-                LocalDate newLoanDuration = calculateLoanDuration(newLoanAmount);
-
                 loan.setLoanAmount(newLoanAmount);
-                loan.setLoanDuration(newLoanDuration);
+                //not sure if loanDueDate automatically updates
             }
         }
     }
 
     public void printLoans(){
+        System.out.println("Outstanding Loans:");
         for(Loan loan: this.loans){
-            System.out.println("Loan amount: " +loan.getLoanAmount()+" Loan Deadline: "+loan.getLoanDuration());
+            System.out.println("loanID: "+loan.getLoanId() + ", Loan amount: " +loan.getLoanAmount()+" Loan Deadline: "+loan.getLoanDueDate());
         }
+    }
 
-    }
-    public LocalDate calculateLoanDuration(double loanAmount){
-        LocalDate currentDate = LocalDate.now();
-        if (loanAmount > 50000){
-            return currentDate.plusDays(60);
-        }
-        else if(loanAmount>30000){
-            return currentDate.plusDays(50);
-        }
-        else if(loanAmount>20000){
-            return currentDate.plusDays(40);
-        }
-        else{
-            return currentDate.plusDays(3);
-        }
-    }
     /** no more loans */
 
     /** Accounts **/
-    
+
     public void populateAccount(String username){
-        
+
         Account accounts = getAccountInfo(username);
         this.account.populateItem(accounts);
     }

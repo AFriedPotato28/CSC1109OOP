@@ -12,8 +12,7 @@ public class Loan extends Account{
     /**
      * The customer applying for the loan.
      */
-    private int customerID;
-
+    private int customerId;
 
     /**
      * The amount of the loan.
@@ -28,7 +27,7 @@ public class Loan extends Account{
     /**
      * The duration of the loan in months.
      */
-    private LocalDate loanDuration;
+    private LocalDate loanDueDate;
 
 
     /**
@@ -36,16 +35,16 @@ public class Loan extends Account{
      *
      * @param loanId The unique identifier of the loan.
      * @param loanAmount The amount of the loan.
-     * @param loanDuration The duration of the loan in months.
+     * @param loanDueDate Calculated due date by which the loan should be paid.
      * @param customerId The customer id associated with loan class.
      */
-    public Loan(int loanId, int customerId, double loanAmount, LocalDate loanDuration){
+    public Loan(int loanId, int customerId, double loanAmount){
         super(customerId);
-        this.loanId = loanId;
-        this.loanAmount = loanAmount;
+        this.setLoanId(loanId);
+        this.setCustomerId(customerId);
+        this.setLoanAmount(loanAmount);
         this.interestRate = 0.05; // Interest rate for this bank (5%)
-        this.loanDuration = loanDuration;
-
+        this.calculateLoanDueDate();
     }
 
     /**
@@ -56,6 +55,11 @@ public class Loan extends Account{
         return this.loanId;
     }
 
+    /**
+     * Gets the unique identifier of the customer.
+     * @return The customerId.
+     */
+    public int getCustomerId() { return this.customerId; }
 
     /**
      * Gets the amount of the loan.
@@ -77,8 +81,36 @@ public class Loan extends Account{
      * Retrieves the duration of the loan in months.
      * @return The loan duration.
      */
-    public LocalDate getLoanDuration() {
-        return this.loanDuration;
+    public LocalDate getLoanDueDate() {
+        return this.loanDueDate;
+    }
+
+    /**
+     * Sets the duration of the loan in months.
+     * @param loanDueDate The due date by which the loan should be paid.
+     */
+    public void setLoanDueDate(LocalDate loanDueDate) {
+        this.loanDueDate = loanDueDate;
+    }
+
+    public void calculateLoanDueDate(){
+        LocalDate currentDate = LocalDate.now();
+        if (loanAmount > 50000){
+            setLoanDueDate(currentDate.plusDays(60));
+        }
+        else if(loanAmount>30000){
+            setLoanDueDate(currentDate.plusDays(50));
+        }
+        else if(loanAmount>20000){
+            setLoanDueDate(currentDate.plusDays(40));
+        }
+        else{
+            setLoanDueDate(currentDate.plusDays(3));
+        }
+    }
+
+    public void setLoanId(int loanId){
+        this.loanId = loanId;
     }
 
     /**
@@ -91,19 +123,6 @@ public class Loan extends Account{
     }
 
     /**
-     * Sets the duration of the loan in months.
-     * @param loanDuration The loan duration to be set.
-     */
-    public void setLoanDuration(LocalDate loanDuration) {
-        this.loanDuration = loanDuration;
-    }
-
-
-    public void setLoanId(int loanId){
-        this.loanId = loanId;
-    }
-
-    /**
      * Calculates the total amount to be repaid for the loan.
      * @return The total amount to be repaid after interest.
      */
@@ -112,8 +131,6 @@ public class Loan extends Account{
     }
 
 
-    public void setCustomerID(int customerID) {
-        this.customerID = customerID;
-    }
+    public void setCustomerId(int customerId) { this.customerId = customerId; }
 
 }
