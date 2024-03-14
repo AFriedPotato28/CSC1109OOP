@@ -20,9 +20,14 @@ public class CreditCard {
     private int accountNo;
 
     /**
-     * The current balance on the credit card.
+     * The current balance on the credit card bill.
      */
     private double balance;
+
+    /**
+     * The remaining balance usable on the credit card.
+     */
+    private double remainingBalance;
 
     /**
      * The credit limit set for the credit card.
@@ -60,6 +65,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
+        this.remainingBalance = this.creditLimit // remaining balance is equal to the credit limit initially
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
 
         this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo);
@@ -80,11 +86,12 @@ public class CreditCard {
      * @param cvv          The Card Verification Value (CVV) associated with the credit card.
      * @param expiryDate   The expiry date of the credit card.
      */
-    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, int creditLimit, String cardNumber, int cvv, YearMonth expiryDate) {
+    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingBalance, int creditLimit, String cardNumber, int cvv, YearMonth expiryDate) {
         this.creditCardId = creditCardId;
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
+        this.remainingBalance = remainingBalance;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
         this.CVV = cvv;
@@ -152,6 +159,15 @@ public class CreditCard {
      */
     public double getBalance() {
         return this.balance;
+    }
+
+    /**
+     * Retrieves the remaining balance usable on the credit card.
+     *
+     * @return The remaining balance.
+     */
+    public double getRemainingBalance() {
+        return this.remainingBalance;
     }
 
     /**
