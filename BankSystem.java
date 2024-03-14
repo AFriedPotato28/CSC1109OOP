@@ -114,7 +114,7 @@ public class BankSystem {
         while (!bank.authenticateOTP(loginUsername, Integer.valueOf(OTP)) && attemptOfTries <= 3) {
             OTP = promptInput("Please enter your OTP", scanner);
 
-            if (attemptOfTries >= 4) {
+            if (attemptOfTries >= 3) {
                 System.out.println("You have tried more than 3 tries to authenticate");
                 break;
             }

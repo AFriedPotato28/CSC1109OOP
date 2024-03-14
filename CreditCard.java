@@ -71,7 +71,7 @@ public class CreditCard {
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
         this.cashAdvancePayable = 0.0; // cash advance payable is 0 for a new credit card
-        this.remainingBalance = this.creditLimit // remaining balance is equal to the credit limit initially
+        this.remainingBalance = this.creditLimit; // remaining balance is equal to the credit limit initially
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
 
         this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo);
@@ -97,7 +97,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
-        this.cashAdvancePayable= cashAdvancePayable;
+        //this.cashAdvancePayable= cashAdvancePayable;
         this.remainingBalance = remainingBalance;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
