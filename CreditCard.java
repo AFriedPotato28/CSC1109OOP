@@ -30,6 +30,11 @@ public class CreditCard {
     private double remainingBalance;
 
     /**
+     * The cash advance payable on the credit card.
+     */
+    private double cashAdvancePayable;
+
+    /**
      * The credit limit set for the credit card.
      */
     private int creditLimit;
@@ -65,6 +70,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
+        this.cashAdvancePayable = 0.0; // cash advance payable is 0 for a new credit card
         this.remainingBalance = this.creditLimit // remaining balance is equal to the credit limit initially
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
 
@@ -91,6 +97,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
+        this.cashAdvancePayable= cashAdvancePayable;
         this.remainingBalance = remainingBalance;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
@@ -171,6 +178,21 @@ public class CreditCard {
     }
 
     /**
+     * Updates the balance usable on the credit card.
+     * @param amountDeducted The amount to be deducted from the remaining balance available.
+     */
+    public void setRemainingBalance(double amountDeducted) {
+        this.remainingBalance -= amountDeducted;
+    }
+
+    /**
+     * Retrieves the cash advance payable on the credit card.
+     */
+    public double getCashAdvancePayable() {
+        return this.cashAdvancePayable;
+    }
+
+    /**
      * Retrieves the credit limit for the credit card.
      *
      * @return The credit limit of the credit card.
@@ -197,6 +219,22 @@ public class CreditCard {
     public boolean payCreditBill(double paymentAmount) {
         // Implementation of payment logic goes here
         return false;
+    }
+
+    public boolean cashAdvanceWithdrawal(double cashAdvanceAmount) {
+        // Implementation of cash advance withdrawal logic goes here
+        double minCashAdvanceFee = 10.00; // minimum cash advance fee set at $10.00
+        double cashAdvanceFee = Math.max(minCashAdvanceFee, 0.05 * cashAdvanceAmount); // cash advance fee set at 5% of the cash advance amount or $10.00, whichever is higher
+        double totalCashAdvanceAmount = cashAdvanceAmount + cashAdvanceFee; // total cash advance amount including the cash advance fee
+
+        // check if the total cash advance amount is less than 30% of the credit limit and less than or equal to the remaining balance
+        if (totalCashAdvanceAmount < 0.3*this.creditLimit && totalCashAdvanceAmount <= this.remainingBalance) {
+            this.cashAdvancePayable += totalCashAdvanceAmount;
+            this.remainingBalance -= totalCashAdvanceAmount;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
