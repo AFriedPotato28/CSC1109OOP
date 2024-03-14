@@ -153,7 +153,7 @@ public final class csv_help {
                     double balance = account.getBalance();
                     double transactionLimit = account.getTransactionLimit();
 
-                    if(accountStash.getAccountType().equalsIgnoreCase(accountType) && accountNo == accountStash.getAccountNo()){
+                    if(accountStash.getAccountType().equalsIgnoreCase(accountType) && accountNo == accountStash.getAccountNo() && accountStash.getCustomerId() == userId){
                         balance = accountStash.getBalance();
                         transactionLimit = accountStash.getTransactionLimit();
                     }

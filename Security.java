@@ -231,9 +231,11 @@ public class Security {
             case 4:
                 // Log the user deposit activity
                 csv_help.generateCSVofSecurity("Deposit", accountID);
+                break;
             case 5:
                 // Log the user withdraw activity
                 csv_help.generateCSVofSecurity("Withdraw", accountID);
+                break;
         }
     }
 }

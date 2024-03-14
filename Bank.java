@@ -426,7 +426,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             if(this.account.withdraw(money)){
-                csv_help.updateCSVOfAccount(accounts, account);
+                csv_help.updateCSVOfAccount(this.accounts, account);
                 securityInstance.logActivity(this.account.getCustomerId(), 5);
                 return;
             };
@@ -437,7 +437,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()){
             this.account.deposit(money);
-            csv_help.updateCSVOfAccount(accounts, this.account);
+            csv_help.updateCSVOfAccount(this.accounts, this.account);
             securityInstance.logActivity(this.account.getCustomerId(),4);
             return;
         }
@@ -447,7 +447,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(userInfo);
         if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()){
             this.account.setTransactionLimit(limit);
-            csv_help.updateCSVOfAccount(accounts, this.account);
+            csv_help.updateCSVOfAccount(this.accounts, this.account);
             return true;
         }
 
