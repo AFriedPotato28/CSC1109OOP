@@ -378,7 +378,9 @@ public class BankSystem {
 
     private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo) {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+       
         bank.getCustomerCreditCards(customerId);
+        
 
         System.out.println("1. Apply Credit Card");
         System.out.println("2. Cancel Credit Card");
@@ -402,7 +404,7 @@ public class BankSystem {
                 bank.cancelCreditCard(scanner, customerId, userInfo);
                 break;
             case 3:
-                bank.payCreditCardBill(scanner, customerId, userInfo);
+                bank.payCreditCardBills(scanner, customerId, userInfo);
                 break;
             default:
                 if (choice != 0) {

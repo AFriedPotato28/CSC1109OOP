@@ -94,6 +94,11 @@ public class Bank {
      * credit card
      **/
 
+    public boolean checkExistingCard(String cardNumber){
+        Optional<CreditCard> card = this.creditCards.stream().filter((cust) -> cust.getCardNumber().equals(cardNumber)).findFirst();
+        return card.isPresent();
+    }
+
     public void getCustomerCreditCards(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
             String sLine;
@@ -112,7 +117,10 @@ public class Bank {
 
                     CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
                             remainingCredit, creditLimit, cardNumber, cvv, expiration_date);
-                    this.creditCards.add(creditCard);
+
+                    if (!checkExistingCard(cardNumber)){
+                        this.creditCards.add(creditCard);
+                    }
                 }
             }
         } catch (FileNotFoundException e) {
@@ -217,16 +225,17 @@ public class Bank {
         }
     }
 
-    public void payCreditCardBill(Scanner scanner, int customerId, String username) {
+    public void payCreditCardBills(Scanner scanner, int customerId, String username) {
         // Display credit cards for the given customer
         System.out.println("Credit cards for customer " + username + ":");
-        for (CreditCard card : creditCards) {
+
+        for (CreditCard card : this.creditCards) {
             if (card.getCustomerId() == customerId) {
                 System.out.println(
                         "Card Number ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4));
             }
         }
-
+       
         // Prompt user to select which credit card to pay
         System.out.println("Enter the card number to pay the bill: ");
         String cardNumber = scanner.next();
@@ -234,10 +243,9 @@ public class Bank {
         // Prompt user to enter payment amount
         System.out.println("Enter the payment amount: ");
         double paymentAmount = scanner.nextDouble();
-
         // Find the credit card with the specific card number and pay the bill
         boolean foundCard = false;
-        for (CreditCard card : creditCards) {
+        for (CreditCard card : this.creditCards) {
             if (card.getCustomerId() == customerId && card.getCardNumber().equals(cardNumber)) {
                 if (card.payCreditBill(paymentAmount)) {
                     // Payment successful
@@ -247,6 +255,7 @@ public class Bank {
                     // Payment failed
                     System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+                            
                 }
                 foundCard = true;
                 break;
@@ -257,6 +266,8 @@ public class Bank {
             // No credit card found with the specified card number
             System.out.println("Credit card with the specified card number not found.");
         }
+
+        return;
     }
 
     /* end creditcard */
