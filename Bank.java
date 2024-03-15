@@ -239,7 +239,9 @@ public class Bank {
         for (CreditCard card : this.creditCards) {
             if (card.getCustomerId() == customerId) {
                 System.out.println(
-                        "Card Number ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4));
+                        "Card Number ending in " +
+                                card.getCardNumber().substring(card.getCardNumber().length() - 4) +
+                        " (Outstanding balance: " + card.getBalance() + ")");
             }
         }
        
