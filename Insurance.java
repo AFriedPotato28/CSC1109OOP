@@ -9,11 +9,11 @@ public class Insurance {
     private int premiumAge = 55;
 
     public Insurance(int insuranceID, String insuranceType) {
-        this.insuranceID = insuranceID;
-        this.insuranceType = insuranceType;
-        this.beneficiaryNames = new ArrayList();
-        this.coverageAmount = 5000.00;
-        this.insurancePremium = 150.0;
+        this.setInsuranceID(insuranceID);
+        this.setInsuranceType(insuranceType);
+        this.setBeneficiaryNames(beneficiaryNames);
+        this.setCoverageAmount(5000.00);
+        this.setInsurancePremium(150.0);
     }
 
     public int getInsuranceID() {
