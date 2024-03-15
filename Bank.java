@@ -580,15 +580,40 @@ public class Bank {
 
     public void seeAllCurrencyExchanges() {
         StringBuilder sb = new StringBuilder();
-        for (Entry<String, Currency> currency : this.listofCurrencies.entrySet()) {
-            sb.append("Currency from " + currency.getValue().getToSource() + " to " +
-                    currency.getKey() + " Purchase Price: " +
-                    currency.getValue().getpurchasePrice() + " Selling Price: " +
-                    currency.getValue().getsellingPrice()
-                    + " \n");
+        sb.append("Current supported exchange rate:\n");
+        for (Entry<String,Currency> currency : this.listofCurrencies.entrySet()){
+            sb.append("Currency from " + currency.getValue().getToSource() + " to " + 
+            currency.getKey() + " Purchase Price: " + 
+            currency.getValue().getpurchasePrice() + " Selling Price: " +
+            currency.getValue().getsellingPrice()    
+            + " \n");
         }
         System.out.println(sb.toString());
     }
+
+
+    public void exchangeCurrency(String currencyName,double amount){
+
+    }  
+    // left off here still got issue 
+    private Currency getRelatedCurrency(String currencyName){
+        Optional<Currency> currency = this.listofCurrencies.entrySet().stream().filter((cur) -> cur.getKey().equals(currencyName)).flatMap(entry -> entry.getValue().stream()).filter().findFirst();  
+    }
+
+    public boolean checkCurrency(String currency){
+        if (this.listofCurrencies.containsKey(currency)){
+            return true;
+        }
+        return false;
+    }
+
+    public double getRates(String currency){
+        if(this.listofCurrencies.containsKey(currency)){
+            
+        }
+        return 0.0;
+    }
+
 
 }
     
