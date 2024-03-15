@@ -389,7 +389,6 @@ public class BankSystem {
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                int newCreditCardId = bank.getCreditCardCount(customerId) + 1;
                 int accountNo = bank.getAccountNo();
                 int annualIncome;
                 do {
@@ -398,7 +397,7 @@ public class BankSystem {
                         System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
                     }
                 } while (annualIncome < 15000);
-                bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+                bank.applyCreditCard(customerId, accountNo, annualIncome);
                 break;
             case 2:
                 bank.cancelCreditCard(scanner, customerId, userInfo);

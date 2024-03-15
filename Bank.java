@@ -140,10 +140,10 @@ public class Bank {
         return count;
     }
 
-    public void applyCreditCard(int newCreditCardId, int customerId, int accountNo, int annualIncome) {
+    public void applyCreditCard(int customerId, int accountNo, int annualIncome) {
         int existingCreditCardCount = getCreditCardCount(customerId);
         if (existingCreditCardCount < 2) {
-            CreditCard creditCard = new CreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+            CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
             updateCreditCardToCSV(creditCard);
             System.out.println("Credit Card application successful!");
         } else {
@@ -192,12 +192,19 @@ public class Bank {
             System.out.print("Enter the last 4 digits of the card number to delete: ");
             String cardNumberToDelete = scanner.next();
 
-            // Remove the credit card object from the ArrayList
+            // Find the credit card with the specific card number remove the credit card object from the ArrayList
+            boolean foundCard = false;
             for (CreditCard card : creditCards) {
                 if (card.getCustomerId() == custId && card.getCardNumber().endsWith(cardNumberToDelete)) {
                     creditCards.remove(card);
+                    foundCard = true;
                     break; // Exit the loop after removing the card
                 }
+            }
+
+            if (!foundCard) {
+                System.out.println("Credit card ending in " + cardNumberToDelete + " not found.");
+                return; // Exit the method if the card is not found
             }
 
             // Read the file again to filter out the selected credit card
