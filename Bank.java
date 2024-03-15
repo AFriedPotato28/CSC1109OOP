@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.IntStream;
 
 public class Bank {
     private String name;
@@ -92,12 +93,7 @@ public class Bank {
 
     /**
      * credit card
-     **/
-
-    public boolean checkExistingCard(String cardNumber){
-        Optional<CreditCard> card = this.creditCards.stream().filter((cust) -> cust.getCardNumber().equals(cardNumber)).findFirst();
-        return card.isPresent();
-    }
+     **/   
 
     public void getCustomerCreditCards(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
@@ -118,9 +114,10 @@ public class Bank {
                     CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
                             remainingCredit, creditLimit, cardNumber, cvv, expiration_date);
 
-                    if (!checkExistingCard(cardNumber)){
+                   if (this.creditCards.isEmpty()){
                         this.creditCards.add(creditCard);
-                    }
+                   }
+                    
                 }
             }
         } catch (FileNotFoundException e) {
@@ -144,6 +141,7 @@ public class Bank {
         int existingCreditCardCount = getCreditCardCount(customerId);
         if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
+            this.creditCards.add(creditCard);
             updateCreditCardToCSV(creditCard);
             System.out.println("Credit Card application successful!");
         } else {
@@ -189,14 +187,21 @@ public class Bank {
             br.close();
 
             // Prompt user to select which credit card to delete
-            System.out.print("Enter the last 4 digits of the card number to delete: ");
+            System.out.print("Enter the last 4 digits of the card number to delete: (Press -1 to exit) ");
             String cardNumberToDelete = scanner.next();
+
+            if (cardNumberToDelete.equals("-1")) return;
 
             // Find the credit card with the specific card number remove the credit card object from the ArrayList
             boolean foundCard = false;
             for (CreditCard card : creditCards) {
-                if (card.getCustomerId() == custId && card.getCardNumber().endsWith(cardNumberToDelete)) {
-                    creditCards.remove(card);
+                if (card.getCustomerId() == custId && card.getCardNumber().endsWith(cardNumberToDelete) && cardNumberToDelete.length() == 4) {
+                    if (card.getBalance() > 0 ){
+                        System.out.println("You still have balance left in your bank, you cannot delete this card.");
+                        return;
+                    }
+
+                    this.creditCards.remove(card);
                     foundCard = true;
                     break; // Exit the loop after removing the card
                 }
@@ -223,13 +228,32 @@ public class Bank {
             bw.write(csvContent.toString());
             bw.close();
 
+            
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
+            
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found!" + e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    //left off here to do tmmrw (shag af now)
+    public void updateCreditCardBills(CreditCard card,String username){
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
+            String[] dataToAppend = { String.valueOf(card.getCreditCardId()),
+                    String.valueOf(card.getCustomerId()),
+                    String.valueOf(card.getAccountNo()), card.getCardNumber(),
+                    card.getEncryptedCVV(), String.valueOf(card.getExpiryDate()),
+                    String.valueOf(card.getBalance()), String.valueOf(card.getRemainingCredit()),
+                    String.valueOf(card.getCreditLimit()) };
+            String line = String.join(",", dataToAppend);
+            bw.write(line);
+            bw.newLine();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     public void payCreditCardBills(Scanner scanner, int customerId, String username) {
@@ -260,6 +284,7 @@ public class Bank {
                     // Payment successful
                     System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+                            updateCreditCardBills(card,username);
                 } else {
                     // Payment failed
                     System.out.println("Payment of $" + paymentAmount + " for card ending in " +
