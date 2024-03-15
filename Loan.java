@@ -38,13 +38,14 @@ public class Loan extends Account{
      * @param loanDueDate Calculated due date by which the loan should be paid.
      * @param customerId The customer id associated with loan class.
      */
-    public Loan(int loanId, int customerId, double loanAmount){
+    public Loan(int loanId, int customerId, double loanAmount, LocalDate loanDuration){
         super(customerId);
         this.setLoanId(loanId);
         this.setCustomerId(customerId);
         this.setLoanAmount(loanAmount);
         this.interestRate = 0.05; // Interest rate for this bank (5%)
-        this.calculateLoanDueDate();
+        this.setLoanDueDate(loanDuration);
+
     }
 
     /**
@@ -93,21 +94,7 @@ public class Loan extends Account{
         this.loanDueDate = loanDueDate;
     }
 
-    public void calculateLoanDueDate(){
-        LocalDate currentDate = LocalDate.now();
-        if (loanAmount > 50000){
-            setLoanDueDate(currentDate.plusDays(60));
-        }
-        else if(loanAmount>30000){
-            setLoanDueDate(currentDate.plusDays(50));
-        }
-        else if(loanAmount>20000){
-            setLoanDueDate(currentDate.plusDays(40));
-        }
-        else{
-            setLoanDueDate(currentDate.plusDays(3));
-        }
-    }
+
 
     public void setLoanId(int loanId){
         this.loanId = loanId;

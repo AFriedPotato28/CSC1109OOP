@@ -409,6 +409,8 @@ public class BankSystem {
     private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
         bank.getLoans(customerId);
+        bank.updateOverdueLoans();
+        bank.printLoans();
 
         System.out.println("1. Apply Loan");
         System.out.println("2. Repay Loan");
@@ -418,10 +420,8 @@ public class BankSystem {
         switch (choice) {
             case 1:
                 int newLoanNumber = bank.getCustomerLoans(customerId);
-                bank.updateOverdueLoans();
                 double bankBalance = bank.getBalance();
                 double maximumLoanAmount = bankBalance*2;
-                bank.printLoans();
                 System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+maximumLoanAmount);
                 double loanAmount = 0.0;
                 boolean valid = false;
