@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Bank {
     private String name;
@@ -22,7 +23,7 @@ public class Bank {
         this.creditCards = new ArrayList<>();
         this.account = new Account();
         this.securityInstance = new Security();
-        this.listofCurrencies = new HashMap<String,Currency>();
+        this.listofCurrencies = new HashMap<String, Currency>();
 
         csv_get_help.populateCustomersList(this.customers);
         csv_get_help.populateAccountList(this.accounts);
@@ -35,7 +36,8 @@ public class Bank {
 
     public void addCustomer(Customer customer) {
         int customerSize = this.customers.size();
-        Optional<Customer> custOptional = this.customers.stream().filter((cust) -> cust.getUserName().equalsIgnoreCase(customer.getUserName())).findFirst();
+        Optional<Customer> custOptional = this.customers.stream()
+                .filter((cust) -> cust.getUserName().equalsIgnoreCase(customer.getUserName())).findFirst();
 
         if (!custOptional.isEmpty()) {
             System.out.println("Customer account already exists for username");
@@ -108,7 +110,8 @@ public class Bank {
                     double remainingCredit = Double.parseDouble(data[7]);
                     int creditLimit = Integer.parseInt(data[8]);
 
-                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, remainingCredit, creditLimit, cardNumber, cvv, expiration_date);
+                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
+                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date);
                     this.creditCards.add(creditCard);
                 }
             }
@@ -144,11 +147,12 @@ public class Bank {
 
     public void updateCreditCardToCSV(CreditCard creditCard) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
-            String[] dataToAppend = {String.valueOf(creditCard.getCreditCardId()),
+            String[] dataToAppend = { String.valueOf(creditCard.getCreditCardId()),
                     String.valueOf(creditCard.getCustomerId()),
                     String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
                     creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
-                    String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()), String.valueOf(creditCard.getCreditLimit())};
+                    String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()),
+                    String.valueOf(creditCard.getCreditLimit()) };
             String line = String.join(",", dataToAppend);
             bw.write(line);
             bw.newLine();
@@ -213,7 +217,8 @@ public class Bank {
      * authentication
      */
     public boolean validateLogin(String loginUsername, String loginPassword) {
-        Optional<Customer> customerOptional = this.customers.stream().filter((customer) -> customer.getUserName().equalsIgnoreCase(loginUsername)).findFirst();
+        Optional<Customer> customerOptional = this.customers.stream()
+                .filter((customer) -> customer.getUserName().equalsIgnoreCase(loginUsername)).findFirst();
         if (customerOptional.isEmpty()) {
             return false;
         }
@@ -238,9 +243,9 @@ public class Bank {
         return securityInstance.validateUsername(username);
     }
 
-
     public Customer retrieveUserInfo(String username) {
-        Optional<Customer> customerOptional = this.customers.stream().filter(customer -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
+        Optional<Customer> customerOptional = this.customers.stream()
+                .filter(customer -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
         Customer customer = customerOptional.get();
         return customer;
     }
@@ -261,13 +266,12 @@ public class Bank {
         customer.setSalt(HashedPasswordandSalt.get(1));
         boolean success = csv_update_help.updateCSVOfCustomerData(userInfo, this.customers, HashedPasswordandSalt);
 
-
         if (success) {
             this.customers.set(customer.getCustomerId(), customer);
         }
     }
-    /** Final Authentication */
 
+    /** Final Authentication */
 
     /**
      * For Loans *
@@ -325,8 +329,9 @@ public class Bank {
 
     public void addLoanToCsv(Loan newloan) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data.csv", true))) {
-            //Append object to csv
-            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + "," + newloan.getInterestRate() + "," + newloan.getLoanDueDate();
+            // Append object to csv
+            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + ","
+                    + newloan.getInterestRate() + "," + newloan.getLoanDueDate();
             bw.write(loanData);
             bw.newLine();
 
@@ -363,14 +368,16 @@ public class Bank {
                         throw new RuntimeException(e);
                     }
 
-
                     // Modify csv data
                     if (!lines.isEmpty()) {
                         for (int i = 1; i < lines.size(); i++) {
-                            //System.out.println(lines.get(i)[0]);
+                            // System.out.println(lines.get(i)[0]);
                             String[] row = lines.get(i);
                             if (Integer.parseInt(row[0]) == repayLoanId) {
-                                row[2] = String.valueOf(Double.parseDouble(row[2]) - repayLoanAmount); // subtract repaidLoanAmount from loanAmount
+                                row[2] = String.valueOf(Double.parseDouble(row[2]) - repayLoanAmount); // subtract
+                                                                                                       // repaidLoanAmount
+                                                                                                       // from
+                                                                                                       // loanAmount
                                 System.out.println("\nModified data:");
                                 StringBuilder rowStr = new StringBuilder();
                                 for (String value : row) {
@@ -389,7 +396,8 @@ public class Bank {
                             for (int i = 0; i < row.length; i++) {
                                 writer.write(row[i]);
                                 if (i < row.length - 1) {
-                                    writer.write(",");  //if current element isn't last element, write "," to separate values in CSV file
+                                    writer.write(","); // if current element isn't last element, write "," to separate
+                                                       // values in CSV file
                                 }
                             }
                             writer.newLine();
@@ -399,14 +407,14 @@ public class Bank {
                         e.printStackTrace();
                     }
                 } else {
-                    System.out.println("There is insufficient funds in your account to repay the loan by the specified amount.");
+                    System.out.println(
+                            "There is insufficient funds in your account to repay the loan by the specified amount.");
                 }
             } else {
                 System.out.println("There is no loan with that loanID in your account.");
             }
         }
     }
-
 
     public void getLoans(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))) {
@@ -425,14 +433,12 @@ public class Bank {
                 }
             }
 
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
@@ -441,7 +447,7 @@ public class Bank {
                 double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
                 LocalDate newLoanDueDate = calculateLoanDueDate(newLoanAmount);
                 loan.setLoanAmount(newLoanAmount);
-                //not sure if loanDueDate automatically updates
+                // not sure if loanDueDate automatically updates
                 loan.setLoanDueDate(newLoanDueDate);
                 csv_update_help.updateLoanToCsv(this.loans);
             }
@@ -451,7 +457,8 @@ public class Bank {
     public void printLoans() {
         System.out.println("Outstanding Loans:");
         for (Loan loan : this.loans) {
-            System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount() + " Loan Deadline: " + loan.getLoanDueDate());
+            System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
+                    + " Loan Deadline: " + loan.getLoanDueDate());
         }
     }
 
@@ -470,7 +477,8 @@ public class Bank {
     private Account getAccountInfo(String username) {
         Optional<Account> accountInformation = this.accounts.entrySet().stream()
                 .filter(entry -> entry.getKey() == retrieveUserInfo(username).getCustomerId())
-                .flatMap(entry -> entry.getValue().stream()).filter((account) -> account.getAccountType().equals("Savings")).findFirst();
+                .flatMap(entry -> entry.getValue().stream())
+                .filter((account) -> account.getAccountType().equals("Savings")).findFirst();
         Account accountInfo = accountInformation.get();
         return accountInfo;
     }
@@ -529,44 +537,41 @@ public class Bank {
         }
     }
 
-
-    public void seeAllCurrencyExchanges(){
+    public void seeAllCurrencyExchanges() {
         StringBuilder sb = new StringBuilder();
         sb.append("Current supported exchange rate:\n");
-        for (Entry<String,Currency> currency : this.listofCurrencies.entrySet()){
-            sb.append("Currency from " + currency.getValue().getToSource() + " to " + 
-            currency.getKey() + " Purchase Price: " + 
-            currency.getValue().getpurchasePrice() + " Selling Price: " +
-            currency.getValue().getsellingPrice()    
-            + " \n");
+        for (Entry<String, Currency> currency : this.listofCurrencies.entrySet()) {
+            sb.append("Currency from " + currency.getValue().getToSource() + " to " +
+                    currency.getKey() + " Purchase Price: " +
+                    currency.getValue().getpurchasePrice() + " Selling Price: " +
+                    currency.getValue().getsellingPrice()
+                    + " \n");
         }
         System.out.println(sb.toString());
     }
 
+    public void exchangeCurrency(String currencyName, double amount) {
 
-    public void exchangeCurrency(String currencyName,double amount){
-
-    }  
-    // left off here still got issue 
-    private Currency getRelatedCurrency(String currencyName){
-        Optional<Currency> currency = this.listofCurrencies.entrySet().stream().filter((cur) -> cur.getKey().equals(currencyName)).flatMap(entry -> entry.getValue().stream()).filter().findFirst();  
     }
 
-    public boolean checkCurrency(String currency){
-        if (this.listofCurrencies.containsKey(currency)){
+    // left off here still got issue
+    private Currency getRelatedCurrency(String currencyName) {
+        Currency currency = this.listofCurrencies.get(currencyName);
+        return currency;
+    }
+
+    public boolean checkCurrency(String currency) {
+        if (this.listofCurrencies.containsKey(currency)) {
             return true;
         }
         return false;
     }
 
-    public double getRates(String currency){
-        if(this.listofCurrencies.containsKey(currency)){
-            
+    public Currency getRates(String currency) {
+        if (this.listofCurrencies.containsKey(currency)) {
+            return getRelatedCurrency(currency);
         }
-        return 0.0;
+        return null;
     }
 
-
 }
-    
-

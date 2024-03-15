@@ -7,7 +7,6 @@ public class BankSystem {
         Bank bank = new Bank("Matthias");
         Security securityInstance = new Security();
 
-
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
         String userInfo = "";
@@ -61,7 +60,7 @@ public class BankSystem {
                         loanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
-                        foreignExchangeOptions(scanner,bank,userInfo);
+                        foreignExchangeOptions(scanner, bank, userInfo);
                         break;
                     case 5:
                         settings(scanner, bank, securityInstance, userInfo);
@@ -200,7 +199,6 @@ public class BankSystem {
 
     }
 
-
     private static void checkBalance(Scanner scanner, Bank bank, String userInfo) {
         double balance = bank.getBalance();
         System.out.println("Your current balance is " + balance + " left in your bank");
@@ -221,7 +219,8 @@ public class BankSystem {
 
         while (!valid || limit <= 500) {
             try {
-                System.out.println("Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
+                System.out.println(
+                        "Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
                 limit = scanner.nextInt();
 
                 if (limit == -1.0) {
@@ -242,7 +241,8 @@ public class BankSystem {
         }
     }
 
-    private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
+    private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
+            String userInfo) {
 
         int accountChoice = -1;
 
@@ -258,7 +258,7 @@ public class BankSystem {
 
             switch (accountChoice) {
                 case 1:
-                    transferAmount(scanner,bank,userInfo);
+                    transferAmount(scanner, bank, userInfo);
                     break;
                 case 2:
                     withdraw(scanner, bank, userInfo);
@@ -277,9 +277,9 @@ public class BankSystem {
         boolean valid = false;
         System.out.println("You currently have $" + bank.getBalance() + " in your bank account");
         String recipientUsername = promptInput("Please enter a recipient username: ", scanner);
-    
+
         try {
-            if (bank.retrieveUserInfo(recipientUsername) != null){
+            if (bank.retrieveUserInfo(recipientUsername) != null) {
                 valid = true;
             }
         } catch (NoSuchElementException e) {
@@ -296,20 +296,22 @@ public class BankSystem {
                     System.out.println("Please enter a valid transfer amount. Press -1 to exit.");
                     transferAmount = scanner.nextDouble();
                     scanner.nextLine();
-    
-                    if (transferAmount == -1.0) return;
-    
-                    if (transferAmount > 0.0 && bank.getBalance() >= transferAmount && transferAmount <= bank.getTransactionLimit()) {
+
+                    if (transferAmount == -1.0)
+                        return;
+
+                    if (transferAmount > 0.0 && bank.getBalance() >= transferAmount
+                            && transferAmount <= bank.getTransactionLimit()) {
                         getAmounttoPaid = true;
-                    }  
+                    }
                 } catch (InputMismatchException | IllegalArgumentException e) {
                     System.out.println("That's not a valid number. Please enter a valid amount.");
                     scanner.nextLine(); // Consume the invalid input
                 }
-            }  
+            }
         } while (!getAmounttoPaid);
 
-        if (getAmounttoPaid ) {
+        if (getAmounttoPaid) {
             bank.transferAmount(transferAmount, recipientUsername);
             System.out.println("Successfully transferred " + transferAmount + " to " + recipientUsername + ".");
             System.out.println("Your current balance is: " + bank.getBalance());
@@ -341,8 +343,9 @@ public class BankSystem {
 
         if (valid) {
             bank.withdraw(money, username);
-            System.out.println("You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
-        } else{
+            System.out.println(
+                    "You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
+        } else {
             System.out.println("You have failed to withdraw " + money);
         }
 
@@ -380,7 +383,6 @@ public class BankSystem {
         System.out.println("1. Apply Credit Card");
         System.out.println("2. Cancel Credit Card");
         System.out.println("3. Pay Credit Card Bill");
-
 
         int choice = scanner.nextInt();
         switch (choice) {
@@ -423,11 +425,12 @@ public class BankSystem {
             case 1:
                 int newLoanNumber = bank.getCustomerLoans(customerId);
                 double bankBalance = bank.getBalance();
-                double maximumLoanAmount = bankBalance*2;
-                System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+maximumLoanAmount);
+                double maximumLoanAmount = bankBalance * 2;
+                System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + maximumLoanAmount);
                 double loanAmount = 0.0;
                 do {
-                    loanAmount = Double.parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
+                    loanAmount = Double
+                            .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
                     if (loanAmount == -1.0) {
                         System.out.println("Exiting...");
                         break;
@@ -435,14 +438,13 @@ public class BankSystem {
                     try {
                         if (loanAmount <= 0) {
                             System.out.println("Invalid input, loan amount must be a positive number");
-                        } else if (loanAmount>maximumLoanAmount) {
-                            System.out.println("Unsuccessful, you can only loan up to: "+maximumLoanAmount);
-                        }
-                        else {
-                            System.out.println("inputs customerID: "+customerId);
+                        } else if (loanAmount > maximumLoanAmount) {
+                            System.out.println("Unsuccessful, you can only loan up to: " + maximumLoanAmount);
+                        } else {
+                            System.out.println("inputs customerID: " + customerId);
                             bank.applyLoan(newLoanNumber, customerId, loanAmount);
                         }
-                    }catch (NumberFormatException e){
+                    } catch (NumberFormatException e) {
                         System.out.println("Entered an invalid input");
                         loanAmount = -2;
                     }
@@ -450,8 +452,10 @@ public class BankSystem {
                 break;
             case 2:
                 bank.printLoans();
-                int repayLoanId = Integer.parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
-                double repayLoanAmount = Double.parseDouble(promptInput("Please enter the amount you are repaying", scanner));
+                int repayLoanId = Integer
+                        .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
+                double repayLoanAmount = Double
+                        .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
                 bank.repayLoan(repayLoanId, repayLoanAmount);
                 break;
             default:
@@ -463,9 +467,8 @@ public class BankSystem {
 
     }
 
-
     private static void foreignExchangeOptions(Scanner scanner, Bank bank, String userInfo) {
-        
+
         bank.seeAllCurrencyExchanges();
 
         System.out.println("1. Withdrawal of Foreign Exchange");
@@ -474,28 +477,33 @@ public class BankSystem {
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                exchangeMoney(scanner,bank,userInfo);
-            }
+                exchangeMoney(scanner, bank, userInfo);
         }
+    }
 
     private static void exchangeMoney(Scanner scanner, Bank bank, String userInfo) {
         try {
-            String chString = promptInput("Please enter a valid currency to exchange",scanner);
+            String chString = promptInput("Please enter a valid currency to exchange", scanner);
 
-            while (!bank.checkCurrency(chString)){
+            while (!bank.checkCurrency(chString)) {
                 bank.seeAllCurrencyExchanges();
-                chString = promptInput("Please enter a valid currency to exchange",scanner);
+                chString = promptInput("Please enter a valid currency to exchange", scanner);
             }
-            System.out.println("Your bank only has " + bank.getBalance() * bank.getRates()  + "amount");
+            System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice()
+                    + bank.getRates(chString).getSymbol() + " amount");
+
             int amount = scanner.nextInt();
 
+            while (amount >= 0 && amount < (bank.getBalance() * bank.getRates(chString).getpurchasePrice())) {
+                System.out.println("Please enter a valid amount to exchange");
+                amount = scanner.nextInt();
+            }
 
+            bank.exchangeCurrency(chString, amount);
 
-        } catch( InputMismatchException e){ 
-            
-            return;}
-        
+        } catch (InputMismatchException e) {
+            return;
+        }
+
     }
 }
-
-    
