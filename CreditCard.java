@@ -25,9 +25,9 @@ public class CreditCard {
     private double balance;
 
     /**
-     * The remaining balance usable on the credit card.
+     * The remaining credit usable on the credit card.
      */
-    private double remainingBalance;
+    private double remainingCredit;
 
     /**
      * The cash advance payable on the credit card.
@@ -46,7 +46,7 @@ public class CreditCard {
     /**
      * The Card Verification Value (CVV) of the credit card.
      */
-    private int CVV;
+    private String CVV;
 
     /**
      * The expiry date of the credit card.
@@ -71,8 +71,8 @@ public class CreditCard {
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
         this.cashAdvancePayable = 0.0; // cash advance payable is 0 for a new credit card
-        this.remainingBalance = this.creditLimit; // remaining balance is equal to the credit limit initially
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
+        this.remainingCredit = this.creditLimit; // remaining balance is equal to the credit limit initially
 
         this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo);
         this.CVV = CreditCardGenerator.generateCVV();
@@ -92,13 +92,13 @@ public class CreditCard {
      * @param cvv          The Card Verification Value (CVV) associated with the credit card.
      * @param expiryDate   The expiry date of the credit card.
      */
-    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingBalance, int creditLimit, String cardNumber, int cvv, YearMonth expiryDate) {
+    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingCredit, int creditLimit, String cardNumber, String cvv, YearMonth expiryDate) {
         this.creditCardId = creditCardId;
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
         //this.cashAdvancePayable= cashAdvancePayable;
-        this.remainingBalance = remainingBalance;
+        this.remainingCredit = remainingCredit;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
         this.CVV = cvv;
@@ -119,7 +119,7 @@ public class CreditCard {
      *
      * @return The customer ID associated with the corresponding credit card
      */
-    public int getCustomerId(){
+    public int getCustomerId() {
         return this.customerId;
     }
 
@@ -128,7 +128,7 @@ public class CreditCard {
      *
      * @return The account number associated with the corresponding credit card
      */
-    public int getAccountNo(){
+    public int getAccountNo() {
         return this.accountNo;
     }
 
@@ -147,7 +147,7 @@ public class CreditCard {
      * @return The hashed value of the CVV.
      */
     public String getEncryptedCVV() throws Exception {
-        return Security.encryptCVV(String.valueOf(this.CVV));
+        return Security.hashCVV(String.valueOf(this.CVV));
     }
 
     /**
@@ -173,16 +173,17 @@ public class CreditCard {
      *
      * @return The remaining balance.
      */
-    public double getRemainingBalance() {
-        return this.remainingBalance;
+    public double getRemainingCredit() {
+        return this.remainingCredit;
     }
 
     /**
      * Updates the balance usable on the credit card.
+     *
      * @param amountDeducted The amount to be deducted from the remaining balance available.
      */
     public void setRemainingBalance(double amountDeducted) {
-        this.remainingBalance -= amountDeducted;
+        this.remainingCredit -= amountDeducted;
     }
 
     /**
@@ -197,7 +198,7 @@ public class CreditCard {
      *
      * @return The credit limit of the credit card.
      */
-    public int getCreditLimit(){
+    public int getCreditLimit() {
         return this.creditLimit;
     }
 
@@ -228,9 +229,9 @@ public class CreditCard {
         double totalCashAdvanceAmount = cashAdvanceAmount + cashAdvanceFee; // total cash advance amount including the cash advance fee
 
         // check if the total cash advance amount is less than 30% of the credit limit and less than or equal to the remaining balance
-        if (totalCashAdvanceAmount < 0.3*this.creditLimit && totalCashAdvanceAmount <= this.remainingBalance) {
+        if (totalCashAdvanceAmount < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.remainingCredit) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
-            this.remainingBalance -= totalCashAdvanceAmount;
+            this.remainingCredit -= totalCashAdvanceAmount;
             return true;
         } else {
             return false;
@@ -243,8 +244,13 @@ public class CreditCard {
      * @return True if the credit card is expired, False otherwise.
      */
     public boolean isExpired() {
-        // Implementation of expiration check logic goes here
-        return false;
+        // Get current date
+        YearMonth currentDate = YearMonth.now();
+
+        // Get the expiry date of the credit card
+        YearMonth expiryDate = this.expiryDate;
+
+        return expiryDate.isBefore(currentDate);
     }
 }
 

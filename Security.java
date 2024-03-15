@@ -1,3 +1,4 @@
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -6,9 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -120,35 +118,31 @@ public class Security {
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    // Encryption method for CVV
-    public static String encryptCVV(String cvv) throws Exception {
-        Key key = generateKey();
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
-        byte[] encryptedBytes = cipher.doFinal(cvv.getBytes());
-        return Base64.getEncoder().encodeToString(encryptedBytes);
+    // Method to hash the CVV using SHA-256
+    public static String hashCVV(String cvv) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = digest.digest(cvv.getBytes());
+            // Convert the hashed bytes to a hexadecimal string
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashedBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    // Decryption method for CVV
-    public static String decryptCVV(String encryptedCVV) throws Exception {
-        Key key = generateKey();
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, key);
-        byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedCVV));
-        return new String(decryptedBytes);
-    }
-
-    // Generate secret key
-    private static SecretKey generateKey() throws NoSuchAlgorithmException {
-        // Create a KeyGenerator object for AES
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-
-        // Set the key length (128, 192, or 256 bits)
-        int keySize = 128; // Change to 192 or 256 for larger key sizes
-        keyGen.init(keySize);
-
-        // Generate a secret key
-        return keyGen.generateKey();
+    // Method to verify the CVV
+    public static boolean verifyCVV(String providedCVV, String storedHashedCVV) {
+        String hashedProvidedCVV = hashCVV(providedCVV);
+        return hashedProvidedCVV != null && hashedProvidedCVV.equals(storedHashedCVV);
     }
 
     /**

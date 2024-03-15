@@ -142,8 +142,7 @@ public class Bank {
      * credit card
      **/
 
-    public int getCustomerCreditCards(int customerId) {
-        int creditCardCount = 0;
+    public void getCustomerCreditCards(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
             String sLine;
             br.readLine();
@@ -153,27 +152,45 @@ public class Bank {
                     int creditCardId = Integer.parseInt(data[0]);
                     int accountNo = Integer.parseInt(data[2]);
                     String cardNumber = data[3];
-                    int cvv = Integer.parseInt(Security.decryptCVV(data[4]));
+                    String cvv = data[4];
                     YearMonth expiration_date = YearMonth.parse(data[5]);
                     double balance = Double.parseDouble(data[6]);
-                    int creditLimit = Integer.parseInt(data[7]);
+                    double remainingCredit = Double.parseDouble(data[7]);
+                    int creditLimit = Integer.parseInt(data[8]);
 
-                    // CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, creditLimit, cardNumber, cvv, expiration_date);
-                    // this.creditCards.add(creditCard);
+                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, remainingCredit,creditLimit, cardNumber, cvv, expiration_date);
+                    this.creditCards.add(creditCard);
                 }
-                creditCardCount++;
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found!" + e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return creditCardCount + 1;
+    }
+
+    public int getCreditCardCount(int customerId){
+        int count = 0;
+        for(CreditCard card : creditCards){
+            if(card.getCustomerId() == customerId){
+                count++;
+            }
+        }
+        return count;
     }
 
     public void applyCreditCard(int newCreditCardId, int customerId, int accountNo, int annualIncome) {
-        CreditCard creditCard = new CreditCard(newCreditCardId, customerId, accountNo, annualIncome);
-        updateCreditCardToCSV(creditCard);
+        int existingCreditCardCount = getCreditCardCount(customerId);
+        if(existingCreditCardCount < 2){
+            CreditCard creditCard = new CreditCard(newCreditCardId, customerId, accountNo, annualIncome);
+            updateCreditCardToCSV(creditCard);
+            System.out.println("Credit Card application successful!");
+        }
+        else{
+            // Deny the application of a new credit card
+            System.out.println("You have reached the limit of two credit cards per account!");
+        }
+
     }
 
     public void updateCreditCardToCSV(CreditCard creditCard) {
@@ -182,7 +199,7 @@ public class Bank {
                     String.valueOf(creditCard.getCustomerId()),
                     String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
                     creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
-                    String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getCreditLimit())};
+                    String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()), String.valueOf(creditCard.getCreditLimit())};
             String line = String.join(",", dataToAppend);
             bw.write(line);
             bw.newLine();

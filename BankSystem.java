@@ -372,6 +372,7 @@ public class BankSystem {
 
     private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo) {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+        bank.getCustomerCreditCards(customerId);
 
         System.out.println("1. Apply Credit Card");
         System.out.println("2. Cancel Credit Card");
@@ -381,7 +382,7 @@ public class BankSystem {
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                int newCreditCardId = bank.getCustomerCreditCards(customerId);
+                int newCreditCardId = bank.getCreditCardCount(customerId) + 1;
                 int accountNo = bank.getAccountNo();
                 int annualIncome;
                 do {
@@ -391,7 +392,6 @@ public class BankSystem {
                     }
                 } while (annualIncome < 15000);
                 bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
-                System.out.println("Credit Card application successful!");
                 break;
             case 2:
                 bank.cancelCreditCard(customerId);

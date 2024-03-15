@@ -64,11 +64,14 @@ public final class CreditCardGenerator {
      *
      * @return An integer representing the generated CVV code.
      */
-    public static int generateCVV() {
+    public static String generateCVV() {
         // Logic to generate a CVV code
         SecureRandom random = new SecureRandom();
         String code = String.format("%03d", random.nextInt(1000));
-        return Integer.parseInt(code);
+
+        // Print cvv for debugging purposes only
+        System.out.println("Your cvv for this credit card is: " + code);
+        return code;
     }
 
     /**
