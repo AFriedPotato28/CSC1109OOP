@@ -2,6 +2,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
+import java.util.Map.Entry;
 
 public class Bank {
     private String name;
@@ -526,6 +527,19 @@ public class Bank {
             csv_update_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
             securityInstance.logActivity(this.account.getCustomerId(), 2);
         }
+    }
+
+
+    public void seeAllCurrencyExchanges(){
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String,Currency> currency : this.listofCurrencies.entrySet()){
+            sb.append("Currency from " + currency.getValue().getToSource() + " to " + 
+            currency.getKey() + " Purchase Price: " + 
+            currency.getValue().getpurchasePrice() + " Selling Price: " +
+            currency.getValue().getsellingPrice()    
+            + " \n");
+        }
+        System.out.println(sb.toString());
     }
 
 }

@@ -42,8 +42,9 @@ public class BankSystem {
                 System.out.println("1. Transfer / Withdraw / Deposit");
                 System.out.println("2. Credit Card Options");
                 System.out.println("3. Loan Options");
-                System.out.println("4. Account Settings");
-                System.out.println("5. Log out");
+                System.out.println("4. Foreign Exchanges Options");
+                System.out.println("5. Account Settings");
+                System.out.println("6. Log out");
                 System.out.println("0. Exit");
 
                 System.out.println("Enter your choice: ");
@@ -60,9 +61,12 @@ public class BankSystem {
                         loanOptions(scanner, bank, userInfo);
                         break;
                     case 4:
-                        settings(scanner, bank, securityInstance, userInfo);
+                        foreignExchangeOptions(scanner,bank,userInfo);
                         break;
                     case 5:
+                        settings(scanner, bank, securityInstance, userInfo);
+                        break;
+                    case 6:
                         securityInstance.logActivity(bank.retrieveUserInfo(userInfo).getCustomerId(), 3);
                         userInfo = "";
                         break;
@@ -76,7 +80,6 @@ public class BankSystem {
         scanner.close();
 
     }
-
 
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
@@ -459,5 +462,11 @@ public class BankSystem {
         }
 
     }
+
+
+    private static void foreignExchangeOptions(Scanner scanner, Bank bank, String userInfo) {
+        bank.seeAllCurrencyExchanges();
+    }
+
 
 }

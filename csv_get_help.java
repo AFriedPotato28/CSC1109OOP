@@ -61,7 +61,31 @@ public final class csv_get_help {
         }
     }
 
-    public static void populateCurrencyList(HashMap<String, Currency> listofCurrencies){
+    public static void populateCurrencyList(HashMap<String, Currency> listofCurrencies) {
+
+        try (BufferedReader bur = new BufferedReader(new FileReader("ForeignExchangeRate.csv"))){
+            bur.readLine();
+            String sLine;
+            while((sLine = bur.readLine()) != null){
+                String[] data = sLine.split(",");
+                String Symbol = data[1];
+                double purchasePrice = Double.parseDouble(data[2]);
+                double sellPrice = Double.parseDouble(data[3]);
+                String toSource = data[4];
+                String fromSource = data[5];
+
+                Currency currency = new Currency(Symbol, purchasePrice, sellPrice, fromSource, toSource);
+                
+                if(!listofCurrencies.containsKey(fromSource)){
+                    listofCurrencies.put(fromSource,new Currency());
+                }
+                
+                listofCurrencies.put(fromSource,currency);
+            } 
+
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

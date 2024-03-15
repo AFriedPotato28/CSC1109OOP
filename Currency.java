@@ -14,6 +14,8 @@ public class Currency {
         this.toSource = toSource;
     }
 
+    public Currency() {}
+
     public String getSymbol() {
         return Symbol;
     }
@@ -33,5 +35,4 @@ public class Currency {
     public String getToSource() {
         return toSource;
     }
-
 }
