@@ -337,7 +337,6 @@ public class Bank {
         return count + 1;
     }
 
-
     public void applyLoan(int newLoanNumber, int customerId, double loanAmount) {
         LocalDate loanDueDate = calculateLoanDueDate(loanAmount);
         Loan newloan = new Loan(newLoanNumber, customerId, loanAmount, loanDueDate);
@@ -372,10 +371,12 @@ public class Bank {
     }
 
     public void repayLoan(int repayLoanId, double repayLoanAmount) {
+        DecimalFormat df = new DecimalFormat("##.00");
         for (Loan loan : this.loans) {
             if (loan.getLoanId() == repayLoanId) {
                 if (repayLoanAmount <= getBalance()) {
-                    this.account.withdraw(repayLoanAmount);
+
+                    this.account.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
                     csv_update_help.updateCSVOfAccount(accounts, account);
 
                     String filePath = "Loan_Data.csv";
@@ -405,10 +406,11 @@ public class Bank {
                             // System.out.println(lines.get(i)[0]);
                             String[] row = lines.get(i);
                             if (Integer.parseInt(row[0]) == repayLoanId) {
-                                row[2] = String.valueOf(Double.parseDouble(row[2]) - repayLoanAmount); // subtract
-                                                                                                       // repaidLoanAmount
-                                                                                                       // from
-                                                                                                       // loanAmount
+                                row[2] = String.valueOf(
+                                        Double.parseDouble(df.format(Double.parseDouble(row[2]) - repayLoanAmount))); // subtract
+                                // repaidLoanAmount
+                                // from
+                                // loanAmount
                                 System.out.println("\nModified data:");
                                 StringBuilder rowStr = new StringBuilder();
                                 for (String value : row) {
@@ -454,7 +456,7 @@ public class Bank {
             br.readLine();
             while ((sLine = br.readLine()) != null) {
                 String[] data = sLine.split(",");
-                if (Integer.parseInt(data[1]) == customerId && Double.parseDouble(data[2])>0.0) {
+                if (Integer.parseInt(data[1]) == customerId && Double.parseDouble(data[2]) > 0.0) {
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
                     LocalDate loanDueDate = LocalDate.parse(data[4]);
@@ -471,14 +473,13 @@ public class Bank {
         }
     }
 
-    public Double totalLoanAmount(){
+    public Double totalLoanAmount() {
         double totalLoan = 0.0;
-        for (Loan loan: this.loans){
+        for (Loan loan : this.loans) {
             totalLoan += loan.getLoanAmount();
         }
         return totalLoan;
     }
-
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
