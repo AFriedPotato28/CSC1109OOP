@@ -465,8 +465,37 @@ public class BankSystem {
 
 
     private static void foreignExchangeOptions(Scanner scanner, Bank bank, String userInfo) {
+        
         bank.seeAllCurrencyExchanges();
+
+        System.out.println("1. Withdrawal of Foreign Exchange");
+        System.out.println("2. Exit");
+
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                exchangeMoney(scanner,bank,userInfo);
+            }
+        }
+
+    private static void exchangeMoney(Scanner scanner, Bank bank, String userInfo) {
+        try {
+            String chString = promptInput("Please enter a valid currency to exchange",scanner);
+
+            while (!bank.checkCurrency(chString)){
+                bank.seeAllCurrencyExchanges();
+                chString = promptInput("Please enter a valid currency to exchange",scanner);
+            }
+            System.out.println("Your bank only has " + bank.getBalance() * bank.getRates()  + "amount");
+            int amount = scanner.nextInt();
+
+
+
+        } catch( InputMismatchException e){ 
+            
+            return;}
+        
     }
-
-
 }
+
+    
