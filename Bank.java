@@ -275,33 +275,16 @@ public class Bank {
      * @param customerId
      * @return
      */
-
-    public int getCustomerLoans(int customerId) {
-        int loanCount = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"))) {
-            this.loans.clear();
-            String sLine;
-            br.readLine();
-            while ((sLine = br.readLine()) != null) {
-                String[] data = sLine.split(",");
-                if (Integer.parseInt(data[1]) == customerId) {
-                    int loanId = Integer.parseInt(data[0]);
-                    double loanAmount = Double.parseDouble(data[2]);
-                    LocalDate loanDueDate = LocalDate.parse(data[4]);
-
-                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDueDate);
-                    this.loans.add(loan);
-                }
-                loanCount++;
+    public int getLoanCount(int customerId) {
+        int count = 0;
+        for (Loan loan : loans) {
+            if (loan.getCustomerId() == customerId) {
+                count++;
             }
-            return loanCount + 1;
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        return count + 1;
     }
+
 
     public void applyLoan(int newLoanNumber, int customerId, double loanAmount) {
         LocalDate loanDueDate = calculateLoanDueDate(loanAmount);
@@ -415,7 +398,7 @@ public class Bank {
             br.readLine();
             while ((sLine = br.readLine()) != null) {
                 String[] data = sLine.split(",");
-                if (Integer.parseInt(data[1]) == customerId) {
+                if (Integer.parseInt(data[1]) == customerId && Double.parseDouble(data[2])>0.0) {
                     int loanId = Integer.parseInt(data[0]);
                     double loanAmount = Double.parseDouble(data[2]);
                     LocalDate loanDueDate = LocalDate.parse(data[4]);
@@ -431,6 +414,14 @@ public class Bank {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Double totalLoanAmount(){
+        double totalLoan = 0.0;
+        for (Loan loan: this.loans){
+            totalLoan += loan.getLoanAmount();
+        }
+        return totalLoan;
     }
 
 

@@ -421,10 +421,11 @@ public class BankSystem {
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                int newLoanNumber = bank.getCustomerLoans(customerId);
+                int newLoanNumber = bank.getLoanCount(customerId);
                 double bankBalance = bank.getBalance();
-                double maximumLoanAmount = bankBalance*2;
-                System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+maximumLoanAmount);
+                double currentLoanAmount = bank.totalLoanAmount();
+                double maximumLoanAmount = bankBalance*2-currentLoanAmount;
+                System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+(maximumLoanAmount));
                 double loanAmount = 0.0;
                 do {
                     loanAmount = Double.parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
