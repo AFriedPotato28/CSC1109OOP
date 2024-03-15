@@ -1,0 +1,4 @@
+RatesId,Symbol,Purchase,Sell,fromSource/toSource,toSource/fromSource
+1,$,0.75,1.34,SGD,USD
+2,RM,3.52,0.28,SGD,MYR
+3,฿,26.77,0.037,SGD,THB

@@ -423,7 +423,6 @@ public class BankSystem {
                 double maximumLoanAmount = bankBalance*2;
                 System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+maximumLoanAmount);
                 double loanAmount = 0.0;
-                boolean valid = false;
                 do {
                     loanAmount = Double.parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
                     if (loanAmount == -1.0) {

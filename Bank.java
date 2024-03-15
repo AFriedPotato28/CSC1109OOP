@@ -11,6 +11,7 @@ public class Bank {
     private ArrayList<CreditCard> creditCards;
     private Security securityInstance;
     private Account account;
+    private HashMap<String, Currency> listofCurrencies;
 
     public Bank(String name) {
         this.name = name;
@@ -19,69 +20,17 @@ public class Bank {
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
         this.account = new Account();
-        securityInstance = new Security();
+        this.securityInstance = new Security();
+        this.listofCurrencies = new HashMap<String,Currency>();
 
-        populateCustomersList();
-        populateAccountList();
+        csv_get_help.populateCustomersList(this.customers);
+        csv_get_help.populateAccountList(this.accounts);
+        csv_get_help.populateCurrencyList(this.listofCurrencies);
     }
 
     public void welcomeMessage() {
         System.out.println("Welcome to " + this.name + " Bank");
     }
-
-    public void populateCustomersList() {
-        try (BufferedReader bur = new BufferedReader(new FileReader("MOCK_DATA.csv"))) {
-            String sLine;
-            bur.readLine();
-            while ((sLine = bur.readLine()) != null) {
-                String[] data = sLine.split(",");
-                int id = Integer.parseInt(data[0]);
-                String customerName = data[1];
-                String customerUsername = data[2];
-                String customerPassword = data[3];
-                String Salt = data[4];
-
-                Customer newCustomer = new Customer(id, customerName, customerUsername, customerPassword, Salt);
-                this.customers.add(newCustomer);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void populateAccountList() {
-        try (BufferedReader bur = new BufferedReader(new FileReader("Account_Data.csv"))) {
-            String sLine;
-            bur.readLine();
-            while ((sLine = bur.readLine()) != null) {
-                String[] data = sLine.split(",");
-                int AccountID = Integer.parseInt(data[0]);
-                int customerID = Integer.parseInt(data[1]);
-                String accountType = data[2];
-                double balance = Double.parseDouble(data[3]);
-                double transactionLimit = Double.parseDouble(data[4]);
-
-                Account account = new Account(AccountID, customerID, accountType, balance, transactionLimit);
-
-                if (!this.accounts.containsKey(customerID)) {
-                    this.accounts.put(customerID, new ArrayList<>());
-                }
-
-                this.accounts.get(customerID).add(account);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public void addCustomer(Customer customer) {
         int customerSize = this.customers.size();
@@ -95,7 +44,7 @@ public class Bank {
             customer.setItems(customerSize + 1, hashPassword, salt);
 
             this.customers.add(customerSize, customer);
-            csv_help.createCustomerAccount(customer);
+            csv_update_help.createCustomerAccount(customer);
             System.out.println("New Customer has been created");
             System.out.println("There is a total of " + (customerSize + 1) + " in the list");
         }
@@ -132,7 +81,7 @@ public class Bank {
         }
         if (!accountTypeExists) {
             this.accounts.get(customerID).add(account);
-            csv_help.generateCSVtoAccount(customerID, account);
+            csv_update_help.generateCSVtoAccount(customerID, account);
             return true;
         }
         return false;
@@ -246,6 +195,7 @@ public class Bank {
             BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv"));
             bw.write(csvContent.toString());
             bw.close();
+            scanner.close();
 
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
 
@@ -255,7 +205,6 @@ public class Bank {
             throw new RuntimeException(e);
         }
     }
-
 
     /** end creditcard */
 
@@ -309,7 +258,7 @@ public class Bank {
         ArrayList<String> HashedPasswordandSalt = securityInstance.resetPassword(userInfo, newPassword);
         customer.setPassword(HashedPasswordandSalt.get(0));
         customer.setSalt(HashedPasswordandSalt.get(1));
-        boolean success = csv_help.updateCSVOfCustomerData(userInfo, this.customers, HashedPasswordandSalt);
+        boolean success = csv_update_help.updateCSVOfCustomerData(userInfo, this.customers, HashedPasswordandSalt);
 
 
         if (success) {
@@ -390,7 +339,7 @@ public class Bank {
             if (loan.getLoanId() == repayLoanId) {
                 if (repayLoanAmount <= getBalance()) {
                     this.account.withdraw(repayLoanAmount);
-                    csv_help.updateCSVOfAccount(accounts, account);
+                    csv_update_help.updateCSVOfAccount(accounts, account);
 
                     String filePath = "Loan_Data.csv";
                     // Read existing data from CSV file
@@ -483,18 +432,6 @@ public class Bank {
         }
     }
 
-//    public void updateOverdueLoans(){
-//        LocalDate dateNow = LocalDate.now();
-//        for(Loan loan: this.loans){
-//            if(dateNow.isAfter(loan.getLoanDuration())){
-//                double newLoanAmount = loan.getLoanAmount() * (1+loan.getInterestRate());
-//                LocalDate newLoanDuration = calculateLoanDuration(newLoanAmount);
-//
-//                loan.setLoanAmount(newLoanAmount);
-//                loan.setLoanDuration(newLoanDuration);
-//            }
-//        }
-//    }
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
@@ -505,48 +442,9 @@ public class Bank {
                 loan.setLoanAmount(newLoanAmount);
                 //not sure if loanDueDate automatically updates
                 loan.setLoanDueDate(newLoanDueDate);
-                updateLoanToCsv();
+                csv_update_help.updateLoanToCsv(this.loans);
             }
         }
-    }
-
-    public void updateLoanToCsv() {
-        try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"));
-             BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data_Temp.csv"))) {
-
-            String header = br.readLine(); // Read and skip the header line
-            bw.write(header + "\n"); // Write the header line to the new file
-
-            String sLine;
-            while ((sLine = br.readLine()) != null) {
-                String[] data = sLine.split(",");
-                int loanId = Integer.parseInt(data[0]);
-                int customerId = Integer.parseInt(data[1]);
-                double loanAmount = Double.parseDouble(data[2]);
-                double interestRate = Double.parseDouble(data[3]);
-                LocalDate loanDueDate = LocalDate.parse(data[4]);
-
-                // Update records for customerId 3
-                for (Loan loan : this.loans) {
-                    if (loan.getLoanId() == loanId) {
-                        loanAmount = loan.getLoanAmount();
-                        interestRate = loan.getInterestRate();
-                        loanDueDate = loan.getLoanDueDate();
-                        break;
-                    }
-                }
-
-                bw.write(String.format("%d,%d,%.2f,%.2f,%s\n",
-                        loanId, customerId, loanAmount, interestRate, loanDueDate));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Replace the original file with the updated file
-        File originalFile = new File("Loan_Data.csv");
-        File tempFile = new File("Loan_Data_Temp.csv");
-        tempFile.renameTo(originalFile);
     }
 
     public void printLoans() {
@@ -592,7 +490,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
             if (this.account.withdraw(money)) {
-                csv_help.updateCSVOfAccount(this.accounts, account);
+                csv_update_help.updateCSVOfAccount(this.accounts, account);
                 securityInstance.logActivity(this.account.getCustomerId(), 5);
                 return;
             }
@@ -604,7 +502,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
             this.account.deposit(money);
-            csv_help.updateCSVOfAccount(this.accounts, this.account);
+            csv_update_help.updateCSVOfAccount(this.accounts, this.account);
             securityInstance.logActivity(this.account.getCustomerId(), 4);
             return;
         }
@@ -614,7 +512,7 @@ public class Bank {
         Account accountInformation = getAccountInfo(userInfo);
         if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()) {
             this.account.setTransactionLimit(limit);
-            csv_help.updateCSVOfAccount(this.accounts, this.account);
+            csv_update_help.updateCSVOfAccount(this.accounts, this.account);
             return true;
         }
 
@@ -625,7 +523,7 @@ public class Bank {
         Account accountRecipient = getAccountInfo(recipient);
 
         if (this.account.transfer(accountRecipient, money)) {
-            csv_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
+            csv_update_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
             securityInstance.logActivity(this.account.getCustomerId(), 2);
         }
     }

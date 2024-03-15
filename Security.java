@@ -7,7 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
-import java.security.Key;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -210,25 +209,25 @@ public class Security {
          */
         switch (activityNumber) {
             case 1:
-                csv_help.generateCSVofSecurity("Login", accountID);
+                csv_update_help.generateCSVofSecurity("Login", accountID);
                 break;
             case 2:
                 // Log the user bank transfer activity
-                csv_help.generateCSVofSecurity("Transfer Initialized", accountID);
+                csv_update_help.generateCSVofSecurity("Transfer Initialized", accountID);
                 // Break the switch statement if the activity number is 2
                 break;
             case 3:
                 // Log the user logout activity
                 // Break the switch statement if the activity number is 3
-                csv_help.generateCSVofSecurity("Logout", accountID);
+                csv_update_help.generateCSVofSecurity("Logout", accountID);
                 break;
             case 4:
                 // Log the user deposit activity
-                csv_help.generateCSVofSecurity("Deposit", accountID);
+                csv_update_help.generateCSVofSecurity("Deposit", accountID);
                 break;
             case 5:
                 // Log the user withdraw activity
-                csv_help.generateCSVofSecurity("Withdraw", accountID);
+                csv_update_help.generateCSVofSecurity("Withdraw", accountID);
                 break;
         }
     }
