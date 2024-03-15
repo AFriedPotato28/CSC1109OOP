@@ -1,4 +1,6 @@
+import java.time.Period;
 import java.time.YearMonth;
+import java.util.ArrayList;
 
 /**
  * Represents a Credit Card with information such as card number, expiry date, CVV, customer details, balance, and credit limit.
@@ -146,7 +148,7 @@ public class CreditCard {
      *
      * @return The hashed value of the CVV.
      */
-    public String getEncryptedCVV() throws Exception {
+    public String getEncryptedCVV() {
         return Security.hashCVV(String.valueOf(this.CVV));
     }
 
@@ -217,9 +219,26 @@ public class CreditCard {
      * @param paymentAmount The amount to be paid.
      * @return True if the payment is successful, False otherwise.
      */
-    public boolean payCreditBill(double paymentAmount) {
-        // Implementation of payment logic goes here
-        return false;
+    public boolean payCreditBill(double paymentAmount){
+        // Check if the payment amount is valid
+        if(paymentAmount < 0){
+            System.out.println("Payment amount is invalid!");
+            return false;
+        }
+
+        // Check if payment amount exceed credit bill balance
+        if(paymentAmount > this.balance){
+            System.out.println("Payment amount exceeds the outstanding balance!");
+            return false;
+        }
+
+        // Deduct the payment amount from the balance
+        this.balance -= paymentAmount;
+
+        // Update remainingCredit
+        this.remainingCredit += paymentAmount;
+
+        return true;
     }
 
     public boolean cashAdvanceWithdrawal(double cashAdvanceAmount) {

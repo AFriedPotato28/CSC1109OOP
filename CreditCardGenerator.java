@@ -22,21 +22,21 @@ public final class CreditCardGenerator {
         // Logic to generate a unique and valid card number
         StringBuilder cardNumber = new StringBuilder();
 
-        String zeros = getZeros(accountNo);
+        String uniqueId = accountNo + String.valueOf(creditCardId);
+        String zeros = getZeros(uniqueId);
 
-        cardNumber.append(IIN).append(BANK_ID).append(String.valueOf(creditCardId)).append(zeros).append(String.valueOf(accountNo));
+        cardNumber.append(IIN).append(BANK_ID).append(zeros).append(accountNo).append(creditCardId);
         int checkDigit = calculateCheckDigit(cardNumber.toString());
         cardNumber.append(checkDigit);
 
         return cardNumber.toString();
     }
 
-    private static String getZeros(int accountNo) {
+    private static String getZeros(String uniqueId) {
+        int totalLength = 9;
         StringBuilder zeros = new StringBuilder();
-        int zeroToGenerate = 8 - String.valueOf(accountNo).length();
-        for (int i = 0; i < zeroToGenerate; i++) {
-            zeros.append("0");
-        }
+        int zeroToGenerate = totalLength - uniqueId.length();
+        zeros.append("0".repeat(Math.max(0, zeroToGenerate)));
         return zeros.toString();
     }
 
