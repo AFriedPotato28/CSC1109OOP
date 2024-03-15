@@ -8,55 +8,55 @@ public class Insurance {
     private double insurancePremium;
     private int premiumAge = 55;
 
-    public Insurance(int insuranceID, String insuranceType){
-        this.insuranceID= insuranceID;
+    public Insurance(int insuranceID, String insuranceType) {
+        this.insuranceID = insuranceID;
         this.insuranceType = insuranceType;
         this.beneficiaryNames = new ArrayList();
         this.coverageAmount = 5000.00;
         this.insurancePremium = 150.0;
     }
 
-    public int getInsuranceID(){
+    public int getInsuranceID() {
         return insuranceID;
     }
 
-    public void setInsuranceID(int insuranceID){
+    public void setInsuranceID(int insuranceID) {
         this.insuranceID = insuranceID;
     }
 
-    public String getInsuranceType(){
+    public String getInsuranceType() {
         return insuranceType;
     }
 
-    public void setInsuranceType(String insuranceType){
+    public void setInsuranceType(String insuranceType) {
         this.insuranceType = insuranceType;
     }
 
-    public ArrayList<String> getBeneficiaryNames(){
+    public ArrayList<String> getBeneficiaryNames() {
         return beneficiaryNames;
     }
 
-    public void setBeneficiaryNames(ArrayList<String> beneficiaryNames){
+    public void setBeneficiaryNames(ArrayList<String> beneficiaryNames) {
         this.beneficiaryNames = beneficiaryNames;
     }
-    
-    public double getCoverageAmount(){
+
+    public double getCoverageAmount() {
         return coverageAmount;
     }
 
-    public void setCoverageAmount(double coverageAmount){
+    public void setCoverageAmount(double coverageAmount) {
         this.coverageAmount = coverageAmount;
     }
 
-    public double getInsurancePremium(){
+    public double getInsurancePremium() {
         return insurancePremium;
     }
 
-    public void setInsurancePremium(double insurancePremium){
+    public void setInsurancePremium(double insurancePremium) {
         this.insurancePremium = insurancePremium;
     }
 
-    public void displayInsuranceDetails(){
+    public void displayInsuranceDetails() {
         System.out.println("Current Insurance Details:");
         System.out.println("Insurance ID: " + this.insuranceID);
         System.out.println("Insurance Type: " + this.insuranceType);
@@ -64,9 +64,9 @@ public class Insurance {
         System.out.println("Coverage Amount: " + this.coverageAmount);
     }
 
-    public double calculatePremium(int premiumAge){
+    public double calculatePremium(int premiumAge) {
         double premiumAgeAmount = this.insurancePremium;
-        if (premiumAge > this.premiumAge){
+        if (premiumAge > this.premiumAge) {
             premiumAgeAmount *= 1.15;
         }
 
@@ -77,24 +77,24 @@ public class Insurance {
         this.coverageAmount = newCoverageAmount;
     }
 
-    public boolean isCoverageSufficient(double claimAmount){
+    public boolean isCoverageSufficient(double claimAmount) {
         return this.coverageAmount >= claimAmount;
     }
 
     public void processClaim(double claimAmount) {
-        if(this.isCoverageSufficient(claimAmount)){
+        if (this.isCoverageSufficient(claimAmount)) {
             System.out.println("Successfully processed Insurance Claim.");
             this.coverageAmount -= claimAmount;
-        } else{
+        } else {
             System.out.println("Claim denied. Insufficient Coverage Amount");
         }
     }
 
-    public void addBeneficiary(String beneficiaryNames){
+    public void addBeneficiary(String beneficiaryNames) {
         this.beneficiaryNames.add(beneficiaryNames);
     }
 
-    public void removeBeneficiary(String beneficiaryNames){
+    public void removeBeneficiary(String beneficiaryNames) {
         this.beneficiaryNames.remove(beneficiaryNames);
     }
 }
