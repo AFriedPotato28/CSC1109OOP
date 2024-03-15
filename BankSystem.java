@@ -397,8 +397,10 @@ public class BankSystem {
                 bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
                 break;
             case 2:
-                bank.cancelCreditCard(customerId, userInfo);
+                bank.cancelCreditCard(scanner, customerId, userInfo);
+                break;
             case 3:
+                bank.payCreditCardBill(scanner, customerId, userInfo);
                 break;
             default:
                 if (choice != 0) {

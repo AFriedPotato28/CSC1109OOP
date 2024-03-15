@@ -22,7 +22,7 @@ public class Bank {
         this.creditCards = new ArrayList<>();
         this.account = new Account();
         this.securityInstance = new Security();
-        this.listofCurrencies = new HashMap<String,Currency>();
+        this.listofCurrencies = new HashMap<String, Currency>();
 
         csv_get_help.populateCustomersList(this.customers);
         csv_get_help.populateAccountList(this.accounts);
@@ -157,14 +157,13 @@ public class Bank {
         }
     }
 
-    public void cancelCreditCard(int custId, String username) {
+    public void cancelCreditCard(Scanner scanner, int custId, String username) {
         try {
             // Read the existing CSV file
             BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"));
             StringBuilder csvContent = new StringBuilder();
             String sLine;
             String last4Digits;
-            Scanner scanner = new Scanner(System.in);
 
             // Display credit cards for the given customer
             System.out.println("Credit cards for customer " + username + ":");
@@ -179,7 +178,15 @@ public class Bank {
 
             // Prompt user to select which credit card to delete
             System.out.print("Enter the last 4 digits of the card number to delete: ");
-            String cardNumberToDelete = scanner.nextLine();
+            String cardNumberToDelete = scanner.next();
+
+            // Remove the credit card object from the ArrayList
+            for (CreditCard card : creditCards) {
+                if (card.getCustomerId() == custId && card.getCardNumber().endsWith(cardNumberToDelete)) {
+                    creditCards.remove(card);
+                    break; // Exit the loop after removing the card
+                }
+            }
 
             // Read the file again to filter out the selected credit card
             br = new BufferedReader(new FileReader("mock_credit_card.csv"));
@@ -196,7 +203,6 @@ public class Bank {
             BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv"));
             bw.write(csvContent.toString());
             bw.close();
-            scanner.close();
 
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
 
@@ -207,7 +213,49 @@ public class Bank {
         }
     }
 
-    /** end creditcard */
+    public void payCreditCardBill(Scanner scanner, int customerId, String username) {
+        // Display credit cards for the given customer
+        System.out.println("Credit cards for customer " + username + ":");
+        for (CreditCard card : creditCards) {
+            if (card.getCustomerId() == customerId) {
+                System.out.println("Card Number ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4));
+            }
+        }
+
+        // Prompt user to select which credit card to pay
+        System.out.println("Enter the card number to pay the bill: ");
+        String cardNumber = scanner.next();
+
+        // Prompt user to enter payment amount
+        System.out.println("Enter the payment amount: ");
+        double paymentAmount = scanner.nextDouble();
+
+        // Find the credit card with the specific card number and pay the bill
+        boolean foundCard = false;
+        for (CreditCard card: creditCards){
+            if(card.getCustomerId() == customerId && card.getCardNumber().equals(cardNumber)){
+                if(card.payCreditBill(paymentAmount)){
+                    // Payment successful
+                    System.out.println("Payment of $" + paymentAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+                }
+                else{
+                    // Payment failed
+                    System.out.println("Payment of $" + paymentAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+                }
+                foundCard = true;
+                break;
+            }
+        }
+
+        if (!foundCard) {
+            // No credit card found with the specified card number
+            System.out.println("Credit card with the specified card number not found.");
+        }
+    }
+
+    /* end creditcard */
 
     /**
      * authentication
@@ -530,14 +578,14 @@ public class Bank {
     }
 
 
-    public void seeAllCurrencyExchanges(){
+    public void seeAllCurrencyExchanges() {
         StringBuilder sb = new StringBuilder();
-        for (Entry<String,Currency> currency : this.listofCurrencies.entrySet()){
-            sb.append("Currency from " + currency.getValue().getToSource() + " to " + 
-            currency.getKey() + " Purchase Price: " + 
-            currency.getValue().getpurchasePrice() + " Selling Price: " +
-            currency.getValue().getsellingPrice()    
-            + " \n");
+        for (Entry<String, Currency> currency : this.listofCurrencies.entrySet()) {
+            sb.append("Currency from " + currency.getValue().getToSource() + " to " +
+                    currency.getKey() + " Purchase Price: " +
+                    currency.getValue().getpurchasePrice() + " Selling Price: " +
+                    currency.getValue().getsellingPrice()
+                    + " \n");
         }
         System.out.println(sb.toString());
     }
