@@ -155,12 +155,12 @@ public class Bank {
 
     public void updateCreditCardToCSV(CreditCard creditCard) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
-            String[] dataToAppend = { String.valueOf(creditCard.getCreditCardId()),
+            String[] dataToAppend = {String.valueOf(creditCard.getCreditCardId()),
                     String.valueOf(creditCard.getCustomerId()),
                     String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
                     creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
                     String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()),
-                    String.valueOf(creditCard.getCreditLimit()) };
+                    String.valueOf(creditCard.getCreditLimit())};
             String line = String.join(",", dataToAppend);
             bw.write(line);
             bw.newLine();
@@ -393,69 +393,74 @@ public class Bank {
         for (Loan loan : this.loans) {
             if (loan.getLoanId() == repayLoanId) {
                 if (repayLoanAmount <= getBalance()) {
+                    if (loan.getLoanAmount() >= repayLoanAmount) {
 
-                    this.account.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
-                    csv_update_help.updateCSVOfAccount(accounts, account);
 
-                    String filePath = "Loan_Data.csv";
-                    // Read existing data from CSV file
-                    List<String[]> lines = new ArrayList<>();
-                    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-                        String line;
-                        System.out.println("Existing data in the CSV file:");
-                        while ((line = reader.readLine()) != null) {
-                            StringTokenizer tokenizer = new StringTokenizer(line, ",");
-                            List<String> tokens = new ArrayList<>();
-                            while (tokenizer.hasMoreTokens()) {
-                                tokens.add(tokenizer.nextToken());
-                            }
-                            lines.add(tokens.toArray(new String[0]));
-                            System.out.println("THIS IS TOKENS:" + tokens);
-                        }
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                        this.account.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
+                        csv_update_help.updateCSVOfAccount(accounts, account);
 
-                    // Modify csv data
-                    if (!lines.isEmpty()) {
-                        for (int i = 1; i < lines.size(); i++) {
-                            // System.out.println(lines.get(i)[0]);
-                            String[] row = lines.get(i);
-                            if (Integer.parseInt(row[0]) == repayLoanId) {
-                                row[2] = String.valueOf(
-                                        Double.parseDouble(df.format(Double.parseDouble(row[2]) - repayLoanAmount))); // subtract
-                                // repaidLoanAmount
-                                // from
-                                // loanAmount
-                                System.out.println("\nModified data:");
-                                StringBuilder rowStr = new StringBuilder();
-                                for (String value : row) {
-                                    rowStr.append(value).append(",");
+                        String filePath = "Loan_Data.csv";
+                        // Read existing data from CSV file
+                        List<String[]> lines = new ArrayList<>();
+                        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                            String line;
+                            System.out.println("Existing data in the CSV file:");
+                            while ((line = reader.readLine()) != null) {
+                                StringTokenizer tokenizer = new StringTokenizer(line, ",");
+                                List<String> tokens = new ArrayList<>();
+                                while (tokenizer.hasMoreTokens()) {
+                                    tokens.add(tokenizer.nextToken());
                                 }
-                                rowStr.deleteCharAt(rowStr.length() - 1); // Removes last comma
-                                System.out.println(rowStr.toString());
-                                break; // Break the loop once the row is modified
+                                lines.add(tokens.toArray(new String[0]));
+                                System.out.println("THIS IS TOKENS:" + tokens);
                             }
+                        } catch (FileNotFoundException e) {
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
-                    }
 
-                    // Write the modified data back to the CSV file
-                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-                        for (String[] row : lines) {
-                            for (int i = 0; i < row.length; i++) {
-                                writer.write(row[i]);
-                                if (i < row.length - 1) {
-                                    writer.write(","); // if current element isn't last element, write "," to separate
-                                                       // values in CSV file
+                        // Modify csv data
+                        if (!lines.isEmpty()) {
+                            for (int i = 1; i < lines.size(); i++) {
+                                // System.out.println(lines.get(i)[0]);
+                                String[] row = lines.get(i);
+                                if (Integer.parseInt(row[0]) == repayLoanId) {
+                                    row[2] = String.valueOf(
+                                            Double.parseDouble(df.format(Double.parseDouble(row[2]) - repayLoanAmount))); // subtract
+                                    // repaidLoanAmount
+                                    // from
+                                    // loanAmount
+                                    System.out.println("\nModified data:");
+                                    StringBuilder rowStr = new StringBuilder();
+                                    for (String value : row) {
+                                        rowStr.append(value).append(",");
+                                    }
+                                    rowStr.deleteCharAt(rowStr.length() - 1); // Removes last comma
+                                    System.out.println(rowStr.toString());
+                                    break; // Break the loop once the row is modified
                                 }
                             }
-                            writer.newLine();
                         }
-                        // System.out.println("\nCSV file has been edited successfully.");
-                    } catch (IOException e) {
-                        e.printStackTrace();
+
+                        // Write the modified data back to the CSV file
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                            for (String[] row : lines) {
+                                for (int i = 0; i < row.length; i++) {
+                                    writer.write(row[i]);
+                                    if (i < row.length - 1) {
+                                        writer.write(","); // if current element isn't last element, write "," to separate
+                                        // values in CSV file
+                                    }
+                                }
+                                writer.newLine();
+                            }
+                            // System.out.println("\nCSV file has been edited successfully.");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        System.out.println("Repayment amount is more than the loan amount. Please redo the process.");
                     }
                 } else {
                     System.out.println(

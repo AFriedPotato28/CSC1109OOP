@@ -109,14 +109,6 @@ public class Loan extends Account{
         this.loanAmount = loanAmount;
     }
 
-    /**
-     * Calculates the total amount to be repaid for the loan.
-     * @return The total amount to be repaid after interest.
-     */
-    public double calculateAmount() {
-        return this.loanAmount;
-    }
-
 
     public void setCustomerId(int customerId) { this.customerId = customerId; }
 

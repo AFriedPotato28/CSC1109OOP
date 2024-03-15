@@ -219,8 +219,7 @@ public class BankSystem {
 
         while (!valid || limit <= 500) {
             try {
-                System.out.println(
-                        "Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
+                System.out.println("Please enter a valid transaction limit and a numeric value above 500. Type -1 to exit");
                 limit = scanner.nextInt();
 
                 if (limit == -1.0) {
@@ -241,8 +240,7 @@ public class BankSystem {
         }
     }
 
-    private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
-            String userInfo) {
+    private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
 
         int accountChoice = -1;
 
@@ -297,11 +295,9 @@ public class BankSystem {
                     transferAmount = scanner.nextDouble();
                     scanner.nextLine();
 
-                    if (transferAmount == -1.0)
-                        return;
+                    if (transferAmount == -1.0) return;
 
-                    if (transferAmount > 0.0 && bank.getBalance() >= transferAmount
-                            && transferAmount <= bank.getTransactionLimit()) {
+                    if (transferAmount > 0.0 && bank.getBalance() >= transferAmount && transferAmount <= bank.getTransactionLimit()) {
                         getAmounttoPaid = true;
                     }
                 } catch (InputMismatchException | IllegalArgumentException e) {
@@ -343,8 +339,7 @@ public class BankSystem {
 
         if (valid) {
             bank.withdraw(money, username);
-            System.out.println(
-                    "You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
+            System.out.println("You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
         } else {
             System.out.println("You have failed to withdraw " + money);
         }
@@ -429,12 +424,11 @@ public class BankSystem {
                 int newLoanNumber = bank.getLoanCount(customerId);
                 double bankBalance = bank.getBalance();
                 double currentLoanAmount = bank.totalLoanAmount();
-                double maximumLoanAmount = bankBalance*2-currentLoanAmount;
-                System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+(maximumLoanAmount));
+                double maximumLoanAmount = bankBalance * 2 - currentLoanAmount;
+                System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
                 double loanAmount = 0.0;
                 do {
-                    loanAmount = Double
-                            .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
+                    loanAmount = Double.parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
                     if (loanAmount == -1.0) {
                         System.out.println("Exiting...");
                         break;
@@ -455,11 +449,17 @@ public class BankSystem {
                 } while (loanAmount <= 0);
                 break;
             case 2:
+                int repayLoanId;
                 bank.printLoans();
-                int repayLoanId = Integer
-                        .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
-                double repayLoanAmount = Double
-                        .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
+                while (true) {
+                    try {
+                        repayLoanId = Integer.parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
+                        break;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please enter valid integer for LoanId");
+                    }
+                }
+                double repayLoanAmount = Double.parseDouble(promptInput("Please enter the amount you are repaying", scanner));
                 bank.repayLoan(repayLoanId, repayLoanAmount);
                 break;
             default:
@@ -493,8 +493,7 @@ public class BankSystem {
                 bank.seeAllCurrencyExchanges();
                 chString = promptInput("Please enter a valid currency to exchange", scanner);
             }
-            System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice()
-                    + " " + bank.getRates(chString).getSymbol() + " amount");
+            System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice() + " " + bank.getRates(chString).getSymbol() + " amount");
 
             System.out.println("Please enter a valid amount to exchange");
             int amount = scanner.nextInt();
