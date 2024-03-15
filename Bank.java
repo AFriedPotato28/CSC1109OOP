@@ -1,4 +1,5 @@
 import java.io.*;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
@@ -550,12 +551,16 @@ public class Bank {
         System.out.println(sb.toString());
     }
 
-    public void exchangeCurrency(String currencyName, double amount) {
+    public void withdrawCurrency(String currencyName, double amount) {
+        DecimalFormat df = new DecimalFormat("##.00");
+        amount /= getCurrencyInformation(currencyName).getpurchasePrice();
+
+        this.account.withdraw(Double.parseDouble(df.format(amount)));
+        csv_update_help.updateCSVOfAccount(this.accounts, account);
 
     }
 
-    // left off here still got issue
-    private Currency getRelatedCurrency(String currencyName) {
+    private Currency getCurrencyInformation(String currencyName) {
         Currency currency = this.listofCurrencies.get(currencyName);
         return currency;
     }
@@ -569,7 +574,7 @@ public class Bank {
 
     public Currency getRates(String currency) {
         if (this.listofCurrencies.containsKey(currency)) {
-            return getRelatedCurrency(currency);
+            return getCurrencyInformation(currency);
         }
         return null;
     }

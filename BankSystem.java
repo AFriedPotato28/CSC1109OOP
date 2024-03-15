@@ -490,16 +490,17 @@ public class BankSystem {
                 chString = promptInput("Please enter a valid currency to exchange", scanner);
             }
             System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice()
-                    + bank.getRates(chString).getSymbol() + " amount");
+                    + " " + bank.getRates(chString).getSymbol() + " amount");
 
+            System.out.println("Please enter a valid amount to exchange");
             int amount = scanner.nextInt();
 
-            while (amount >= 0 && amount < (bank.getBalance() * bank.getRates(chString).getpurchasePrice())) {
+            while (!(amount >= 0 && amount < (bank.getBalance() * bank.getRates(chString).getpurchasePrice()))) {
                 System.out.println("Please enter a valid amount to exchange");
                 amount = scanner.nextInt();
             }
 
-            bank.exchangeCurrency(chString, amount);
+            bank.withdrawCurrency(chString, amount);
 
         } catch (InputMismatchException e) {
             return;
