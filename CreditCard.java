@@ -97,13 +97,13 @@ public class CreditCard {
      *                    credit card.
      * @param expiryDate  The expiry date of the credit card.
      */
-    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingCredit,
+    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double cashAdvancePayable, double remainingCredit,
                       int creditLimit, String cardNumber, String cvv, YearMonth expiryDate) {
         this.creditCardId = creditCardId;
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
-        // this.cashAdvancePayable= cashAdvancePayable;
+        this.cashAdvancePayable= cashAdvancePayable;
         this.remainingCredit = remainingCredit;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
@@ -184,16 +184,6 @@ public class CreditCard {
     }
 
     /**
-     * Updates the balance usable on the credit card.
-     *
-     * @param amountDeducted The amount to be deducted from the remaining balance
-     *                       available.
-     */
-    public void setRemainingBalance(double amountDeducted) {
-        this.remainingCredit -= amountDeducted;
-    }
-
-    /**
      * Retrieves the cash advance payable on the credit card.
      */
     public double getCashAdvancePayable() {
@@ -246,6 +236,12 @@ public class CreditCard {
         return true;
     }
 
+    /**
+     * Attempts to withdraw cash advance from the ATM using the credit card.
+     * 
+     * @param cashAdvanceAmount The amount to be withdrawn as cash advance.
+     * @return True if the cash advance withdrawal is successful, False otherwise.
+     */
     public boolean cashAdvanceWithdrawal(double cashAdvanceAmount) {
         // Implementation of cash advance withdrawal logic goes here
         double minCashAdvanceFee = 10.00; // minimum cash advance fee set at $10.00
@@ -255,9 +251,9 @@ public class CreditCard {
         double totalCashAdvanceAmount = cashAdvanceAmount + cashAdvanceFee; // total cash advance amount including the
         // cash advance fee
 
-        // check if the total cash advance amount is less than 30% of the credit limit
+        // check if the total cash advance amount withdrawn totals less than 30% of the credit limit
         // and less than or equal to the remaining balance
-        if (totalCashAdvanceAmount < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.remainingCredit) {
+        if (totalCashAdvanceAmount + this.cashAdvancePayable < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.remainingCredit ) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
             this.remainingCredit -= totalCashAdvanceAmount;
             return true;
