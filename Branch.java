@@ -7,18 +7,18 @@ public class Branch{
     
 
     public Branch(int branchId, String branchName, String branchAddress, int openingTime, int closingTime){
-        this.branchID(branchId);
-        this.branchName(branchName);
-        this.branchAddress(branchAddress);
-        this.openingTime(openingTime);
-        this.closingTime(closingTime);
+        this.setBranchID(branchId);
+        this.setBranchName(branchName);
+        this.setBranchAddress(branchAddress);
+        this.setOpeningTime(openingTime);
+        this.setClosingTime(closingTime);
     }
 
     public int getBranchID(){
         return this.branchId;
     }
     
-    public String getBranchID(){
+    public String getBranchName(){
         return this.branchName;
     }
     
