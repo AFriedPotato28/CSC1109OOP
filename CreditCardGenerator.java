@@ -18,13 +18,13 @@ public final class CreditCardGenerator {
     /**
      * Generates a unique and valid credit card number.
      */
-    public static String generateCardNumber(int accountNo) {
+    public static String generateCardNumber(int accountNo, int creditCardId) {
         // Logic to generate a unique and valid card number
         StringBuilder cardNumber = new StringBuilder();
 
         String zeros = getZeros(accountNo);
 
-        cardNumber.append(IIN).append(BANK_ID).append(zeros).append(String.valueOf(accountNo));
+        cardNumber.append(IIN).append(BANK_ID).append(String.valueOf(creditCardId)).append(zeros).append(String.valueOf(accountNo));
         int checkDigit = calculateCheckDigit(cardNumber.toString());
         cardNumber.append(checkDigit);
 
@@ -33,7 +33,7 @@ public final class CreditCardGenerator {
 
     private static String getZeros(int accountNo) {
         StringBuilder zeros = new StringBuilder();
-        int zeroToGenerate = 9 - String.valueOf(accountNo).length();
+        int zeroToGenerate = 8 - String.valueOf(accountNo).length();
         for (int i = 0; i < zeroToGenerate; i++) {
             zeros.append("0");
         }

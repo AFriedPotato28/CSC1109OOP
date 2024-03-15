@@ -74,7 +74,7 @@ public class CreditCard {
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
         this.remainingCredit = this.creditLimit; // remaining balance is equal to the credit limit initially
 
-        this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo);
+        this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo, this.creditCardId);
         this.CVV = CreditCardGenerator.generateCVV();
         this.expiryDate = CreditCardGenerator.generateExpiryDate();
     }

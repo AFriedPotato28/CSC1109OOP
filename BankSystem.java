@@ -394,8 +394,7 @@ public class BankSystem {
                 bank.applyCreditCard(newCreditCardId, customerId, accountNo, annualIncome);
                 break;
             case 2:
-                bank.cancelCreditCard(customerId);
-                System.out.println("All Credit Cards associated with your account has been cancelled");
+                bank.cancelCreditCard(customerId, userInfo);
             case 3:
                 break;
             default:

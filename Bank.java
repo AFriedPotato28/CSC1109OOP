@@ -158,7 +158,7 @@ public class Bank {
                     double remainingCredit = Double.parseDouble(data[7]);
                     int creditLimit = Integer.parseInt(data[8]);
 
-                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, remainingCredit,creditLimit, cardNumber, cvv, expiration_date);
+                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance, remainingCredit, creditLimit, cardNumber, cvv, expiration_date);
                     this.creditCards.add(creditCard);
                 }
             }
@@ -169,10 +169,10 @@ public class Bank {
         }
     }
 
-    public int getCreditCardCount(int customerId){
+    public int getCreditCardCount(int customerId) {
         int count = 0;
-        for(CreditCard card : creditCards){
-            if(card.getCustomerId() == customerId){
+        for (CreditCard card : creditCards) {
+            if (card.getCustomerId() == customerId) {
                 count++;
             }
         }
@@ -181,12 +181,11 @@ public class Bank {
 
     public void applyCreditCard(int newCreditCardId, int customerId, int accountNo, int annualIncome) {
         int existingCreditCardCount = getCreditCardCount(customerId);
-        if(existingCreditCardCount < 2){
+        if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(newCreditCardId, customerId, accountNo, annualIncome);
             updateCreditCardToCSV(creditCard);
             System.out.println("Credit Card application successful!");
-        }
-        else{
+        } else {
             // Deny the application of a new credit card
             System.out.println("You have reached the limit of two credit cards per account!");
         }
@@ -208,26 +207,47 @@ public class Bank {
         }
     }
 
-    public void cancelCreditCard(int custId) {
+    public void cancelCreditCard(int custId, String username) {
         try {
             // Read the existing CSV file
             BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"));
             StringBuilder csvContent = new StringBuilder();
             String sLine;
+            String last4Digits;
+            Scanner scanner = new Scanner(System.in);
 
+            // Display credit cards for the given customer
+            System.out.println("Credit cards for customer " + username + ":");
             while ((sLine = br.readLine()) != null) {
                 String[] columns = sLine.split(",");
+                if (columns.length >= 2 && columns[1].equals(String.valueOf(custId))) {
+                    last4Digits = columns[3].substring(columns[3].length() - 4);
+                    System.out.println("Card Number: **** **** **** " + last4Digits); // Display the last 4 digits
+                }
+            }
+            br.close();
 
-                // Assuming the data-to-delete is in the fourth column
-                if (columns.length >= 2 && !columns[1].equals(String.valueOf(custId))) {
+            // Prompt user to select which credit card to delete
+            System.out.print("Enter the last 4 digits of the card number to delete: ");
+            String cardNumberToDelete = scanner.nextLine();
+
+            // Read the file again to filter out the selected credit card
+            br = new BufferedReader(new FileReader("mock_credit_card.csv"));
+            while ((sLine = br.readLine()) != null) {
+                String[] columns = sLine.split(",");
+                // Keep the credit card if it doesn't match the one to delete
+                if (columns.length >= 4 && !columns[3].substring(columns[3].length() - 4).equals(cardNumberToDelete)) {
                     csvContent.append(sLine).append("\n");
                 }
             }
             br.close();
 
+            // Write the updated content back to the CSV file
             BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv"));
             bw.write(csvContent.toString());
             bw.close();
+
+            System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
 
         } catch (FileNotFoundException e) {
             System.out.println("File not found!" + e);
