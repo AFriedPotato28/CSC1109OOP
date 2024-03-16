@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +17,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class csv_update_help {
+
+    private static String tempFile = "temp.csv";
+
     /**
      * 
      * @param userInfo the username of the account
@@ -38,7 +43,6 @@ public final class csv_update_help {
     public static boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
 
         String fileName = "MOCK_DATA.csv";
-        String tempFile = "temp.csv";
         File oldFile = new File(fileName);
         File newFile = new File(tempFile);
 
@@ -95,7 +99,6 @@ public final class csv_update_help {
     public static boolean updateCSVofTwoAccounts(HashMap<Integer,List<Account>> accounts,Account fromAccount, Account toAccount){
 
         String file = "Account_Data.csv";
-        String tempFile = "temp.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -157,7 +160,6 @@ public final class csv_update_help {
     public static boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
 
         String file = "Account_Data.csv";
-        String tempFile = "temp.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -260,7 +262,10 @@ public final class csv_update_help {
     public static void generateCSVtoAccount(int customerID, Account account) {
         String filepath = "Account_Data.csv";
         
-        String[] dataToAppend = { String.valueOf(account.getAccountNo()),String.valueOf(customerID), account.getAccountType(), String.valueOf(account.getBalance()), String.valueOf(account.getTransactionLimit())};
+        String[] dataToAppend = { String.valueOf(account.getAccountNo()),
+                                String.valueOf(customerID), account.getAccountType(), 
+                                String.valueOf(account.getBalance()), 
+                                String.valueOf(account.getTransactionLimit())};
 
         String csvLine = Arrays.stream(dataToAppend)
                 .map(csv_update_help::escapeDoubleQuotes)
@@ -278,7 +283,7 @@ public final class csv_update_help {
 
      public static void updateLoanToCsv(ArrayList<Loan> loans) {
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"));
-             BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data_Temp.csv"))) {
+             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
 
             String header = br.readLine(); // Read and skip the header line
             bw.write(header + "\n"); // Write the header line to the new file
@@ -311,8 +316,54 @@ public final class csv_update_help {
 
         // Replace the original file with the updated file
         File originalFile = new File("Loan_Data.csv");
-        File tempFile = new File("Loan_Data_Temp.csv");
-        tempFile.renameTo(originalFile);
+        File tempsFile = new File(tempFile);
+        tempsFile.renameTo(originalFile);
+    }
+
+
+    public static void updateExistingCreditCardBills(CreditCard card,int ID){
+        StringBuilder sb = new StringBuilder("credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit\n");
+        File originalFile = new File("mock_credit_card.csv");
+        File newFile = new File(tempFile);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(originalFile))) {
+            br.readLine();
+            String sLine ;
+            while ((sLine = br.readLine())!= null){
+                String[] data = sLine.split(",");
+
+                String cardID = card.getCreditCardId() == Integer.parseInt(data[0]) ? String.valueOf(card.getCreditCardId())  : (data[0]);
+                String cust_ID = card.getCustomerId() == Integer.parseInt(data[1]) ? String.valueOf(card.getCustomerId()) : (data[1]);
+                String accNumber = card.getAccountNo() == Integer.parseInt(data[2]) ? String.valueOf(card.getAccountNo()) : data[2];
+                String cardNumber = card.getCardNumber().equals(data[3]) ? card.getCardNumber(): data[3];
+                String cvv = card.getEncryptedCVV().equals(data[4]) ? card.getEncryptedCVV() : data[4];
+                YearMonth expiration_date = YearMonth.parse(data[5]).equals(card.getExpiryDate()) ? card.getExpiryDate() : YearMonth.parse(data[5]);
+                double balance = card.getCustomerId() == ID ? card.getBalance() : Double.parseDouble(data[6]) ; 
+                double remaining_credit = card.getCustomerId() == ID ? card.getRemainingCredit() : Double.parseDouble(data[7]);
+                int credit_limit = Integer.parseInt(data[8]) == card.getCreditLimit() ? card.getCreditLimit() : Integer.parseInt(data[8]);
+
+
+                String[] dataToAppend = { cardID,cust_ID, accNumber, cardNumber, cvv, 
+                    card.getEncryptedCVV(), String.valueOf(expiration_date),
+                    String.valueOf(balance), String.valueOf(remaining_credit),
+                    String.valueOf(credit_limit) };
+                String line = String.join(",", dataToAppend);
+                sb.append(line + "\n");
+            } 
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(newFile))){
+            bw.append(sb);
+
+        }  catch(IOException e){
+            return;
+        }
+
+        originalFile.delete();
+        newFile.renameTo(originalFile);
     }
 
     private static String escapeDoubleQuotes(String str) {

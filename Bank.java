@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.stream.IntStream;
 
 public class Bank {
     private String name;
@@ -238,24 +237,8 @@ public class Bank {
             throw new RuntimeException(e);
         }
     }
-    //left off here to do tmmrw (shag af now)
-    public void updateCreditCardBills(CreditCard card,String username){
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
-            String[] dataToAppend = { String.valueOf(card.getCreditCardId()),
-                    String.valueOf(card.getCustomerId()),
-                    String.valueOf(card.getAccountNo()), card.getCardNumber(),
-                    card.getEncryptedCVV(), String.valueOf(card.getExpiryDate()),
-                    String.valueOf(card.getBalance()), String.valueOf(card.getRemainingCredit()),
-                    String.valueOf(card.getCreditLimit()) };
-            String line = String.join(",", dataToAppend);
-            bw.write(line);
-            bw.newLine();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-    }
-
+   
     public void payCreditCardBills(Scanner scanner, int customerId, String username) {
         // Display credit cards for the given customer
         System.out.println("Credit cards for customer " + username + ":");
@@ -273,34 +256,33 @@ public class Bank {
         System.out.println("Enter the card number to pay the bill: ");
         String cardNumber = scanner.next();
 
+        Optional <CreditCard> creditCardExists = this.creditCards.stream().filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
+
+        if (!(creditCardExists.isPresent())) { 
+            System.out.println("Credit card with the specified card number not found.");
+            return;
+        }
+
         // Prompt user to enter payment amount
         System.out.println("Enter the payment amount: ");
         double paymentAmount = scanner.nextDouble();
         // Find the credit card with the specific card number and pay the bill
-        boolean foundCard = false;
         for (CreditCard card : this.creditCards) {
             if (card.getCustomerId() == customerId && card.getCardNumber().equals(cardNumber)) {
                 if (card.payCreditBill(paymentAmount)) {
                     // Payment successful
                     System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                            updateCreditCardBills(card,username);
+                            csv_update_help.updateExistingCreditCardBills(card,retrieveUserInfo(username).getCustomerId());
                 } else {
                     // Payment failed
                     System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
                             
                 }
-                foundCard = true;
                 break;
             }
         }
-
-        if (!foundCard) {
-            // No credit card found with the specified card number
-            System.out.println("Credit card with the specified card number not found.");
-        }
-
         return;
     }
 
@@ -533,7 +515,6 @@ public class Bank {
                 double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
                 LocalDate newLoanDueDate = calculateLoanDueDate(newLoanAmount);
                 loan.setLoanAmount(newLoanAmount);
-                // not sure if loanDueDate automatically updates
                 loan.setLoanDueDate(newLoanDueDate);
                 csv_update_help.updateLoanToCsv(this.loans);
             }
