@@ -5,16 +5,75 @@ import java.time.YearMonth;
 import java.util.*;
 import java.util.Map.Entry;
 
+/**
+ * Represents a bank with a name, list of customers, accounts, loans, and credit cards.
+ * Supports operations such as adding customers, accounts, and credit cards, applying for loans, and managing accounts.
+ * Supports authentication and security features such as password hashing and OTP generation.
+ * Supports currency exchange and transaction operations.
+ */
+
 public class Bank {
+    /**
+     * The name of the bank.
+     */
     private String name;
+
+    /**
+     * The list of customers associated with the bank.
+     */
     private ArrayList<Customer> customers;
+
+    /**
+     * The list of accounts associated with the bank.
+     */
     private HashMap<Integer, List<Account>> accounts;
+
+    /**
+     * The list of loans associated with the bank.
+     */
     private ArrayList<Loan> loans;
+
+    /**
+     * The list of credit cards associated with the bank.
+     */
     private ArrayList<CreditCard> creditCards;
+
+    /**
+     * The security instance associated with the bank.
+     */
     private Security securityInstance;
+
+    /**
+     * The account object associated with the bank.
+     */
     private Account account;
+
+    /**
+     * The list of currencies associated with the bank.
+     */
     private HashMap<String, Currency> listofCurrencies;
 
+    /**
+     * Constructs a new Bank object with the specified name.
+     * @param name The name of the bank.
+     * name - The name of the bank.
+     * customers - The list of customers associated with the bank.
+     * accounts - The list of accounts associated with the bank.
+     * loans - The list of loans associated with the bank.
+     * creditCards - The list of credit cards associated with the bank.
+     * account - The account object associated with the bank.
+     * securityInstance - The security instance associated with the bank.
+     * listofCurrencies - The list of currencies associated with the bank.
+     * 
+     * csv_get_help.populateCustomersList(this.customers) - Populates the list of customers from the CSV file.
+     * @param this.customers - The list of customers associated with the bank.
+     * 
+     * csv_get_help.populateAccountList(this.accounts) - Populates the list of accounts from the CSV file.
+     * @param this.accounts - The list of accounts associated with the bank.
+     * 
+     * csv_get_help.populateCurrencyList(this.listofCurrencies) - Populates the list of currencies from the CSV file.
+     * @param this.listofCurrencies - The list of currencies associated with the bank.
+     */
     public Bank(String name) {
         this.name = name;
         this.customers = new ArrayList<>();
@@ -30,15 +89,35 @@ public class Bank {
         csv_get_help.populateCurrencyList(this.listofCurrencies);
     }
 
+    /**
+     * Prints a welcome message from the bank.
+     */
     public void welcomeMessage() {
         System.out.println("Welcome to " + this.name + " Bank");
     }
 
+    /**
+     * Adding a new customer to the bank.
+     * @param customer The customer object to add.
+     * customerSize - The size of the customer list.
+     * custOptional - The optional customer object.
+     * salt - The salt for the customer's password.
+     * hashPassword - The hashed password for the customer's password.
+     * 
+     * if customer already exists, print "Customer account already exists for username".
+     * else, generate a new customer account and print "New Customer has been created".
+     * 
+     * csv_update_help.createCustomerAccount(customer) - Creates a new customer account in the CSV file.
+     * @param customer - The customer object to add.
+     * 
+     * Prints amount of customers in the list.
+     */
     public void addCustomer(Customer customer) {
         int customerSize = this.customers.size();
         Optional<Customer> custOptional = this.customers.stream()
                 .filter((cust) -> cust.getUserName().equalsIgnoreCase(customer.getUserName())).findFirst();
 
+        // Check if the customer already exists
         if (!custOptional.isEmpty()) {
             System.out.println("Customer account already exists for username");
         } else {
@@ -56,6 +135,12 @@ public class Bank {
         addAccount(userId, "1");
     }
 
+    /**
+     * Adding a new account to the bank.
+     * @param customerID The ID of the customer.
+     * @param accountType The type of account to add.
+     * 
+     */
     public boolean addAccount(Integer customerID, String accountType) {
 
         boolean customerIdExists = false;
