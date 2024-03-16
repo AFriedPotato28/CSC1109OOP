@@ -10,7 +10,12 @@ public class Account {
     private double transactionLimit;
 
     /**
-     * Constructs a new Account object.
+     * Constructs a new Account object with the specified account number, customer ID, account type, balance, and transaction limit.
+     * @param accountNo The bank account number.
+     * @param customerId The customer ID associated with the account.
+     * @param accountType The type of account (e.g. "Savings", "Checking").
+     * @param balance The current balance of the account.
+     * @param transactionLimit The maximum amount that can be withdrawn from the account in a single transaction.
      */
     public Account(int accountNo, int customerId, String accountType, double balance, double transactionLimit) {
         this.accountNo = accountNo;
@@ -22,8 +27,17 @@ public class Account {
     /* private intiator */
     public Account() {}
 
+    /**
+     * Constructs a new Account object with the specified customer ID.
+     * @param customerId The customer ID associated with the account.
+     */
     public Account(int customerId){}
 
+    /**
+     * Populates the account object with the specified account details.
+     * @param accounts The account object to populate.
+     * Returns Account Numbers, Customer ID, Account Type, Balance, Transaction Limit
+     */
     public void populateItem(Account accounts) {
         this.accountNo = accounts.accountNo;
         this.customerId = accounts.customerId;
@@ -81,7 +95,7 @@ public class Account {
      * Sets the transaction limit for the account.
      *
      * @param amount The new transaction limit to set.
-     * @return True if the transaction limit was successfully set, false otherwise.
+     * Updates the transaction limit for the account.
      */
     public void setTransactionLimit(double amount) {
         this.transactionLimit = amount;
@@ -91,6 +105,7 @@ public class Account {
      * Deposits an amount into the account.
      *
      * @param amount The amount to deposit.
+     * Updates the balance of the account.
      */
     public void deposit(double amount) {
         this.balance += amount;

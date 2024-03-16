@@ -74,7 +74,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
-        this.cashAdvancePayable = 0; // cash advance payable is 50% of creditLimit for a new credit card
+        this.cashAdvancePayable = 0.0; // outstanding cash advance payable is 0 for a new credit card
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
         this.remainingCredit = this.creditLimit; // remaining balance is equal to the credit limit initially
 
@@ -253,14 +253,16 @@ public class CreditCard {
         double totalCashAdvanceAmount = withdrawalAmount + cashAdvanceFee; // total cash advance amount including the
         // cash advance fee
 
-        // check if the total cash advance amount withdrawn totals less than 30% of the credit limit
+        // check if the total cash advance amount to be withdrawn totals less than 30% of the credit limit
         // AND less than or equal to the remaining balance
         if (totalCashAdvanceAmount + this.cashAdvancePayable < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.creditLimit ) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
             this.remainingCredit -= totalCashAdvanceAmount;
+            System.out.println("Cash advance withdrawal successful!");
             return true;
         } 
         else {
+            // error message if the cash advance withdrawal failed
             System.out.println("Cash advance withdrawal failed!");
             // error message if the total cash advance amount withdrawn exceeds 30% of the credit limit
             if (totalCashAdvanceAmount + this.cashAdvancePayable >= 0.3 * this.creditLimit){
