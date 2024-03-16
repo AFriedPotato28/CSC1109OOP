@@ -1,4 +1,3 @@
-import java.lang.reflect.Field;
 import java.time.YearMonth;
 
 /**
@@ -75,7 +74,7 @@ public class CreditCard {
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
-        this.cashAdvancePayable = 0.0; // cash advance payable is 0 for a new credit card
+        this.cashAdvancePayable = 0; // cash advance payable is 50% of creditLimit for a new credit card
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
         this.remainingCredit = this.creditLimit; // remaining balance is equal to the credit limit initially
 
@@ -92,26 +91,25 @@ public class CreditCard {
      * @param creditCardId The unique identifier of the credit card
      * @param customerId  The customer ID associated with the credit card.
      * @param accountNo   The account number associated with the credit card.
-     * @param balance     The outstanding balance of the credit bill.
-     * @param cashAdvancePayable The cash advance withdrawn that is payable on the credit card.
+     * @param balance     The outstanding balance of the credit bill
      * @param creditLimit The credit limit of the credit card.
      * @param cardNumber  The card number associated with the credit card.
      * @param cvv         The Card Verification Value (CVV) associated with the
      *                    credit card.
      * @param expiryDate  The expiry date of the credit card.
      */
-    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double cashAdvancePayable, double remainingCredit,
-                      int creditLimit, String cardNumber, String cvv, YearMonth expiryDate) {
+    public CreditCard(int creditCardId, int customerId, int accountNo, double balance,double remainingCredit,
+                      int creditLimit, String cardNumber, String cvv, YearMonth expiryDate, double cashAdvancedPayment) {
         this.creditCardId = creditCardId;
         this.customerId = customerId;
         this.accountNo = accountNo;
         this.balance = balance;
-        this.cashAdvancePayable= cashAdvancePayable;
         this.remainingCredit = remainingCredit;
         this.creditLimit = creditLimit;
         this.cardNumber = cardNumber;
         this.CVV = cvv;
         this.expiryDate = expiryDate;
+        this.cashAdvancePayable = cashAdvancedPayment;
     }
 
     /**
@@ -202,6 +200,7 @@ public class CreditCard {
         return this.creditLimit;
     }
 
+
     /**
      * Sets the credit limit for the credit card.
      *
@@ -256,7 +255,7 @@ public class CreditCard {
 
         // check if the total cash advance amount withdrawn totals less than 30% of the credit limit
         // AND less than or equal to the remaining balance
-        if (totalCashAdvanceAmount + this.cashAdvancePayable < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.remainingCredit ) {
+        if (totalCashAdvanceAmount + this.cashAdvancePayable < 0.3 * this.creditLimit && totalCashAdvanceAmount <= this.creditLimit ) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
             this.remainingCredit -= totalCashAdvanceAmount;
             return true;
@@ -267,8 +266,8 @@ public class CreditCard {
             if (totalCashAdvanceAmount + this.cashAdvancePayable >= 0.3 * this.creditLimit){
                 double cashAdvanceBalance = 0.3 * this.creditLimit - this.cashAdvancePayable;
                 System.out.println("\nCash advance withdrawal amount exceeds 30% of the credit limit!");
-                System.out.println("Cash advance remaining credit: " + this.cashAdvanceBalance);
-                return false
+                System.out.println("Cash advance remaining credit: " + cashAdvanceBalance);
+                return false;
             }
             // error message if the total cash advance amount withdrawn exceeds the remaining credit
             else {

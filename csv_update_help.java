@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -321,8 +319,8 @@ public final class csv_update_help {
     }
 
 
-    public static void updateExistingCreditCardBills(CreditCard card,int ID){
-        StringBuilder sb = new StringBuilder("credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit\n");
+    public static void updateExistingCreditCardBills(CreditCard card, String cardNo){
+        StringBuilder sb = new StringBuilder("credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advance,cash_advancement_limit\n");
         File originalFile = new File("mock_credit_card.csv");
         File newFile = new File(tempFile);
 
@@ -331,23 +329,14 @@ public final class csv_update_help {
             String sLine ;
             while ((sLine = br.readLine())!= null){
                 String[] data = sLine.split(",");
-
-                String cardID = card.getCreditCardId() == Integer.parseInt(data[0]) ? String.valueOf(card.getCreditCardId())  : (data[0]);
-                String cust_ID = card.getCustomerId() == Integer.parseInt(data[1]) ? String.valueOf(card.getCustomerId()) : (data[1]);
-                String accNumber = card.getAccountNo() == Integer.parseInt(data[2]) ? String.valueOf(card.getAccountNo()) : data[2];
-                String cardNumber = card.getCardNumber().equals(data[3]) ? card.getCardNumber(): data[3];
-                String cvv = card.getEncryptedCVV().equals(data[4]) ? card.getEncryptedCVV() : data[4];
-                YearMonth expiration_date = YearMonth.parse(data[5]).equals(card.getExpiryDate()) ? card.getExpiryDate() : YearMonth.parse(data[5]);
-                double balance = card.getCustomerId() == ID ? card.getBalance() : Double.parseDouble(data[6]) ; 
-                double remaining_credit = card.getCustomerId() == ID ? card.getRemainingCredit() : Double.parseDouble(data[7]);
-                int credit_limit = Integer.parseInt(data[8]) == card.getCreditLimit() ? card.getCreditLimit() : Integer.parseInt(data[8]);
-
-
-                String[] dataToAppend = { cardID,cust_ID, accNumber, cardNumber, cvv, 
-                    card.getEncryptedCVV(), String.valueOf(expiration_date),
-                    String.valueOf(balance), String.valueOf(remaining_credit),
-                    String.valueOf(credit_limit) };
-                String line = String.join(",", dataToAppend);
+                
+                if(card.getCreditCardId() == Integer.parseInt(data[0]) && card.getCardNumber().equals(cardNo)) {
+                    data[6] = String.valueOf(card.getBalance());
+                    data[7] = String.valueOf(card.getRemainingCredit());
+                    data[9] = String.valueOf(card.getCashAdvancePayable());
+                }   
+            
+                String line = String.join(",", data);
                 sb.append(line + "\n");
             } 
 
@@ -358,7 +347,7 @@ public final class csv_update_help {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(newFile))){
             bw.append(sb);
 
-        }  catch(IOException e){
+        } catch(IOException e){
             return;
         }
 
