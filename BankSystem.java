@@ -387,7 +387,9 @@ public class BankSystem {
             System.out.println("1. Apply Credit Card");
             System.out.println("2. Cancel Credit Card");
             System.out.println("3. Pay Credit Card Bill");
-            System.out.println("4: Exit");
+            System.out.println("4. Cash Advance Withdrawal");
+            System.out.println("5. Pay Cash Advance Payables");
+            System.out.println("6: Exit");
             
             System.out.println("Please enter your choice between 1 to 4");
             choice = scanner.nextInt();
@@ -419,6 +421,18 @@ public class BankSystem {
                         bank.payCreditCardBills(scanner, customerId, userInfo);
                     }
                     break;
+                case 4:
+                    if (bank.getCreditCardCount(customerId) == 0){
+                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                    else{
+                        bank.cashAdvanceWithdrawal(scanner, customerId, userInfo);
+                    }
+                case 5:
+                    if (bank.getCreditCardCount(customerId) == 0){
+                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                    else{
+                        bank.payCashAdvancePayables(scanner, customerId, userInfo);
+                    }
                 default:
                     break;
                 }
