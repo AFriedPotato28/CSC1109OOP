@@ -89,15 +89,16 @@ public class Bank {
         }
         return false;
     }
+
     /**
      * credit card
-     **/   
+     **/
 
-    private boolean checkExistingCard(String cardNumber){
-        Optional<CreditCard> card = this.creditCards.stream().filter((cust) -> cust.getCardNumber().equals(cardNumber)).findFirst();
+    private boolean checkExistingCard(String cardNumber) {
+        Optional<CreditCard> card = this.creditCards.stream().filter((cust) -> cust.getCardNumber().equals(cardNumber))
+                .findFirst();
         return card.isPresent();
     }
-
 
     public void getCustomerCreditCards(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
@@ -117,12 +118,11 @@ public class Bank {
                     double cashAdvancedPay = Double.parseDouble(data[9]);
 
                     CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
-                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date,cashAdvancedPay);
-                    if(!checkExistingCard(cardNumber))
-                    {
+                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date, cashAdvancedPay);
+                    if (!checkExistingCard(cardNumber)) {
                         this.creditCards.add(creditCard);
                     }
-                    
+
                 }
             }
         } catch (FileNotFoundException e) {
@@ -163,7 +163,7 @@ public class Bank {
                     String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
                     creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
                     String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()),
-                    String.valueOf(creditCard.getCreditLimit()) , String.valueOf(creditCard.getCashAdvancePayable()) };
+                    String.valueOf(creditCard.getCreditLimit()), String.valueOf(creditCard.getCashAdvancePayable()) };
             String line = String.join(",", dataToAppend);
             bw.write(line);
             bw.newLine();
@@ -192,37 +192,35 @@ public class Bank {
             br.close();
 
             // Prompt user to select which credit card to delete
-            System.out.print("Enter the last 4 digits of the card number to delete: (Press -1 to exit) ");
+            System.out.print("Enter the digits of the card number to delete: (Press -1 to exit) ");
             String cardNumberToDelete = scanner.next();
 
-            if (cardNumberToDelete.equals("-1")) return;
+            if (cardNumberToDelete.equals("-1"))
+                return;
 
-            // Find the credit card with the specific card number remove the credit card object from the ArrayList
-            boolean foundCard = false;
-            for (CreditCard card : creditCards) {
-                if (card.getCustomerId() == custId && card.getCardNumber().endsWith(cardNumberToDelete) && cardNumberToDelete.length() == 4) {
-                    if (card.getBalance() > 0 ){
-                        System.out.println("You still have balance left in your bank, you cannot delete this card.");
-                        return;
-                    }
+            Optional<CreditCard> cardItem = this.creditCards.stream()
+                    .filter((cust) -> cust.getCardNumber().equalsIgnoreCase(cardNumberToDelete)).findFirst();
 
-                    this.creditCards.remove(card);
-                    foundCard = true;
-                    break; // Exit the loop after removing the card
-                }
+            if (!cardItem.isPresent()) {
+                System.out.println("The digits you have input is invalid.");
+                return;
             }
 
-            if (!foundCard) {
-                System.out.println("Credit card ending in " + cardNumberToDelete + " not found.");
-                return; // Exit the method if the card is not found
+            CreditCard card = cardItem.get();
+
+            if (card.getBalance() > 0 || card.getCashAdvancePayable() > 0) {
+                System.out.println("You still have balance left in your bank, you cannot delete this card.");
+                return;
             }
+
+            this.creditCards.remove(card);
 
             // Read the file again to filter out the selected credit card
             br = new BufferedReader(new FileReader("mock_credit_card.csv"));
             while ((sLine = br.readLine()) != null) {
                 String[] columns = sLine.split(",");
                 // Keep the credit card if it doesn't match the one to delete
-                if (columns.length >= 4 && !columns[3].substring(columns[3].length() - 4).equals(cardNumberToDelete)) {
+                if (columns.length >= 4 && !columns[3].equals(cardNumberToDelete)) {
                     csvContent.append(sLine).append("\n");
                 }
             }
@@ -233,17 +231,17 @@ public class Bank {
             bw.write(csvContent.toString());
             bw.close();
 
-            
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
-            
 
-        } catch (FileNotFoundException e) {
+        } catch (
+
+        FileNotFoundException e) {
             System.out.println("File not found!" + e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-   
+
     public void payCreditCardBills(Scanner scanner, int customerId, String username) {
         // Display credit cards for the given customer
         System.out.println("Credit cards for customer " + username + ":");
@@ -253,17 +251,18 @@ public class Bank {
                 System.out.println(
                         "Card Number ending in " +
                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) +
-                        " (Outstanding balance: " + card.getBalance() + ")");
+                                " (Outstanding balance: " + card.getBalance() + ")");
             }
         }
-       
+
         // Prompt user to select which credit card to pay
         System.out.println("Enter the card number to pay the bill: ");
         String cardNumber = scanner.next();
 
-        Optional <CreditCard> creditCardExists = this.creditCards.stream().filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
+        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+                .filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
 
-        if (!(creditCardExists.isPresent())) { 
+        if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
             return;
         }
@@ -273,30 +272,31 @@ public class Bank {
         double paymentAmount = scanner.nextDouble();
         // Find the credit card with the specific card number and pay the bill
         CreditCard card = creditCardExists.get();
-        if(getBalance() >= paymentAmount){
+        if (getBalance() >= paymentAmount) {
             if (card.payCreditBill(paymentAmount)) {
                 // Payment successful
                 System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                         card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                        csv_update_help.updateExistingCreditCardBills(card,cardNumber);
-                        account.withdraw(paymentAmount);
-                        csv_update_help.updateCSVOfAccount(this.accounts, this.account);
-            } 
-        }   else {
+                csv_update_help.updateExistingCreditCardBills(card, cardNumber);
+                account.withdraw(paymentAmount);
+                csv_update_help.updateCSVOfAccount(this.accounts, this.account);
+            }
+        } else {
             // Payment failed
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                     card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
-                    
+
         }
     }
-        
+
     /**
      * Credit Card Cash Advance Withdrawal
-     * @param scanner Scanner object to read user input
+     * 
+     * @param scanner    Scanner object to read user input
      * @param customerId ID of the customer
-     * @param username Username of the customer
+     * @param username   Username of the customer
      */
-    public void CashAdvanceWithdrawal(Scanner scanner, int customerId, String username){
+    public void CashAdvanceWithdrawal(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
         System.out.println("Credit cards for customer " + username + ":");
 
@@ -305,7 +305,8 @@ public class Bank {
                 System.out.println(
                         "Card Number ending in " +
                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) +
-                        " (Remaining Credit " +  (0.3 * card.getCreditLimit() - card.getCashAdvancePayable()) + ")");
+                                " (Remaining Credit " + (0.3 * card.getCreditLimit() - card.getCashAdvancePayable())
+                                + ")");
             }
         }
 
@@ -313,38 +314,38 @@ public class Bank {
         System.out.println("Enter the card number to withdraw from: ");
         String cardNumber = scanner.next();
 
-        Optional <CreditCard> creditCardExists = this.creditCards.stream().filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
+        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+                .filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
 
-        if (!(creditCardExists.isPresent())) { 
+        if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
             return;
-        } else if ((0.3 * creditCardExists.get().getCreditLimit() - creditCardExists.get().getCashAdvancePayable()) < 19){
+        } else if ((0.3 * creditCardExists.get().getCreditLimit()
+                - creditCardExists.get().getCashAdvancePayable()) < 19) {
             System.out.println("Credit card with the specified card number cannot withdraw anymore");
             return;
         }
 
-        
-
         // Prompt user to enter withdrawal amount
-        System.out.println("Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher.");
+        System.out.println(
+                "Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher.");
         System.out.println("Enter the withdrawal amount: ");
 
-        try { 
+        try {
             double withdrawalAmount = scanner.nextDouble();
             double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 1.05);
             CreditCard card = creditCardExists.get();
-           
-    
-            if (card.cashAdvanceWithdrawal(withdrawalAmount)){
+
+            if (card.cashAdvanceWithdrawal(withdrawalAmount)) {
                 // Withdrawal successful
                 System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
                         card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                        csv_update_help.updateExistingCreditCardBills(card, cardNumber);
+                csv_update_help.updateExistingCreditCardBills(card, cardNumber);
             } else {
                 // Withdrawal failed
                 System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
                         card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
-            }  
+            }
 
         } catch (Exception e) {
             return;
@@ -355,11 +356,12 @@ public class Bank {
 
     /**
      * Pay Cash Advance Payables
-     * @param scanner Scanner object to read user input
+     * 
+     * @param scanner    Scanner object to read user input
      * @param customerId ID of the customer
-     * @param username Username of the customer
+     * @param username   Username of the customer
      */
-    public void payCashAdvancePayables(Scanner scanner, int customerId, String username){
+    public void payCashAdvancePayables(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
         System.out.println("Credit cards for customer " + username + ":");
 
@@ -368,7 +370,7 @@ public class Bank {
                 System.out.println(
                         "Card Number ending in " +
                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) +
-                        " (Cash Advance Payable " + card.getCashAdvancePayable() + ")");
+                                " (Cash Advance Payable " + card.getCashAdvancePayable() + ")");
             }
         }
 
@@ -376,12 +378,13 @@ public class Bank {
         System.out.println("Enter the card number to pay the cash advance payable: ");
         String cardNumber = scanner.next();
 
-        Optional <CreditCard> creditCardExists = this.creditCards.stream().filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
+        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+                .filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
 
-        if (!(creditCardExists.isPresent())) { 
+        if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
             return;
-        } else if (creditCardExists.get().getCashAdvancePayable() == 0){
+        } else if (creditCardExists.get().getCashAdvancePayable() == 0) {
             System.out.println("Credit card with this specified card number has no cash advance");
             return;
         }
@@ -389,28 +392,26 @@ public class Bank {
         // Prompt user to enter payment amount
         System.out.println("Enter the payment amount: ");
         double paymentAmount = scanner.nextDouble();
-        // Find the credit card with the specific card number and pay the cash advance payable
+        // Find the credit card with the specific card number and pay the cash advance
+        // payable
         CreditCard creditCard = creditCardExists.get();
 
-            
         if (creditCard.payCashAdvancePayable(paymentAmount)) {
             // Payment successful
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
-            creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " was successful.");
+                    creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " was successful.");
             csv_update_help.updateExistingCreditCardBills(creditCard, cardNumber);
             this.account.withdraw(paymentAmount);
             csv_update_help.updateCSVOfAccount(this.accounts, this.account);
-            System.out.println("Your current balance is: "+getBalance());
+            System.out.println("Your current balance is: " + getBalance());
         } else {
             // Payment failed
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
-            creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " failed.");
+                    creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " failed.");
         }
-              
+
         return;
     }
-
-
 
     /* end creditcard */
 
@@ -540,7 +541,7 @@ public class Bank {
                         String line;
                         while ((line = reader.readLine()) != null) {
                             String[] data = line.split(",");
-                            if(Integer.parseInt(data[0]) == repayLoanId) {
+                            if (Integer.parseInt(data[0]) == repayLoanId) {
                                 data[2] = String.valueOf(
                                         Double.parseDouble(df.format(Double.parseDouble(data[2]) - repayLoanAmount)));
                             }
@@ -630,8 +631,8 @@ public class Bank {
                     + " Loan Deadline: " + loan.getLoanDueDate());
         }
     }
-    
-    public boolean checkExistingLoan(int loanId){
+
+    public boolean checkExistingLoan(int loanId) {
         Optional<Loan> loanOptional = this.loans.stream().filter((loan) -> loan.getLoanId() == loanId).findFirst();
         return loanOptional.isPresent();
     }
