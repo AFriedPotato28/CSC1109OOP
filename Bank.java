@@ -304,6 +304,112 @@ public class Bank {
         return;
     }
 
+    /**
+     * Credit Card Cash Advance Withdrawal
+     * @param scanner Scanner object to read user input
+     * @param customerId ID of the customer
+     * @param username Username of the customer
+     */
+    public void CashAdvanceWithdrawal(Scanner scanner, int customerId, string username){
+        // Display credit cards for given customer
+        System.println("Credit cards for customer " + username + ":");
+
+        for (CreditCard card : this.creditCards) {
+            if (card.getCustomerId() == customerId) {
+                System.out.println(
+                        "Card Number ending in " +
+                                card.getCardNumber().substring(card.getCardNumber().length() - 4) +
+                        " (Remaining Credit " + card.getRemainingCredit() + ")");
+            }
+        }
+
+        // Prompt user to select which credit card to withdraw from
+        System.out.println("Enter the card number to withdraw from: ");
+        String cardNumber = scanner.next();
+
+        // Prompt user to enter withdrawal amount
+        System.out.println("Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher.");
+        System.out.println("Enter the withdrawal amount: ");
+        double withdrawalAmount = scanner.nextDouble();
+        double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 1.05);
+        // Find the credit card with the specific card number and withdraw cash advance
+        boolean foundCard = false;
+        for (CreditCard card : this.creditCards){
+            if (card.getCustomerId() == customerId && card.getCardNumber().equals(cardNumber)){
+                if (card.cashAdvanceWithdrawal(withdrawalAmount)){
+                    // Withdrawal successful
+                    System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+                } else {
+                    // Withdrawal failed
+                    System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+                }
+                foundCard = true;
+                break;
+            }
+        }
+
+        if (!foundCard){
+            // No credit card found with the specified card number
+            System.out.println("Credit card with the specified card number not found.");
+        }
+
+        return;
+    }
+
+    /**
+     * Pay Cash Advance Payables
+     * @param scanner Scanner object to read user input
+     * @param customerId ID of the customer
+     * @param username Username of the customer
+     */
+    public void payCashAdvancePayables(Scanner scanner, int customerId, string username){
+        // Display credit cards for given customer
+        System.println("Credit cards for customer " + username + ":");
+
+        for (CreditCard card : this.creditCards) {
+            if (card.getCustomerId() == customerId) {
+                System.out.println(
+                        "Card Number ending in " +
+                                card.getCardNumber().substring(card.getCardNumber().length() - 4) +
+                        " (Cash Advance Payable " + card.getCashAdvancePayable() + ")");
+            }
+        }
+
+        // Prompt user to select which credit card to pay
+        System.out.println("Enter the card number to pay the cash advance payable: ");
+        String cardNumber = scanner.next();
+
+        // Prompt user to enter payment amount
+        System.out.println("Enter the payment amount: ");
+        double paymentAmount = scanner.nextDouble();
+        // Find the credit card with the specific card number and pay the cash advance payable
+        boolean foundCard = false;
+        for (CreditCard card : this.creditCards) {
+            if (card.getCustomerId() == customerId && card.getCardNumber().equals(cardNumber)) {
+                if (card.payCashAdvancePayable(paymentAmount)) {
+                    // Payment successful
+                    System.out.println("Payment of $" + paymentAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+                } else {
+                    // Payment failed
+                    System.out.println("Payment of $" + paymentAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+                }
+                foundCard = true;
+                break;
+            }
+        }
+
+        if (!foundCard) {
+            // No credit card found with the specified card number
+            System.out.println("Credit card with the specified card number not found.");
+        }
+
+        return;
+    }
+
     /* end creditcard */
 
     /**
