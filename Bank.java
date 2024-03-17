@@ -837,5 +837,21 @@ public class Bank {
         }
         return null;
     }
+    public void buyInsurance(int customerId, String insuranceType, String beneficiaryName) {
+        Insurance insurance = new Insurance(customerId, insuranceType, beneficiaryName);
+        addInsuranceToCSV(insurance);
+    }
+    public void addInsuranceToCSV(Insurance insurance) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
+            // Append object to csv
+            String insuranceData = insurance.getInsuranceID() + "," + insurance.getCustomerId() + "," + insurance.getInsuranceType() + "," + insurance.getInsurancePremium()
+                    + "," + insurance.getCoverageAmount() + "," + insurance.getBeneficiaryName();
+            bw.write(insuranceData);
+            bw.newLine();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

@@ -24,12 +24,12 @@ public class BankSystem {
 
                 try {
                     choice = scanner.nextInt();
-                } catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("Please enter a valid choice");
                     scanner = new Scanner(System.in);
                     choice = -1;
                 }
-                
+
 
                 switch (choice) {
                     case 1:
@@ -45,21 +45,22 @@ public class BankSystem {
                         break;
                 }
             } else {
-                
+
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Transfer / Withdraw / Deposit");
                 System.out.println("2. Credit Card Options");
                 System.out.println("3. Loan Options");
                 System.out.println("4. Foreign Exchanges Options");
                 System.out.println("5. Account Settings");
-                System.out.println("6. Log out");
+                System.out.println("6. Insurance Options");
+                System.out.println("7.. Log out");
                 System.out.println("0. Exit");
 
                 System.out.println("Enter your choice: ");
 
                 try {
                     choice = scanner.nextInt();
-                } catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("Please enter a valid choice");
                     scanner = new Scanner(System.in);
                     choice = -1;
@@ -82,6 +83,9 @@ public class BankSystem {
                         settings(scanner, bank, securityInstance, userInfo);
                         break;
                     case 6:
+                        insuranceOptions(scanner, bank, userInfo);
+                        break;
+                    case 7:
                         securityInstance.logActivity(bank.retrieveUserInfo(userInfo).getCustomerId(), 3);
                         userInfo = "";
                         break;
@@ -132,21 +136,20 @@ public class BankSystem {
         while (attemptOfTries <= 3) {
             try {
                 String OTP = promptInput("Please enter your OTP", scanner);
-                    
+
                 if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
                     securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
                     bank.populateAccount(loginUsername);
                     return loginUsername;
                 }
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
             }
             System.out.println("You have " + (3 - attemptOfTries) + " attempts left");
             attemptOfTries++;
-            
-        }     
+
+        }
         return null;
     }
-        
 
 
     /**
@@ -200,7 +203,7 @@ public class BankSystem {
 
             try {
                 accountChoice = scanner.nextInt();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Please enter a valid choice");
                 scanner = new Scanner(System.in);
                 accountChoice = -1;
@@ -264,7 +267,7 @@ public class BankSystem {
     }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
-            String userInfo) {
+                                                    String userInfo) {
 
         int accountChoice = -1;
 
@@ -278,7 +281,7 @@ public class BankSystem {
             System.out.println("Please enter your choice");
             try {
                 accountChoice = scanner.nextInt();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Please enter a valid choice");
                 scanner = new Scanner(System.in);
                 accountChoice = -1;
@@ -417,12 +420,12 @@ public class BankSystem {
             System.out.println("4. Cash Advance Withdrawal");
             System.out.println("5. Pay Cash Advance Payables");
             System.out.println("6: Exit");
-            
+
             System.out.println("Please enter your choice between 1 to 6");
-            
+
             try {
                 choice = scanner.nextInt();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Please enter a valid choice");
                 scanner = new Scanner(System.in);
                 choice = -1;
@@ -446,22 +449,22 @@ public class BankSystem {
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
                         return;
-                    } 
-            
+                    }
+
                     bank.cancelCreditCard(scanner, customerId, userInfo);
                     break;
                 case 3:
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
                         return;
-                    } 
-                        bank.payCreditCardBills(scanner, customerId, userInfo);
+                    }
+                    bank.payCreditCardBills(scanner, customerId, userInfo);
                     break;
                 case 4:
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
                         return;
-                    } 
+                    }
 
                     bank.CashAdvanceWithdrawal(scanner, customerId, userInfo);
                     break;
@@ -474,7 +477,7 @@ public class BankSystem {
                     break;
                 default:
                     break;
-                }
+            }
         } while (choice != 6);
     }
 
@@ -491,7 +494,7 @@ public class BankSystem {
             System.out.println("Please enter your choice between 1 to 3");
             try {
                 choice = scanner.nextInt();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Please enter a valid choice");
                 scanner = new Scanner(System.in);
                 choice = -1;
@@ -501,8 +504,8 @@ public class BankSystem {
                     int newLoanNumber = bank.getLoanCount(customerId);
                     double bankBalance = bank.getBalance();
                     double currentLoanAmount = bank.totalLoanAmount();
-                    double maximumLoanAmount = bankBalance*2-currentLoanAmount;
-                    System.out.println("Bank balance: $"+ bankBalance + "\nYou can loan up to: $"+(maximumLoanAmount));
+                    double maximumLoanAmount = bankBalance * 2 - currentLoanAmount;
+                    System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
                     double loanAmount = 0.0;
                     do {
                         loanAmount = Double
@@ -536,19 +539,19 @@ public class BankSystem {
 
     }
 
-    private static void repayLoan(Scanner scanner, Bank bank){
+    private static void repayLoan(Scanner scanner, Bank bank) {
 
         bank.printLoans();
         try {
             int repayLoanId = Integer.parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
 
-            if(!bank.checkExistingLoan(repayLoanId)){
+            if (!bank.checkExistingLoan(repayLoanId)) {
                 return;
             }
 
             double repayLoanAmount = Double.parseDouble(promptInput("Please enter the amount you are repaying", scanner));
             bank.repayLoan(repayLoanId, repayLoanAmount);
-        }catch (Exception e){
+        } catch (Exception e) {
             return;
         }
     }
@@ -558,18 +561,18 @@ public class BankSystem {
         bank.seeAllCurrencyExchanges();
 
         do {
-          
+
             System.out.println("1. Withdrawal of Foreign Exchange");
             System.out.println("2. Exit");
             System.out.println("Please enter 1 or 2 as your choice");
             try {
                 choice = scanner.nextInt();
-            } catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Please enter a valid choice");
                 scanner = new Scanner(System.in);
                 choice = -1;
             }
-            
+
 
             switch (choice) {
                 case 1:
@@ -607,5 +610,79 @@ public class BankSystem {
             return;
         }
 
+    }
+
+    public static void insuranceOptions(Scanner scanner, Bank bank, String userInfo) {
+        int choice = -1;
+        int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+        do {
+            System.out.println("\n1. View information on current Insurance");
+            System.out.println("2. Buy new Insurance");
+            System.out.println("3. Surrender Insurance");
+            System.out.println("4. Exit");
+
+            System.out.println("Please enter your chouice between 1 to 4");
+            try {
+                choice = scanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Enter a valid choice");
+                scanner = new Scanner(System.in);
+                choice = -1;
+            }
+
+            switch(choice){
+                case 1:
+                    int accountNo = bank.getAccountNo();
+                    break;
+                case 2:
+                    int insuranceChoice = -1;
+                    String insuranceType = "";
+                    System.out.println("Choose Insurance Type: \n 1. Health Insurance\n 2. Home Insurance \n 3. Vehicle Insurance" +
+                            "\n 4. Life Insurance \n 5. Travel Insurance \n 6. Exit");
+
+                    System.out.println("Enter the type of insurance you would like to purchase between 1 and 5, or exit with 6");
+                    try {
+                        insuranceChoice = scanner.nextInt();
+                    } catch (Exception e){
+                        System.out.println("Enter a valid choice");
+                        scanner = new Scanner(System.in);
+                        insuranceChoice = -1;
+                    }
+                    do {
+                        if (insuranceChoice == 1) {
+                            insuranceType = "Health";
+                            break;
+                        } else if (insuranceChoice == 2) {
+                            insuranceType = "Home";
+                            break;
+                        } else if (insuranceChoice == 3) {
+                            insuranceType = " Vehicle";
+                            break;
+                        } else if (insuranceChoice == 4) {
+                            insuranceType = "Life";
+                            break;
+                        } else if (insuranceChoice == 5) {
+                            insuranceType = "Travel";
+                            break;
+                        }
+                        else{
+                            System.out.println("Invalid input");
+                            break;
+                        }
+                    }while(insuranceChoice != 6);
+
+                    Scanner scanner1 = new Scanner(System.in);
+                    System.out.println("Enter Beneficiary Name:");
+                    String beneficiaryName = scanner1.nextLine();
+
+                    bank.buyInsurance(customerId, insuranceType, beneficiaryName);
+
+                    break;
+                case 3:
+                    break;
+                default:
+                    break;
+            }
+        }while(choice != 4);
     }
 }
