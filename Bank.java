@@ -90,6 +90,10 @@ public class Bank {
     }
 
     /**
+     * Bank
+     */
+
+    /**
      * Prints a welcome message from the bank.
      */
     public void welcomeMessage() {
@@ -97,7 +101,7 @@ public class Bank {
     }
 
     /**
-     * Adding a new customer to the bank.
+     * Attempts to add a new customer to the bank.
      * @param customer The customer object to add.
      * customerSize - The size of the customer list.
      * custOptional - The optional customer object.
@@ -136,10 +140,29 @@ public class Bank {
     }
 
     /**
-     * Adding a new account to the bank.
+     * Attempts to add a new account to the bank.
      * @param customerID The ID of the customer.
      * @param accountType The type of account to add.
+     * accountType - The type of account to add.
      * 
+     * if accountType is "1", set accountType to "Savings", else if accountType is "2", set accountType to "Credit Card", else set accountType to "Loan".
+     * 
+     * if customerID exists, set customerIdExists to true, else customerIDExists remains false.
+     * 
+     * if accountType exists, set accountTypeExists to true, else accountTypeExists remains false.
+     * 
+     * Calculate the size of the account.
+     * 
+     * Create a new account object with the new size of the account, customerID, accountType, balance, and transactionLimit.
+     * @param accountNo - The new size of the account.
+     * @param customerID - The ID of the customer.
+     * @param accountType - The type of account to add.
+     * @param balance - The balance of the account, set to 0.
+     * @param transactionLimit - The transaction limit of the account, set to 500.
+     * 
+     * if customerID does not exist, add a new account to the list of accounts.
+     * if accountType does not exist, add a new account to the list of accounts and generate a new CSV file for the account.
+     * return true if the account was added successfully, else return false.
      */
     public boolean addAccount(Integer customerID, String accountType) {
 
@@ -179,12 +202,42 @@ public class Bank {
      * credit card
      **/
 
+    /**
+     * Checks if a credit card with the specified card number already exists.
+     * @param cardNumber The card number to check.
+     * @return True if the credit card exists, false otherwise.
+     */
     private boolean checkExistingCard(String cardNumber) {
         Optional<CreditCard> card = this.creditCards.stream().filter((cust) -> cust.getCardNumber().equals(cardNumber))
                 .findFirst();
         return card.isPresent();
     }
 
+    /**
+     * Retrieves the credit cards for a given customer.
+     * @param customerId The ID of the customer.
+     * 
+     * read the mock_credit_card.csv file and get the credit cards for the given customer.
+     * while csv file is not empty, split the data
+     * if customerId matches the customer ID in the csv file, retrieve the credit card details and create a new credit card object.
+     * 
+     * Create a new credit card object with the specified credit card ID, customer ID, account number, balance, remaining credit, credit limit, card number, CVV, expiration date, and cash advance payable.
+     * @param creditCardId - The ID of the credit card.
+     * @param customerId - The ID of the customer.
+     * @param accountNo - The account number of the credit card.
+     * @param balance - The balance of the credit card.
+     * @param remainingCredit - The remaining credit of the credit card.
+     * @param creditLimit - The credit limit of the credit card.
+     * @param cardNumber - The card number of the credit card.
+     * @param cvv - The CVV of the credit card.
+     * @param expiration_date - The expiration date of the credit card.
+     * @param cashAdvancedPay - The cash advance payable of the credit card.
+     * @param cashAdvancedLimit - The cash advance limit of the credit card.
+     * 
+     * if the credit card does not exist, add the credit card to the list of credit cards.
+     * 
+     * catch FileNotFoundException and IOException and throw a new RuntimeException with the exception message.
+     */
     public void getCustomerCreditCards(int customerId) {
         try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
             String sLine;
@@ -201,9 +254,10 @@ public class Bank {
                     double remainingCredit = Double.parseDouble(data[7]);
                     int creditLimit = Integer.parseInt(data[8]);
                     double cashAdvancedPay = Double.parseDouble(data[9]);
+                    double cashAdvancedLimit = Double.parseDouble(data[10]);
 
                     CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
-                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date, cashAdvancedPay);
+                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date, cashAdvancedPay,cashAdvancedLimit);
                     if (!checkExistingCard(cardNumber)) {
                         this.creditCards.add(creditCard);
                     }
@@ -217,6 +271,11 @@ public class Bank {
         }
     }
 
+    /**
+     * Retrieves the number of credit cards for a given customer.
+     * @param customerId The ID of the customer.
+     * @return The number of credit cards for the customer.
+     */
     public int getCreditCardCount(int customerId) {
         int count = 0;
         for (CreditCard card : creditCards) {
@@ -227,6 +286,16 @@ public class Bank {
         return count;
     }
 
+    /**
+     * Attempts to apply for a new credit card for a given customer.
+     * @param customerId The ID of the customer.
+     * @param accountNo The account number of the customer.
+     * @param annualIncome The annual income of the customer.
+     * 
+     * if the customer has less than 2 credit cards, create a new credit card object with the specified customer ID, account number, and annual income.
+     * Add the credit card to the list of credit cards and update the credit card to the CSV file.
+     * else, deny the application of a new credit card and print "You have reached the limit of two credit cards per account!".
+     */
     public void applyCreditCard(int customerId, int accountNo, int annualIncome) {
         int existingCreditCardCount = getCreditCardCount(customerId);
         if (existingCreditCardCount < 2) {
@@ -241,6 +310,14 @@ public class Bank {
 
     }
 
+    /**
+     * Attempts to update the credit card to the CSV file.
+     * @param creditCard The credit card object to update.
+     * 
+     * try to append the credit card object to the mock_credit_card.csv file.
+     * Append Customer ID, Account Number, Card Number, CVV, Expiry Date, Balance, Remaining Credit, Credit Limit, Cash Advance Payable and Cash Advance Limit to the CSV file.
+     * catch any exceptions and throw a new RuntimeException with the exception message.
+     */
     public void updateCreditCardToCSV(CreditCard creditCard) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
             String[] dataToAppend = { String.valueOf(creditCard.getCreditCardId()),
@@ -248,7 +325,8 @@ public class Bank {
                     String.valueOf(creditCard.getAccountNo()), creditCard.getCardNumber(),
                     creditCard.getEncryptedCVV(), String.valueOf(creditCard.getExpiryDate()),
                     String.valueOf(creditCard.getBalance()), String.valueOf(creditCard.getRemainingCredit()),
-                    String.valueOf(creditCard.getCreditLimit()), String.valueOf(creditCard.getCashAdvancePayable()) };
+                    String.valueOf(creditCard.getCreditLimit()), String.valueOf(creditCard.getCashAdvancePayable()),
+                    String.valueOf(creditCard.getCashAdvanceLimit()) };
             String line = String.join(",", dataToAppend);
             bw.write(line);
             bw.newLine();
@@ -257,6 +335,27 @@ public class Bank {
         }
     }
 
+    /**
+     * Attempts to cancels a credit card for a given customer.
+     * @param scanner The Scanner object to read user input.
+     * @param custId The ID of the customer.
+     * @param username The username of the customer.
+     * 
+     * try to read the mock_credit_card.csv file and display the credit cards for the given customer.
+     * while the CSV file is not empty, split the data and display details for all credit cards for the given customer.
+     * 
+     * Prompt the user to select which credit card to delete.
+     * if the user enters -1, return.
+     * if card number to delete is invalid, print "The digits you have input is invalid.".
+     * if the credit card has a balance or cash advance payable, print "You still have balance left in your bank, you cannot delete this card.".
+     * if credit card is found, read the file again to filter out the selected credit card.
+     * keep the credit card if it doesn't match the one to delete.
+     * 
+     * close the file and write the updated content back to the 'mock_credit_card.csv' file.
+     * if the credit card is deleted, print "Credit card ending in " + cardNumberToDelete + " has been deleted.".
+     * 
+     * catch FileNotFoundException and IOException and throw a new RuntimeException with the exception message.
+     */
     public void cancelCreditCard(Scanner scanner, int custId, String username) {
         try {
             // Read the existing CSV file
@@ -294,7 +393,7 @@ public class Bank {
             CreditCard card = cardItem.get();
 
             if (card.getBalance() > 0 || card.getCashAdvancePayable() > 0) {
-                System.out.println("You still have balance left in your bank, you cannot delete this card.");
+                System.out.println("You still have bills unpaid left in your bank account, you cannot delete this card.");
                 return;
             }
 
@@ -327,6 +426,23 @@ public class Bank {
         }
     }
 
+    /**
+     * Attemps to pay the credit card bills for a given customer.
+     * @param scanner The Scanner object to read user input.
+     * @param customerId The ID of the customer.
+     * @param username The username of the customer.
+     * 
+     * Display credit cards for the given customer.
+     * while the CSV file is not empty, split the data and display details for all credit cards for the given customer.
+     * print the card number and the outstanding balance for each credit card.
+     * 
+     * Prompt the user to select which credit card to pay.
+     * if the user input is invalid, print "Credit card with the specified card number not found.".
+     * 
+     * Prompt the user to enter the payment amount.
+     * if the payment amount is greater than the balance, print "Payment of $" + paymentAmount + " for card ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.".
+     * if the payment amount is less than or equal to the balance, pay the bill and update the CSV file, print "Payment of $" + paymentAmount + " for card ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.".
+     */
     public void payCreditCardBills(Scanner scanner, int customerId, String username) {
         // Display credit cards for the given customer
         System.out.println("Credit cards for customer " + username + ":");
@@ -380,6 +496,19 @@ public class Bank {
      * @param scanner    Scanner object to read user input
      * @param customerId ID of the customer
      * @param username   Username of the customer
+     * 
+     * Display credit cards for the given customer and their remaining cash advance credit
+     * 
+     * Prompt user to select which credit card to withdraw from
+     * if the credit card does not exist, print "Credit card with the specified card number not found."
+     * if the credit card cannot withdraw anymore, print "Credit card with the specified card number cannot withdraw anymore"
+     * 
+     * Prompt user to enter withdrawal amount
+     * try to read the withdrawal amount from the scanner and calculate the final withdrawal amount inclusive of the cash advance withdrawal fee
+     * if the withdrawal amount is valid, withdraw the amount and update the CSV file, print "Withdrawal of $" + finalwithdrawalAmount + " for card ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful."
+     * if the withdrawal amount is invalid, print "Withdrawal of $" + finalwithdrawalAmount + " for card ending in " + card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed."
+     * catch any exceptions and return
+     * 
      */
     public void CashAdvanceWithdrawal(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
@@ -405,8 +534,8 @@ public class Bank {
         if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
             return;
-        } else if ((0.3 * creditCardExists.get().getCreditLimit()
-                - creditCardExists.get().getCashAdvancePayable()) < 19) {
+        } else if ((creditCardExists.get().getCashAdvanceLimit()
+                - creditCardExists.get().getCashAdvancePayable()) <= 0) {
             System.out.println("Credit card with the specified card number cannot withdraw anymore");
             return;
         }
@@ -470,7 +599,7 @@ public class Bank {
             System.out.println("Credit card with the specified card number not found.");
             return;
         } else if (creditCardExists.get().getCashAdvancePayable() == 0) {
-            System.out.println("Credit card with this specified card number has no cash advance");
+            System.out.println("Credit card with this specified card number has no cash advance payable.");
             return;
         }
 
