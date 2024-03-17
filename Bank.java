@@ -842,7 +842,7 @@ public class Bank {
         addInsuranceToCSV(insurance);
     }
     public void addInsuranceToCSV(Insurance insurance) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_credit_card.csv", true))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("mock_insurance_data.csv", true))) {
             // Append object to csv
             String insuranceData = insurance.getInsuranceID() + "," + insurance.getCustomerId() + "," + insurance.getInsuranceType() + "," + insurance.getInsurancePremium()
                     + "," + insurance.getCoverageAmount() + "," + insurance.getBeneficiaryName();

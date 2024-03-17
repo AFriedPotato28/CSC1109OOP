@@ -675,6 +675,7 @@ public class BankSystem {
                     System.out.println("Enter Beneficiary Name:");
                     String beneficiaryName = scanner1.nextLine();
 
+
                     bank.buyInsurance(customerId, insuranceType, beneficiaryName);
 
                     break;
