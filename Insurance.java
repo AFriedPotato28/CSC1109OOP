@@ -6,6 +6,7 @@ import java.util.ArrayList;
  */
 
 public class Insurance {
+    private static int lastAssignedId = 0;
     /**
      * Identifier Number for the Insurance.
      */
@@ -13,11 +14,12 @@ public class Insurance {
     /**
      * Type of Insurance.
      */
+    private int customerId;
     private String insuranceType;
     /**
      * List of the beneficiary name to be included inside the insurance plan.
      */
-    private ArrayList<String> beneficiaryNames;
+    private String beneficiaryName;
     /**
      * Amount that can be claimed by the beneficiary in the insurance plan.
      */
@@ -37,10 +39,11 @@ public class Insurance {
      * @param insuranceID The unique indentifier for the insurance.
      * @param insuranceType The type of insurance.
      */
-    public Insurance(int insuranceID, String insuranceType) {
-        this.setInsuranceID(insuranceID);
-        this.setInsuranceType(insuranceType);
-        this.setBeneficiaryNames(beneficiaryNames);
+    public Insurance(int customerId, String insuranceType, String beneficiaryName) {
+        this.insuranceID = ++lastAssignedId;
+        this.customerId = customerId;
+        this.insuranceType = insuranceType;
+        this.beneficiaryName = beneficiaryName;
         this.setCoverageAmount(5000.00);
         this.setInsurancePremium(150.0);
     }
@@ -54,14 +57,6 @@ public class Insurance {
     }
 
     /**
-     * Set the insurance ID.
-     * @param insuranceID The insuranceID is set.
-     */
-    public void setInsuranceID(int insuranceID) {
-        this.insuranceID = insuranceID;
-    }
-
-    /**
      * Return the insurance type.
      * @return The insurance type.
      */
@@ -70,27 +65,11 @@ public class Insurance {
     }
 
     /**
-     * Set the insurance type.
-     * @param insuranceType The insurance type.
-     */
-    public void setInsuranceType(String insuranceType) {
-        this.insuranceType = insuranceType;
-    }
-
-    /**
      * Return the list of beneficiary names.
      * @return The list of beneficiary names.
      */
-    public ArrayList<String> getBeneficiaryNames() {
-        return beneficiaryNames;
-    }
-
-    /**
-     * Set the list of beneficiary name.
-     * @param beneficiaryNames The beneficiary name to set.
-     */
-    public void setBeneficiaryNames(ArrayList<String> beneficiaryNames) {
-        this.beneficiaryNames = beneficiaryNames;
+    public String getBeneficiaryName() {
+        return beneficiaryName;
     }
 
     /**
@@ -132,7 +111,7 @@ public class Insurance {
         System.out.println("Current Insurance Details:");
         System.out.println("Insurance ID: " + this.insuranceID);
         System.out.println("Insurance Type: " + this.insuranceType);
-        System.out.println("Beneficiary Member: " + this.beneficiaryNames);
+        System.out.println("Beneficiary Member: " + this.beneficiaryName);
         System.out.println("Coverage Amount: " + this.coverageAmount);
     }
 
@@ -182,19 +161,7 @@ public class Insurance {
         }
     }
 
-    /**
-     * Adds a beneficiary to the list of beneficiary names.
-     * @param beneficiaryNames The name of beneficiary to add.
-     */
-    public void addBeneficiary(String beneficiaryNames) {
-        this.beneficiaryNames.add(beneficiaryNames);
-    }
-
-    /**
-     * Remove a beneficiary from the list of beneficiary names.
-     * @param beneficiaryNames The name of beneficiary to remove.
-     */
-    public void removeBeneficiary(String beneficiaryNames) {
-        this.beneficiaryNames.remove(beneficiaryNames);
+    public double getCustomerId() {
+        return customerId;
     }
 }
