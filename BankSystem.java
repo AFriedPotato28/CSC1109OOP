@@ -470,6 +470,7 @@ public class BankSystem {
                         System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
                         return;
                     }
+                    
                     bank.payCashAdvancePayables(scanner, customerId, userInfo);
                     break;
                 default:
