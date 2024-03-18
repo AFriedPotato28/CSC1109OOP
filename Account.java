@@ -133,11 +133,12 @@ public class Account {
      * @return True if the transfer was successful, false otherwise.
      */
     public boolean transfer(Account toAccount, double amount) {
-        if (this.balance < amount && amount > this.transactionLimit) {
-            return false;
+        if (this.balance >= amount && amount <= this.transactionLimit ) {
+            this.withdraw(amount);
+            toAccount.deposit(amount);
+            return true;
+           
         }
-        this.balance -= amount;
-        toAccount.deposit(amount);
-        return true;
+        return false;
     }
 }

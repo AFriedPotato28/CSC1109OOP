@@ -123,6 +123,7 @@ public final class csv_update_help {
                         balance = fromAccount.getBalance();
                         transactionLimit = fromAccount.getTransactionLimit();
                     } else if (toAccount.getAccountType().equalsIgnoreCase(accountType) && accountNo == toAccount.getAccountNo()){
+                        System.out.println(toAccount.getBalance());
                         balance = toAccount.getBalance();
                         transactionLimit = toAccount.getTransactionLimit();
                     }

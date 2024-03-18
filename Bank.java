@@ -884,26 +884,27 @@ public class Bank {
         return this.account.getTransactionLimit();
     }
 
-    public void withdraw(double money, String username) {
+    public boolean withdraw(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
             if (this.account.withdraw(money)) {
                 csv_update_help.updateCSVOfAccount(this.accounts, account);
                 securityInstance.logActivity(this.account.getCustomerId(), 5);
-                return;
+                return true;
             }
-            ;
         }
+        return false;
     }
 
-    public void deposit(double money, String username) {
+    public boolean deposit(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
             this.account.deposit(money);
             csv_update_help.updateCSVOfAccount(this.accounts, this.account);
             securityInstance.logActivity(this.account.getCustomerId(), 4);
-            return;
+            return true;
         }
+        return false;
     }
 
     public boolean changeTransactionLimit(int limit, String userInfo) {
@@ -917,13 +918,16 @@ public class Bank {
         return false;
     }
 
-    public void transferAmount(double money, String recipient) {
+    public boolean transferAmount(double money, String recipient) {
         Account accountRecipient = getAccountInfo(recipient);
 
         if (this.account.transfer(accountRecipient, money)) {
             csv_update_help.updateCSVofTwoAccounts(this.accounts, this.account, accountRecipient);
             securityInstance.logActivity(this.account.getCustomerId(), 2);
+            return true;
         }
+
+        return false;
     }
 
     public void seeAllCurrencyExchanges() {
