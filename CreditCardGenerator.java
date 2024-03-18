@@ -3,7 +3,8 @@ import java.time.Period;
 import java.time.YearMonth;
 
 /**
- * Utility class for generating credit card information such as card numbers, CVV codes, and expiry dates.
+ * Utility class for generating credit card information such as card numbers,
+ * CVV codes, and expiry dates.
  */
 public final class CreditCardGenerator {
     // issue identifier number
@@ -23,21 +24,25 @@ public final class CreditCardGenerator {
         StringBuilder cardNumber = new StringBuilder();
 
         String uniqueId = accountNo + String.valueOf(creditCardId);
-        String zeros = getZeros(uniqueId);
+        String randomValue = getRandomNumber(uniqueId);
 
-        cardNumber.append(IIN).append(BANK_ID).append(zeros).append(accountNo).append(creditCardId);
+        cardNumber.append(IIN).append(BANK_ID).append(randomValue).append(accountNo).append(creditCardId);
         int checkDigit = calculateCheckDigit(cardNumber.toString());
         cardNumber.append(checkDigit);
 
         return cardNumber.toString();
     }
 
-    private static String getZeros(String uniqueId) {
+    private static String getRandomNumber(String uniqueId) {
         int totalLength = 9;
-        StringBuilder zeros = new StringBuilder();
-        int zeroToGenerate = totalLength - uniqueId.length();
-        zeros.append("0".repeat(Math.max(0, zeroToGenerate)));
-        return zeros.toString();
+        StringBuilder randomNumber = new StringBuilder();
+        int spacesToGenerate = totalLength - uniqueId.length();
+        SecureRandom random = new SecureRandom();
+        for (int i = 0; i < spacesToGenerate; i++) {
+            randomNumber.append(random.nextInt(10));
+        }
+
+        return randomNumber.toString();
     }
 
     // Calculates the check digit for the given card number using the Luhn algorithm

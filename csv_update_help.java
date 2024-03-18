@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class csv_update_help {
+
+    private static String tempFile = "temp.csv";
+
     /**
      * 
      * @param userInfo the username of the account
@@ -38,7 +41,6 @@ public final class csv_update_help {
     public static boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,ArrayList<String> HashedPasswordandSalt){
 
         String fileName = "MOCK_DATA.csv";
-        String tempFile = "temp.csv";
         File oldFile = new File(fileName);
         File newFile = new File(tempFile);
 
@@ -95,7 +97,6 @@ public final class csv_update_help {
     public static boolean updateCSVofTwoAccounts(HashMap<Integer,List<Account>> accounts,Account fromAccount, Account toAccount){
 
         String file = "Account_Data.csv";
-        String tempFile = "temp.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -122,6 +123,7 @@ public final class csv_update_help {
                         balance = fromAccount.getBalance();
                         transactionLimit = fromAccount.getTransactionLimit();
                     } else if (toAccount.getAccountType().equalsIgnoreCase(accountType) && accountNo == toAccount.getAccountNo()){
+                        System.out.println(toAccount.getBalance());
                         balance = toAccount.getBalance();
                         transactionLimit = toAccount.getTransactionLimit();
                     }
@@ -157,7 +159,6 @@ public final class csv_update_help {
     public static boolean updateCSVOfAccount(HashMap<Integer,List<Account>> accounts,Account accountStash){
 
         String file = "Account_Data.csv";
-        String tempFile = "temp.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -260,7 +261,10 @@ public final class csv_update_help {
     public static void generateCSVtoAccount(int customerID, Account account) {
         String filepath = "Account_Data.csv";
         
-        String[] dataToAppend = { String.valueOf(account.getAccountNo()),String.valueOf(customerID), account.getAccountType(), String.valueOf(account.getBalance()), String.valueOf(account.getTransactionLimit())};
+        String[] dataToAppend = { String.valueOf(account.getAccountNo()),
+                                String.valueOf(customerID), account.getAccountType(), 
+                                String.valueOf(account.getBalance()), 
+                                String.valueOf(account.getTransactionLimit())};
 
         String csvLine = Arrays.stream(dataToAppend)
                 .map(csv_update_help::escapeDoubleQuotes)
@@ -278,7 +282,7 @@ public final class csv_update_help {
 
      public static void updateLoanToCsv(ArrayList<Loan> loans) {
         try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"));
-             BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data_Temp.csv"))) {
+             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
 
             String header = br.readLine(); // Read and skip the header line
             bw.write(header + "\n"); // Write the header line to the new file
@@ -311,8 +315,45 @@ public final class csv_update_help {
 
         // Replace the original file with the updated file
         File originalFile = new File("Loan_Data.csv");
-        File tempFile = new File("Loan_Data_Temp.csv");
-        tempFile.renameTo(originalFile);
+        File tempsFile = new File(tempFile);
+        tempsFile.renameTo(originalFile);
+    }
+
+
+    public static void updateExistingCreditCardBills(CreditCard card, String cardNo){
+        StringBuilder sb = new StringBuilder("credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advance,cash_advancement_limit\n");
+        File originalFile = new File("mock_credit_card.csv");
+        File newFile = new File(tempFile);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(originalFile))) {
+            br.readLine();
+            String sLine ;
+            while ((sLine = br.readLine())!= null){
+                String[] data = sLine.split(",");
+                
+                if(card.getCreditCardId() == Integer.parseInt(data[0]) && card.getCardNumber().equals(cardNo)) {
+                    data[6] = String.valueOf(card.getBalance());
+                    data[7] = String.valueOf(card.getRemainingCredit());
+                    data[9] = String.valueOf(card.getCashAdvancePayable());
+                }   
+            
+                String line = String.join(",", data);
+                sb.append(line + "\n");
+            } 
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(newFile))){
+            bw.append(sb);
+
+        } catch(IOException e){
+            return;
+        }
+
+        originalFile.delete();
+        newFile.renameTo(originalFile);
     }
 
     private static String escapeDoubleQuotes(String str) {
