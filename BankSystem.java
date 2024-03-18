@@ -53,7 +53,7 @@ public class BankSystem {
                 System.out.println("4. Foreign Exchanges Options");
                 System.out.println("5. Account Settings");
                 System.out.println("6. Insurance Options");
-                System.out.println("7.. Log out");
+                System.out.println("7. Log out");
                 System.out.println("0. Exit");
 
                 System.out.println("Enter your choice: ");
@@ -468,10 +468,10 @@ public class BankSystem {
     private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
         int choice = -1;
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-        bank.getLoans(customerId);
-        bank.updateOverdueLoans();
+
         do {
-            bank.printLoans();
+            bank.getLoans(customerId);
+
             System.out.println("1. Apply Loan");
             System.out.println("2. Repay Loan");
             System.out.println("3. Exit ");
@@ -485,33 +485,7 @@ public class BankSystem {
             }
             switch (choice) {
                 case 1:
-                    int newLoanNumber = bank.getLoanCount(customerId);
-                    double bankBalance = bank.getBalance();
-                    double currentLoanAmount = bank.totalLoanAmount();
-                    double maximumLoanAmount = bankBalance * 2 - currentLoanAmount;
-                    System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
-                    double loanAmount = 0.0;
-                    do {
-                        loanAmount = Double
-                                .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
-                        if (loanAmount == -1.0) {
-                            System.out.println("Exiting...");
-                            break;
-                        }
-                        try {
-                            if (loanAmount <= 0) {
-                                System.out.println("Invalid input, loan amount must be a positive number");
-                            } else if (loanAmount > maximumLoanAmount) {
-                                System.out.println("Unsuccessful, you can only loan up to: " + maximumLoanAmount);
-                            } else {
-                                System.out.println("inputs customerID: " + customerId);
-                                bank.applyLoan(newLoanNumber, customerId, loanAmount);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Entered an invalid input");
-                            loanAmount = -2;
-                        }
-                    } while (loanAmount <= 0);
+                    applyLoan(scanner, bank, customerId);
                     break;
                 case 2:
                     repayLoan(scanner, bank);
@@ -523,18 +497,64 @@ public class BankSystem {
 
     }
 
-    private static void repayLoan(Scanner scanner, Bank bank) {
-
+    private static void applyLoan(Scanner scanner, Bank bank, int customerId) {
+        double bankBalance = bank.getBalance();
+        double currentTotalLoanAmount = bank.totalLoanAmount();
+        double maximumLoanAmount = (bankBalance * 2) - currentTotalLoanAmount;
+        double loanAmount = 0.0;
         bank.printLoans();
+
+        if (maximumLoanAmount <= 0) {
+            System.out.println("Rejected, you are unable to borrow additional funds. Please repay your outstanding loans.");
+            return;
+        } else {
+            System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
+        }
+        do {
+            loanAmount = Double
+                    .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
+            if (loanAmount == -1.0) {
+                System.out.println("Exiting...");
+                break;
+            }
+            try {
+                if (loanAmount <= 0) {
+                    System.out.println("Invalid input, loan amount must be a positive number");
+                } else if (loanAmount > maximumLoanAmount) {
+                    System.out.println("Unsuccessful, you can only loan up to: " + maximumLoanAmount);
+                } else {
+                    bank.applyLoan(customerId, loanAmount);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entered an invalid input");
+                loanAmount = -2;
+            }
+        } while (loanAmount <= 0);
+    }
+
+    private static void repayLoan(Scanner scanner, Bank bank) {
+        double bankBalance = bank.getBalance();
+        bank.updateOverdueLoans();
+        bank.printLoans();
+
         try {
             int repayLoanId = Integer.parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
-
             if (!bank.checkExistingLoan(repayLoanId)) {
+                System.out.println("Invalid input, your account does not have a loan corresponding with this loanID.");
                 return;
             }
 
+            double currentLoanAmount = bank.loanAmountFromId(repayLoanId);
             double repayLoanAmount = Double.parseDouble(promptInput("Please enter the amount you are repaying", scanner));
-            bank.repayLoan(repayLoanId, repayLoanAmount);
+            if (repayLoanAmount <= 0) {
+                System.out.println("Invalid input, please enter a positive number.");
+            } else if (repayLoanAmount > currentLoanAmount) {
+                System.out.println("Invalid input, amount entered is greater than outstanding loan amount.");
+            } else if (bankBalance < repayLoanAmount) {
+                System.out.println("Rejected, there is insufficient funds in your account to repay this amount.");
+            } else {
+                bank.repayLoan(repayLoanId, repayLoanAmount);
+            }
         } catch (Exception e) {
             return;
         }
