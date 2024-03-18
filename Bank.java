@@ -136,7 +136,7 @@ public class Bank {
         }
 
         int userId = !custOptional.isEmpty() ? custOptional.get().getCustomerId() : this.customers.size();
-        addAccount(userId, "1");
+        addAccount(userId, "1",0);
     }
 
     /**
@@ -164,12 +164,12 @@ public class Bank {
      * if accountType does not exist, add a new account to the list of accounts and generate a new CSV file for the account.
      * return true if the account was added successfully, else return false.
      */
-    public boolean addAccount(Integer customerID, String accountType) {
+    public boolean addAccount(Integer customerID, String accountType, double balance) {
 
         boolean customerIdExists = false;
         boolean accountTypeExists = false;
         int sizeOfAccount = 0;
-        accountType = accountType.equals("1") ? "Savings" : accountType.equals("2") ? "Credit Card" : "Loan";
+        accountType = accountType.equals("1") ? "Savings" : "Loan";
 
         for (Map.Entry<Integer, List<Account>> entry : this.accounts.entrySet()) {
             List<Account> accounts = entry.getValue();
@@ -179,18 +179,20 @@ public class Bank {
                     if (account.getAccountType().equalsIgnoreCase(accountType)) {
                         accountTypeExists = true;
                     }
+
                     ;
                 }
             }
         }
         sizeOfAccount = this.accounts.size();
 
-        Account account = new Account((sizeOfAccount + 1), customerID, accountType, 0, 500);
+        int transactionLimit = accountType.equalsIgnoreCase("Savings") ? 500 : 0;
+        Account account = new Account((sizeOfAccount + 1), customerID, accountType, balance, transactionLimit);
 
         if (!customerIdExists) {
             this.accounts.put(customerID, new ArrayList<>());
         }
-        if (!accountTypeExists) {
+        if (!accountTypeExists || accountType.equalsIgnoreCase("Loans")) {
             this.accounts.get(customerID).add(account);
             csv_update_help.generateCSVtoAccount(customerID, account);
             return true;
@@ -756,6 +758,7 @@ public class Bank {
         int newLoanId = totalLoanCount()+1;
         LocalDate loanDueDate = calculateLoanDueDate(loanAmount);
         Loan newLoan = new Loan(newLoanId, customerId, loanAmount, loanDueDate);
+        addAccount(customerId,"2",loanAmount);
         addLoanToCsv(newLoan);
     }
 
