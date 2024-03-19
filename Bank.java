@@ -543,7 +543,7 @@ public class Bank {
         // Prompt user to enter withdrawal amount
         System.out.println(
                 "Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher.");
-        System.out.println("Enter the withdrawal amount: ");
+        System.out.println("\nEnter the withdrawal amount: ");
 
         try {
             double withdrawalAmount = scanner.nextDouble();
