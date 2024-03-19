@@ -509,6 +509,11 @@ public class BankSystem {
         double loanAmount = 0.0;
         bank.printLoans();
 
+        if (bank.getBalance() <= 0) {
+            System.out.println("Rejected, you are unable to borrow funds. Please top up your bank account");
+            return;
+        }
+
         if (maximumLoanAmount <= 0) {
             System.out.println(
                     "Rejected, you are unable to borrow additional funds. Please repay your outstanding loans.");
