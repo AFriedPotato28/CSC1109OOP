@@ -1,5 +1,6 @@
 *.md
-*.csv
+MOCK_DATA.csv
+Account_Data.csv
 
 # Default ignored files
 /shelf/

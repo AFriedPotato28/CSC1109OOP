@@ -30,7 +30,6 @@ public class BankSystem {
                     choice = -1;
                 }
 
-
                 switch (choice) {
                     case 1:
                         createAccountDetails(scanner, bank, securityInstance);
@@ -53,7 +52,7 @@ public class BankSystem {
                 System.out.println("4. Foreign Exchanges Options");
                 System.out.println("5. Account Settings");
                 System.out.println("6. Insurance Options");
-                System.out.println("7.. Log out");
+                System.out.println("7. Log out");
                 System.out.println("0. Exit");
 
                 System.out.println("Enter your choice: ");
@@ -132,7 +131,6 @@ public class BankSystem {
         bank.setLoginDetails(loginUsername, loginPassword);
         int attemptOfTries = 1;
 
-
         while (attemptOfTries <= 3) {
             try {
                 String OTP = promptInput("Please enter your OTP", scanner);
@@ -150,7 +148,6 @@ public class BankSystem {
         }
         return null;
     }
-
 
     /**
      * @param scanner
@@ -267,7 +264,7 @@ public class BankSystem {
     }
 
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
-                                                    String userInfo) {
+            String userInfo) {
 
         int accountChoice = -1;
 
@@ -319,7 +316,7 @@ public class BankSystem {
         }
 
         double transferAmount = 0.0;
-     
+
         if (valid == true) {
             try {
                 System.out.println("Please enter a valid transfer amount. Press -1 to exit.");
@@ -335,13 +332,12 @@ public class BankSystem {
             }
         }
 
-        
-        if (bank.transferAmount(transferAmount, recipientUsername)){
+        if (bank.transferAmount(transferAmount, recipientUsername)) {
             System.out.println("Successfully transferred " + transferAmount + " to " + recipientUsername + ".");
             System.out.println("Your current balance is: " + bank.getBalance());
             return;
         }
-        
+
         System.out.println("Transfer failed.");
     }
 
@@ -353,18 +349,19 @@ public class BankSystem {
             System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
             money = scanner.nextDouble();
 
-            if (money == -1.0) return;
+            if (money == -1.0)
+                return;
 
         } catch (InputMismatchException e) {
             scanner.nextLine();
         }
-     
-        if (bank.withdraw(money, username)){
+
+        if (bank.withdraw(money, username)) {
             System.out.println(
-                "You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
-                return;
+                    "You have successfully withdraw " + money + ". Currently you have value of " + bank.getBalance());
+            return;
         }
-        
+
         System.out.println("You have failed to withdraw " + money);
     }
 
@@ -376,17 +373,18 @@ public class BankSystem {
             System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
             money = scanner.nextDouble();
 
-            if (money == -1.0) return;
-      
+            if (money == -1.0)
+                return;
+
         } catch (InputMismatchException e) {
             scanner.nextLine();
         }
 
-        if (bank.deposit(money, username)){
+        if (bank.deposit(money, username)) {
             System.out.println("You currently have a amount of " + bank.getBalance() + " in your account ");
             return;
         }
-        
+
         System.out.println("You have not updated your account and your current balance is " + bank.getBalance());
     }
 
@@ -419,18 +417,22 @@ public class BankSystem {
                     int accountNo = bank.getAccountNo();
                     int annualIncome;
                     do {
-                        annualIncome = Integer.parseInt(promptInput("Please enter your annual income: (Please enter -1 to exit) ", scanner));
-                        if (annualIncome == -1) return;
+                        annualIncome = Integer.parseInt(
+                                promptInput("Please enter your annual income: (Please enter -1 to exit) ", scanner));
+                        if (annualIncome == -1)
+                            return;
 
                         if (annualIncome < 15000) {
-                            System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                            System.out
+                                    .println("Unable to apply for a credit card! (Annual income is less than $15000)");
                         }
                     } while (annualIncome < 15000);
                     bank.applyCreditCard(customerId, accountNo, annualIncome);
                     break;
                 case 2:
                     if (bank.getCreditCardCount(customerId) == 0) {
-                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                        System.out.println(
+                                "There is no existing credit card for you to explore. Please apply your credit card");
                         return;
                     }
 
@@ -438,14 +440,16 @@ public class BankSystem {
                     break;
                 case 3:
                     if (bank.getCreditCardCount(customerId) == 0) {
-                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                        System.out.println(
+                                "There is no existing credit card for you to explore. Please apply your credit card");
                         return;
                     }
                     bank.payCreditCardBills(scanner, customerId, userInfo);
                     break;
                 case 4:
                     if (bank.getCreditCardCount(customerId) == 0) {
-                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                        System.out.println(
+                                "There is no existing credit card for you to explore. Please apply your credit card");
                         return;
                     }
 
@@ -453,10 +457,11 @@ public class BankSystem {
                     break;
                 case 5:
                     if (bank.getCreditCardCount(customerId) == 0) {
-                        System.out.println("There is no existing credit card for you to explore. Please apply your credit card");
+                        System.out.println(
+                                "There is no existing credit card for you to explore. Please apply your credit card");
                         return;
                     }
-                    
+
                     bank.payCashAdvancePayables(scanner, customerId, userInfo);
                     break;
                 default:
@@ -468,10 +473,10 @@ public class BankSystem {
     private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
         int choice = -1;
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-        bank.getLoans(customerId);
-        bank.updateOverdueLoans();
+
         do {
-            bank.printLoans();
+            bank.getLoans(customerId);
+
             System.out.println("1. Apply Loan");
             System.out.println("2. Repay Loan");
             System.out.println("3. Exit ");
@@ -485,33 +490,7 @@ public class BankSystem {
             }
             switch (choice) {
                 case 1:
-                    int newLoanNumber = bank.getLoanCount(customerId);
-                    double bankBalance = bank.getBalance();
-                    double currentLoanAmount = bank.totalLoanAmount();
-                    double maximumLoanAmount = bankBalance * 2 - currentLoanAmount;
-                    System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
-                    double loanAmount = 0.0;
-                    do {
-                        loanAmount = Double
-                                .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
-                        if (loanAmount == -1.0) {
-                            System.out.println("Exiting...");
-                            break;
-                        }
-                        try {
-                            if (loanAmount <= 0) {
-                                System.out.println("Invalid input, loan amount must be a positive number");
-                            } else if (loanAmount > maximumLoanAmount) {
-                                System.out.println("Unsuccessful, you can only loan up to: " + maximumLoanAmount);
-                            } else {
-                                System.out.println("inputs customerID: " + customerId);
-                                bank.applyLoan(newLoanNumber, customerId, loanAmount);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Entered an invalid input");
-                            loanAmount = -2;
-                        }
-                    } while (loanAmount <= 0);
+                    applyLoan(scanner, bank, customerId);
                     break;
                 case 2:
                     repayLoan(scanner, bank);
@@ -523,17 +502,63 @@ public class BankSystem {
 
     }
 
-    private static void repayLoan(Scanner scanner, Bank bank) {
-
+    private static void applyLoan(Scanner scanner, Bank bank, int customerId) {
+        double bankBalance = bank.getBalance();
+        double currentTotalLoanAmount = bank.totalLoanAmount();
+        double maximumLoanAmount = (bankBalance * 2) - currentTotalLoanAmount;
+        double loanAmount = 0.0;
         bank.printLoans();
+
+        if (bank.getBalance() <= 0) {
+            System.out.println("Rejected, you are unable to borrow funds. Please top up your bank account");
+            return;
+        }
+
+        if (maximumLoanAmount <= 0) {
+            System.out.println(
+                    "Rejected, you are unable to borrow additional funds. Please repay your outstanding loans.");
+            return;
+        } else {
+            System.out.println("Bank balance: $" + bankBalance + "\nYou can loan up to: $" + (maximumLoanAmount));
+        }
+        do {
+            loanAmount = Double
+                    .parseDouble(promptInput("\nPlease enter amount to loan. Enter -1 to exit", scanner));
+            if (loanAmount == -1.0) {
+                System.out.println("Exiting...");
+                break;
+            }
+            try {
+                if (loanAmount <= 0) {
+                    System.out.println("Invalid input, loan amount must be a positive number");
+                } else if (loanAmount > maximumLoanAmount) {
+                    System.out.println("Unsuccessful, you can only loan up to: " + maximumLoanAmount);
+                } else {
+                    bank.applyLoan(customerId, loanAmount);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Entered an invalid input");
+                loanAmount = -2;
+            }
+        } while (loanAmount <= 0);
+    }
+
+    private static void repayLoan(Scanner scanner, Bank bank) {
+        double bankBalance = bank.getBalance();
+        bank.updateOverdueLoans();
+        bank.printLoans();
+
         try {
-            int repayLoanId = Integer.parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
+            int repayLoanId = Integer
+                    .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
 
             if (!bank.checkExistingLoan(repayLoanId)) {
+                System.out.println("Invalid input, your account does not have a loan corresponding with this loanID.");
                 return;
             }
 
-            double repayLoanAmount = Double.parseDouble(promptInput("Please enter the amount you are repaying", scanner));
+            double repayLoanAmount = Double
+                    .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
             bank.repayLoan(repayLoanId, repayLoanAmount);
         } catch (Exception e) {
             return;
@@ -557,7 +582,6 @@ public class BankSystem {
                 choice = -1;
             }
 
-
             switch (choice) {
                 case 1:
                     exchangeMoney(scanner, bank, userInfo);
@@ -577,8 +601,8 @@ public class BankSystem {
                 bank.seeAllCurrencyExchanges();
                 chString = promptInput("Please enter a valid currency to exchange", scanner);
             }
-            System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice()
-                    + " " + bank.getRates(chString).getSymbol() + " amount");
+            System.out.println("Your bank has " + bank.getBalance() * bank.getRates(chString).getpurchasePrice() + " "
+                    + bank.getRates(chString).getSymbol() + " amount");
 
             System.out.println("Please enter a valid amount to exchange");
             int amount = scanner.nextInt();
@@ -614,20 +638,23 @@ public class BankSystem {
                 choice = -1;
             }
 
-            switch(choice){
+            switch (choice) {
                 case 1:
                     int accountNo = bank.getAccountNo();
                     break;
                 case 2:
                     int insuranceChoice = -1;
                     String insuranceType = "";
-                    System.out.println("Choose Insurance Type: \n 1. Health Insurance\n 2. Home Insurance \n 3. Vehicle Insurance" +
-                            "\n 4. Life Insurance \n 5. Travel Insurance \n 6. Exit");
+                    System.out.println(
+                            "Choose Insurance Type: \n 1. Health Insurance\n 2. Home Insurance \n 3. Vehicle Insurance"
+                                    +
+                                    "\n 4. Life Insurance \n 5. Travel Insurance \n 6. Exit");
 
-                    System.out.println("Enter the type of insurance you would like to purchase between 1 and 5, or exit with 6");
+                    System.out.println(
+                            "Enter the type of insurance you would like to purchase between 1 and 5, or exit with 6");
                     try {
                         insuranceChoice = scanner.nextInt();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         System.out.println("Enter a valid choice");
                         scanner = new Scanner(System.in);
                         insuranceChoice = -1;
@@ -648,17 +675,15 @@ public class BankSystem {
                         } else if (insuranceChoice == 5) {
                             insuranceType = "Travel";
                             break;
-                        }
-                        else{
+                        } else {
                             System.out.println("Invalid input");
                             break;
                         }
-                    }while(insuranceChoice != 6);
+                    } while (insuranceChoice != 6);
 
                     Scanner scanner1 = new Scanner(System.in);
                     System.out.println("Enter Beneficiary Name:");
                     String beneficiaryName = scanner1.nextLine();
-
 
                     bank.buyInsurance(customerId, insuranceType, beneficiaryName);
 
@@ -668,6 +693,6 @@ public class BankSystem {
                 default:
                     break;
             }
-        }while(choice != 4);
+        } while (choice != 4);
     }
 }

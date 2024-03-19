@@ -1,2 +1,3 @@
-credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advance,cash_advancement_limit
-1,2,2,4123451369573211,6d05621ab7cb7b4fb796ca2ffbe1a141e0d4319d3deb6a05322b9de85d69b923,2029-03,0.0,1500.0,1500,0.0,450.0
+credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit
+2,4,2,4123450000000225,55c8079ac96c6a4f6a94e3460c79e4006d62374cce6e9fc8b281938a3abc7627,2029-03,0.0,20000.0,20000
+3,4,2,4123450000000234,524b2d27a1e7fbc3a1614fa661e2dcad68462352feeb8bf633deaccfb8aa84f3,2029-03,0.0,3000.0,3000
