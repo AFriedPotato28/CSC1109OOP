@@ -43,3 +43,6 @@ javadoc
 /.idea/
 /CSC1109OOP.iml
 /out
+
+# ignore csv
+*.csv
