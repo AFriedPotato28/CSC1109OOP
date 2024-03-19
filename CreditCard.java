@@ -65,7 +65,8 @@ public class CreditCard {
      * Constructs a new CreditCard object with the specified Credit Card ID,
      * Customer ID, account number.
      * Balance is set to 0 by default.
-     * Cash Advance Payable is set to 0 by default as no cash advance has been withdrawn.
+     * Cash Advance Payable is set to 0 by default as no cash advance has been
+     * withdrawn.
      * Credit Limit (per month) is set to 10% of the Customer's annual income
      * Remaining Credit is set to the credit limit minus the outstanding balance
      * Cash Advance Limit is set to 30% of the credit limit
@@ -83,7 +84,8 @@ public class CreditCard {
         this.balance = 0.0; // outstanding credit bill balance is 0 for a new credit card
         this.cashAdvancePayable = 0.0; // outstanding cash advance payable is 0 for a new credit card
         this.creditLimit = annualIncome / 10; // credit limit per month set to 10% of customer's annual income
-        this.remainingCredit = this.creditLimit-this.balance; // remaining credit is the credit limit minus the outstanding balance
+        this.remainingCredit = this.creditLimit - this.balance; // remaining credit is the credit limit minus the
+                                                                // outstanding balance
         this.cashAdvanceLimit = 0.3 * this.creditLimit; // cash advance limit set to 30% of the credit limit
 
         this.cardNumber = CreditCardGenerator.generateCardNumber(accountNo, this.creditCardId);
@@ -97,17 +99,18 @@ public class CreditCard {
      * credit limit, card number, CVV and expiry date.
      *
      * @param creditCardId The unique identifier of the credit card
-     * @param customerId  The customer ID associated with the credit card.
-     * @param accountNo   The account number associated with the credit card.
-     * @param balance     The outstanding balance of the credit bill
-     * @param creditLimit The credit limit of the credit card.
-     * @param cardNumber  The card number associated with the credit card.
-     * @param cvv         The Card Verification Value (CVV) associated with the
-     *                    credit card.
-     * @param expiryDate  The expiry date of the credit card.
+     * @param customerId   The customer ID associated with the credit card.
+     * @param accountNo    The account number associated with the credit card.
+     * @param balance      The outstanding balance of the credit bill
+     * @param creditLimit  The credit limit of the credit card.
+     * @param cardNumber   The card number associated with the credit card.
+     * @param cvv          The Card Verification Value (CVV) associated with the
+     *                     credit card.
+     * @param expiryDate   The expiry date of the credit card.
      */
-    public CreditCard(int creditCardId, int customerId, int accountNo, double balance,double remainingCredit,
-                      int creditLimit, String cardNumber, String cvv, YearMonth expiryDate, double cashAdvancedPayable, double cashAdvanceLimit) {
+    public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingCredit,
+            int creditLimit, String cardNumber, String cvv, YearMonth expiryDate, double cashAdvancedPayable,
+            double cashAdvanceLimit) {
         this.creditCardId = creditCardId;
         this.customerId = customerId;
         this.accountNo = accountNo;
@@ -195,6 +198,7 @@ public class CreditCard {
 
     /**
      * Retrieves the cash advance payable on the credit card.
+     * 
      * @return The cash advance payable on the credit card.
      */
     public double getCashAdvancePayable() {
@@ -218,7 +222,6 @@ public class CreditCard {
     public int getCreditLimit() {
         return this.creditLimit;
     }
-
 
     /**
      * Sets the credit limit for the credit card.
@@ -281,22 +284,25 @@ public class CreditCard {
         double totalCashAdvanceAmount = withdrawalAmount + cashAdvanceFee; // total cash advance amount including the
         // cash advance fee
 
-        // check if the total cash advance amount to be withdrawn totals less than 30% of the credit limit
+        // check if the total cash advance amount to be withdrawn totals less than 30%
+        // of the credit limit
         // AND less than or equal to the remaining balance
-        if (totalCashAdvanceAmount + this.cashAdvancePayable < this.cashAdvanceLimit && totalCashAdvanceAmount <= this.creditLimit ) {
+        if (totalCashAdvanceAmount + this.cashAdvancePayable < this.cashAdvanceLimit
+                && totalCashAdvanceAmount <= this.creditLimit) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
             this.remainingCredit -= totalCashAdvanceAmount;
             return true;
-        } 
-        else {
-            // error message if the total cash advance amount withdrawn exceeds 30% of the credit limit
-            if (totalCashAdvanceAmount + this.cashAdvancePayable >= this.cashAdvanceLimit){
+        } else {
+            // error message if the total cash advance amount withdrawn exceeds 30% of the
+            // credit limit
+            if (totalCashAdvanceAmount + this.cashAdvancePayable >= this.cashAdvanceLimit) {
                 double cashAdvanceBalance = this.cashAdvanceLimit - this.cashAdvancePayable;
                 System.out.println("\nCash advance withdrawal amount exceeds 30% of the credit limit!");
                 System.out.println("Cash advance remaining credit: " + cashAdvanceBalance);
                 return false;
             }
-            // error message if the total cash advance amount withdrawn exceeds the remaining credit
+            // error message if the total cash advance amount withdrawn exceeds the
+            // remaining credit
             else {
                 System.out.println("\nCash advance withdrawal amount exceeds the remaining credit!");
                 System.out.println("Cash advance remaining credit: " + this.remainingCredit);
@@ -307,6 +313,7 @@ public class CreditCard {
 
     /**
      * Attempts to pay the cash advance payable on the credit card.
+     * 
      * @param paymentAmount The amount paid on the cash advance payable.
      * @return True if the payment is successful, False otherwise.
      */
