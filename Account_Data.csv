@@ -1,0 +1,2 @@
+AccountNo,CustomerID,accountType,balance,transactionLimit
+1,1,Savings,150000.0,500.0
