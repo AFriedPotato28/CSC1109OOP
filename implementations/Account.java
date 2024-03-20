@@ -1,3 +1,4 @@
+package implementations;
 /**
  * Represents a bank account associated with a customer.
  * Each account has an account ID, type, balance, associated customer, and transaction limit.
@@ -31,7 +32,8 @@ public class Account {
      * Constructs a new Account object with the specified customer ID.
      * @param customerId The customer ID associated with the account.
      */
-    public Account(int customerId){}
+
+
 
     /**
      * Populates the account object with the specified account details.
@@ -78,7 +80,7 @@ public class Account {
      *
      * @return The customer object.
      */
-    protected int getCustomerId() {
+    public int getCustomerId() {
         return this.customerId;
     }
 

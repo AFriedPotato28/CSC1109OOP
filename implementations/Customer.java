@@ -1,3 +1,4 @@
+package implementations;
 /**
  * Represent a customer associated with the Bank
  * Each customer has a Customer ID, name, username and password.

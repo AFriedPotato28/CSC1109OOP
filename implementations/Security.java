@@ -1,3 +1,4 @@
+package implementations;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -9,8 +10,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 

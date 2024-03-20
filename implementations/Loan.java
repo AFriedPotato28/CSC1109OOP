@@ -1,3 +1,4 @@
+package implementations;
 import java.time.LocalDate;
 
 /**
@@ -39,7 +40,7 @@ public class Loan extends Account{
      * @param customerId The customer id associated with loan class.
      */
     public Loan(int loanId, int customerId, double loanAmount, LocalDate loanDuration){
-        super(customerId);
+        super();
         this.setLoanId(loanId);
         this.setCustomerId(customerId);
         this.setLoanAmount(loanAmount);
@@ -47,6 +48,7 @@ public class Loan extends Account{
         this.setLoanDueDate(loanDuration);
 
     }
+
 
     /**
      * Gets the unique identifier for the loan.
@@ -107,14 +109,6 @@ public class Loan extends Account{
      */
     public void setLoanAmount(double loanAmount) {
         this.loanAmount = loanAmount;
-    }
-
-    /**
-     * Calculates the total amount to be repaid for the loan.
-     * @return The total amount to be repaid after interest.
-     */
-    public double calculateAmount() {
-        return this.loanAmount;
     }
 
 

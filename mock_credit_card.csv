@@ -1,2 +1,0 @@
-credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advance,cash_advancement_limit
-1,2,2,4123451369573211,6d05621ab7cb7b4fb796ca2ffbe1a141e0d4319d3deb6a05322b9de85d69b923,2029-03,0.0,1500.0,1500,0.0,450.0
