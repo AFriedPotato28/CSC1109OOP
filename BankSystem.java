@@ -1,7 +1,6 @@
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import implementations.Customer;
 import implementations.Security;
 
 public class BankSystem {
@@ -11,6 +10,7 @@ public class BankSystem {
 
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
+        //Things to do add threading to userInfo to kick user out of logged in page if no interaction for too long 
         String userInfo = "";
 
         do {
@@ -114,7 +114,7 @@ public class BankSystem {
             password = promptInput("Please enter your password:", scanner);
         }
 
-        bank.addCustomer(new Customer(0, name, username, password, ""));
+        bank.addCustomer(name,username,password);
     }
 
     private static String loginToAccount(Scanner scanner, Bank bank, Security securityInstance) {
@@ -137,11 +137,11 @@ public class BankSystem {
 
                 if (bank.authenticateOTP(loginUsername, Integer.valueOf(OTP))) {
                     securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
-                    bank.populateAccount(loginUsername);
+                    bank.populateUserInfo(loginUsername);
                     return loginUsername;
+                    }
+                } catch (NumberFormatException e) {
                 }
-            } catch (NumberFormatException e) {
-            }
             System.out.println("You have " + (3 - attemptOfTries) + " attempts left");
             attemptOfTries++;
 
@@ -567,4 +567,5 @@ public class BankSystem {
             return;
         }
     }
+
 }

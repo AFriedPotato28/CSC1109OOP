@@ -176,8 +176,11 @@ public class Bank {
      *                 Prints amount of customers in the list.
      */
 
-    public void addCustomer(Customer customer) {
+    public void addCustomer(String name, String username, String password) {
+        
+        Customer customer = new Customer(name,username,password);
         int customerSize = this.customers.size();
+
         Optional<Customer> custOptional = this.customers.stream()
                 .filter((cust) -> cust.getUserName().equalsIgnoreCase(customer.getUserName())).findFirst();
 
@@ -270,7 +273,7 @@ public class Bank {
     }
 
 
-    public void populateAccount(String username) {
+    public void populateUserInfo(String username) {
 
         Account accounts = getAccountInfo(username);
         this.account.populateItem(accounts);
@@ -1084,6 +1087,8 @@ public class Bank {
                     + " Loan Deadline: " + loan.getLoanDueDate());
         }
     }
+
+  
 
     /** no more loans */
 }
