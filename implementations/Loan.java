@@ -111,6 +111,10 @@ public class Loan extends Account{
         this.loanAmount = loanAmount;
     }
 
+    public void deductLoanAmount(double loanAmount) {
+        this.loanAmount -= loanAmount;
+    }
+
 
     public void setCustomerId(int customerId) { this.customerId = customerId; }
 

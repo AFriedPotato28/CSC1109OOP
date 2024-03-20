@@ -44,13 +44,13 @@ public class Bank {
     /**
      * The list of loans associated with the bank.
      */
-    private HashMap<Integer, List<Loan>> loanList;
+    private HashMap<Integer, ArrayList<Loan>> loanList;
 
     /*
      * The list assocaited with the credit cards associated with the bank
      */
 
-    private HashMap<Integer, List<CreditCard>> creditList;
+    private HashMap<Integer, ArrayList<CreditCard>> creditList;
 
     /**
      * The list of loans associated with the bank.
@@ -124,8 +124,8 @@ public class Bank {
         this.name = name;
         this.customers = new ArrayList<>();
         this.accounts = new HashMap<Integer, List<Account>>();
-        this.loanList = new HashMap<Integer, List<Loan>>();
-        this.creditList = new HashMap<Integer, List<CreditCard>>();
+        this.loanList = new HashMap<Integer, ArrayList<Loan>>();
+        this.creditList = new HashMap<Integer, ArrayList<CreditCard>>();
         this.loans = new ArrayList<>();
         this.creditCards = new ArrayList<>();
         this.account = new Account();
@@ -277,6 +277,8 @@ public class Bank {
 
         Account accounts = getAccountInfo(username);
         this.account.populateItem(accounts);
+        this.loans = this.loanList.get(accounts.getCustomerId());
+        this.creditCards = this.creditList.get(accounts.getCustomerId());
 
     }
 
@@ -348,10 +350,6 @@ public class Bank {
     }
 
     /**
-     * credit card
-     **/
-
-    /**
      * Checks if a credit card with the specified card number already exists.
      * 
      * @param cardNumber The card number to check.
@@ -400,37 +398,37 @@ public class Bank {
      *                          message.
      */
     public void getCustomerCreditCards(int customerId) {
-        try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
-            String sLine;
-            br.readLine();
-            while ((sLine = br.readLine()) != null) {
-                String[] data = sLine.split(",");
-                if (Integer.parseInt(data[1]) == customerId) {
-                    int creditCardId = Integer.parseInt(data[0]);
-                    int accountNo = Integer.parseInt(data[2]);
-                    String cardNumber = data[3];
-                    String cvv = data[4];
-                    YearMonth expiration_date = YearMonth.parse(data[5]);
-                    double balance = Double.parseDouble(data[6]);
-                    double remainingCredit = Double.parseDouble(data[7]);
-                    int creditLimit = Integer.parseInt(data[8]);
-                    double cashAdvancedPay = Double.parseDouble(data[9]);
-                    double cashAdvancedLimit = Double.parseDouble(data[10]);
+        // try (BufferedReader br = new BufferedReader(new FileReader("mock_credit_card.csv"))) {
+        //     String sLine;
+        //     br.readLine();
+        //     while ((sLine = br.readLine()) != null) {
+        //         String[] data = sLine.split(",");
+        //         if (Integer.parseInt(data[1]) == customerId) {
+        //             int creditCardId = Integer.parseInt(data[0]);
+        //             int accountNo = Integer.parseInt(data[2]);
+        //             String cardNumber = data[3];
+        //             String cvv = data[4];
+        //             YearMonth expiration_date = YearMonth.parse(data[5]);
+        //             double balance = Double.parseDouble(data[6]);
+        //             double remainingCredit = Double.parseDouble(data[7]);
+        //             int creditLimit = Integer.parseInt(data[8]);
+        //             double cashAdvancedPay = Double.parseDouble(data[9]);
+        //             double cashAdvancedLimit = Double.parseDouble(data[10]);
 
-                    CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
-                            remainingCredit, creditLimit, cardNumber, cvv, expiration_date, cashAdvancedPay,
-                            cashAdvancedLimit);
-                    if (!checkExistingCard(cardNumber)) {
-                        this.creditCards.add(creditCard);
-                    }
+        //             CreditCard creditCard = new CreditCard(creditCardId, customerId, accountNo, balance,
+        //                     remainingCredit, creditLimit, cardNumber, cvv, expiration_date, cashAdvancedPay,
+        //                     cashAdvancedLimit);
+        //             if (!checkExistingCard(cardNumber)) {
+        //                 this.creditCards.add(creditCard);
+        //             }
 
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found!" + e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        //         }
+        //     }
+        // } catch (FileNotFoundException e) {
+        //     System.out.println("File not found!" + e);
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
     }
 
     /**
@@ -898,63 +896,22 @@ public class Bank {
 
     /** Final Authentication */
 
-    /**
-     * For Loans *
-     *
-     * @param customerId
-     * @return
-     */
-    public void getLoans(int customerId) {
-        try (BufferedReader br = new BufferedReader(new FileReader("./CSV/Loan_Data.csv"))) {
-            String sLine;
-            this.loans.clear();
-            br.readLine();
-            while ((sLine = br.readLine()) != null) {
-                String[] data = sLine.split(",");
-                if (Integer.parseInt(data[1]) == customerId && Double.parseDouble(data[2]) > 0.0) {
-                    int loanId = Integer.parseInt(data[0]);
-                    double loanAmount = Double.parseDouble(data[2]);
-                    LocalDate loanDueDate = LocalDate.parse(data[4]);
-
-                    Loan loan = new Loan(loanId, customerId, loanAmount, loanDueDate);
-                    this.loans.add(loan);
-                }
-            }
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public Optional<Loan> checkExistingLoan(int loanId) {
+        Optional<Loan> loanOptional = this.loans.stream().filter((loan) -> loan.getLoanId() == loanId).findFirst();
+        return loanOptional;
     }
 
     public int totalLoanCount() {
-        int count = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader("./CSV/Loan_Data.csv"))) {
-            br.readLine();
-            while (br.readLine() != null) {
-                count++;
-            }
-            return count;
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public double loanAmountFromId(int loanId) {
-        double loanAmount = 0.0;
-        for (Loan loan : this.loans) {
-            if (loan.getLoanId() == loanId) {
-                loanAmount = loan.getLoanAmount();
-            }
-        }
-        return loanAmount;
+        return (int) this.loanList.values().stream().flatMap(ArrayList::stream).count();
     }
 
     public double totalLoanAmount() {
         double totalLoan = 0.0;
+
+        if (this.loans.size() < 0){
+            return 0.0;
+        }
+
         for (Loan loan : this.loans) {
             totalLoan += loan.getLoanAmount();
         }
@@ -979,8 +936,8 @@ public class Bank {
         } else {
             addAccount(customerId, "2", loanAmount);
         }
-
-        addLoanToCsv(newLoan);
+        this.loanList.get(customerId).add(newLoan);
+        csv_update_help.addLoanToCsv(newLoan);
     }
 
     public LocalDate calculateLoanDueDate(double loanAmount) {
@@ -997,24 +954,6 @@ public class Bank {
         }
     }
 
-    public void addLoanToCsv(Loan newloan) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Loan_Data.csv", true))) {
-            // Append object to csv
-            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + ","
-                    + newloan.getInterestRate() + "," + newloan.getLoanDueDate();
-            bw.write(loanData);
-            bw.newLine();
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Optional<Loan> checkExistingLoan(int loanId) {
-        Optional<Loan> loanOptional = this.loans.stream().filter((loan) -> loan.getLoanId() == loanId).findFirst();
-        return loanOptional;
-    }
-
     public void repayLoan(int repayLoanId, double repayLoanAmount) {
         DecimalFormat df = new DecimalFormat("##.00");
         this.account.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
@@ -1026,43 +965,10 @@ public class Bank {
         accountInformation.get().withdraw(repayLoanAmount);
         csv_update_help.updateCSVofTwoAccounts(this.accounts, account, accountInformation.get());
 
-        String filePath = "Loan_Data.csv";
-        List<String[]> lines = new ArrayList<>();
+        Loan newLoanItems = this.loans.stream().filter((loan) -> loan.getLoanId() == repayLoanId).findFirst().get();
+        newLoanItems.deductLoanAmount(repayLoanAmount);
 
-        // Read existing data from CSV file
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            lines.add(reader.readLine().split(","));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                if (Integer.parseInt(data[0]) == repayLoanId) {
-                    data[2] = String.valueOf(
-                            Double.parseDouble(df.format(Double.parseDouble(data[2]) - repayLoanAmount)));
-                }
-                lines.add(data);
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Write the modified data back to the CSV file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for (String[] row : lines) {
-                for (int i = 0; i < row.length; i++) {
-                    writer.write(row[i]);
-                    if (i < row.length - 1) {
-                        writer.write(","); // if current element isn't last element, write "," to separate
-                                           // values in CSV file
-                    }
-                }
-                writer.newLine();
-            }
-            // System.out.println("\nCSV file has been edited successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        csv_update_help.updateCSVOfLoan(this.loanList, newLoanItems);
     }
 
     public void updateOverdueLoans() {
@@ -1083,12 +989,11 @@ public class Bank {
     public void printLoans() {
         System.out.println("Outstanding Loans:");
         for (Loan loan : this.loans) {
-            System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
+            if(loan.getLoanAmount() > 0){
+                System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
                     + " Loan Deadline: " + loan.getLoanDueDate());
+            }
+            
         }
     }
-
-  
-
-    /** no more loans */
 }

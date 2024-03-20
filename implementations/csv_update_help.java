@@ -364,6 +364,43 @@ public final class csv_update_help {
         newFile.renameTo(originalFile);
     }
 
+    
+    public static void addLoanToCsv(Loan newloan) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("./CSV/Loan_Data.csv", true))) {
+            // Append object to csv
+            String loanData = newloan.getLoanId() + "," + newloan.getCustomerId() + "," + newloan.getLoanAmount() + ","
+                    + newloan.getInterestRate() + "," + newloan.getLoanDueDate();
+            bw.write(loanData);
+            bw.newLine();
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public static void updateCSVOfLoan(HashMap<Integer, ArrayList<Loan>> loanList, Loan newLoanItems) {
+        File file = new File("./CSV/Loan_Data.csv");
+        File newFile = new File(tempFile);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile))) {
+            StringBuilder sb = new StringBuilder("loan_id,customer_id,loan_amount,interest_rate,loan_due_date\n");
+            
+            for (Map.Entry<Integer, ArrayList<Loan>> entry : loanList.entrySet()){
+                for (Loan loan : entry.getValue() ){
+                    double loanAmount = loan.getLoanId() == newLoanItems.getLoanId() ? newLoanItems.getLoanAmount() : loan.getLoanAmount();
+
+                    sb.append(loan.getLoanId() + "," + loan.getCustomerId() + "," + loanAmount + "," + loan.getInterestRate() + "," + loan.getLoanDueDate() + "\n");
+                }
+            }
+            System.out.println(newLoanItems.getLoanId());
+            writer.append(sb);
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       file.delete();
+       newFile.renameTo(file);
+   }
+
     private static String escapeDoubleQuotes(String str) {
         if (str == null) {
             return ""; // Handle null values

@@ -475,8 +475,7 @@ public class BankSystem {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
 
         do {
-            bank.getLoans(customerId);
-
+            
             System.out.println("1. Apply Loan");
             System.out.println("2. Repay Loan");
             System.out.println("3. Exit ");

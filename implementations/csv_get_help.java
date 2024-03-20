@@ -66,7 +66,7 @@ public final class csv_get_help {
         }
     }
 
-    public static void populateListLoan(HashMap<Integer, List<Loan>> loanList) {
+    public static void populateListLoan(HashMap<Integer, ArrayList<Loan>> loanList) {
         try (BufferedReader bur = new BufferedReader(new FileReader("./CSV/Loan_Data.csv"))) {
             String sLine;
             bur.readLine();
@@ -95,7 +95,7 @@ public final class csv_get_help {
         
     }
 
-    public static void populateCreditList(HashMap<Integer, List<CreditCard>> creditList) {
+    public static void populateCreditList(HashMap<Integer, ArrayList<CreditCard>> creditList) {
         try (BufferedReader bur = new BufferedReader(new FileReader("./CSV/mock_credit_card.csv"))) {
             String sLine;
             bur.readLine();
