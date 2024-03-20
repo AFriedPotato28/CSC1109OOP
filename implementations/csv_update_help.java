@@ -1,3 +1,4 @@
+package implementations;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 public final class csv_update_help {
 
-    private static String tempFile = "temp.csv";
+    private static String tempFile = "./CSV/temp.csv";
 
     /**
      * 
@@ -43,7 +44,7 @@ public final class csv_update_help {
     public static boolean updateCSVOfCustomerData(String userInfo, ArrayList<Customer> customers,
             ArrayList<String> HashedPasswordandSalt) {
 
-        String fileName = "MOCK_DATA.csv";
+        String fileName = "./CSV/MOCK_DATA.csv";
         File oldFile = new File(fileName);
         File newFile = new File(tempFile);
 
@@ -99,7 +100,7 @@ public final class csv_update_help {
     public static boolean updateCSVofTwoAccounts(HashMap<Integer, List<Account>> accounts, Account fromAccount,
             Account toAccount) {
 
-        String file = "Account_Data.csv";
+        String file = "./CSV/Account_Data.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -164,7 +165,7 @@ public final class csv_update_help {
 
     public static boolean updateCSVOfAccount(HashMap<Integer, List<Account>> accounts, Account accountStash) {
 
-        String file = "Account_Data.csv";
+        String file = "./CSV/Account_Data.csv";
 
         File oldFile = new File(file);
         File newFile = new File(tempFile);
@@ -222,7 +223,7 @@ public final class csv_update_help {
      */
 
     public static void generateCSVofSecurity(String activity, int customerId) {
-        String fileName = "Log-Tracking.csv";
+        String fileName = "./CSV/Log-Tracking.csv";
 
         LocalDateTime dateTimeObj = LocalDateTime.now();
         /*
@@ -248,7 +249,7 @@ public final class csv_update_help {
     }
 
     public static void createCustomerAccount(Customer customer) {
-        String filepath = "MOCK_DATA.csv";
+        String filepath = "./CSV/MOCK_DATA.csv";
 
         String[] dataToAppend = { String.valueOf(customer.getCustomerId()), customer.getName(), customer.getUserName(),
                 customer.getPassword(), customer.getSalt() };
@@ -266,7 +267,7 @@ public final class csv_update_help {
     }
 
     public static void generateCSVtoAccount(int customerID, Account account) {
-        String filepath = "Account_Data.csv";
+        String filepath = "./CSV/Account_Data.csv";
 
         String[] dataToAppend = { String.valueOf(account.getAccountNo()),
                 String.valueOf(customerID), account.getAccountType(),
@@ -288,7 +289,7 @@ public final class csv_update_help {
     }
 
     public static void updateLoanToCsv(ArrayList<Loan> loans) {
-        try (BufferedReader br = new BufferedReader(new FileReader("Loan_Data.csv"));
+        try (BufferedReader br = new BufferedReader(new FileReader("./CSV/Loan_Data.csv"));
                 BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
 
             String header = br.readLine(); // Read and skip the header line
@@ -321,7 +322,7 @@ public final class csv_update_help {
         }
 
         // Replace the original file with the updated file
-        File originalFile = new File("Loan_Data.csv");
+        File originalFile = new File("./CSV/Loan_Data.csv");
         File tempsFile = new File(tempFile);
         tempsFile.renameTo(originalFile);
     }
