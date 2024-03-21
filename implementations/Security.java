@@ -56,7 +56,7 @@ public class Security {
      */
     public int generateOTP(String username) {
         SecureRandom rand = new SecureRandom();
-        int otp = rand.nextInt(1000000);
+        int otp = rand.nextInt(100000,1000000);
         // Store inside OTP map to validate
         otpMap.put(username, otp);
         System.out.println(otp);

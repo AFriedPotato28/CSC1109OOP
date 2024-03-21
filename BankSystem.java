@@ -45,7 +45,7 @@ public class BankSystem {
                     case 2:
                         userInfo = loginToAccount(scanner, bank, securityInstance);
                         // Once logged in, initiate the logout timer
-                        //initiateLogoutTimer();
+                        // initiateLogoutTimer();
                         break;
                 }
             } else {
@@ -93,7 +93,7 @@ public class BankSystem {
                     default:
                         break;
                 }
-               
+
             }
         } while (choice != 0);
 
@@ -114,10 +114,6 @@ public class BankSystem {
         initiateLogoutTimer();
     }
 
-
-
-
-
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
         System.out.println(prompt);
@@ -133,7 +129,7 @@ public class BankSystem {
             password = promptInput("Please enter your password:", scanner);
         }
 
-        bank.addCustomer(name,username,password);
+        bank.addCustomer(name, username, password);
     }
 
     private static String loginToAccount(Scanner scanner, Bank bank, Security securityInstance) {
@@ -158,9 +154,9 @@ public class BankSystem {
                     securityInstance.logActivity(bank.retrieveUserInfo(loginUsername).getCustomerId(), 1);
                     bank.populateUserInfo(loginUsername);
                     return loginUsername;
-                    }
-                } catch (NumberFormatException e) {
                 }
+            } catch (NumberFormatException e) {
+            }
             System.out.println("You have " + (3 - attemptOfTries) + " attempts left");
             attemptOfTries++;
 
@@ -494,7 +490,7 @@ public class BankSystem {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
 
         do {
-            
+
             System.out.println("1. Apply Loan");
             System.out.println("2. Repay Loan");
             System.out.println("3. Exit ");
@@ -576,7 +572,8 @@ public class BankSystem {
 
             double repayLoanAmount = Double
                     .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
-            if (bank.checkExistingLoan(repayLoanId).get().getLoanAmount() >= repayLoanAmount && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0) {
+            if (bank.checkExistingLoan(repayLoanId).get().getLoanAmount() >= repayLoanAmount
+                    && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0) {
                 bank.repayLoan(repayLoanId, repayLoanAmount);
             } else {
                 System.out.println("The amount you have input is over the amount you are repaying");

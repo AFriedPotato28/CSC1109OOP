@@ -1,4 +1,5 @@
 package implementations;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -7,13 +8,11 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 
 public final class csv_get_help {
 
     public static void populateCustomersList(ArrayList<Customer> customers) {
-      
+
         try (BufferedReader bur = new BufferedReader(new FileReader("./CSV/MOCK_DATA.csv"))) {
             String sLine;
             bur.readLine();
@@ -37,7 +36,7 @@ public final class csv_get_help {
         }
     }
 
-    public static void populateAccountList(HashMap<Integer, List<Account>> accounts) {
+    public static void populateAccountList(HashMap<Integer, ArrayList<Account>> accounts) {
         try (BufferedReader bur = new BufferedReader(new FileReader("./CSV/Account_Data.csv"))) {
             String sLine;
             bur.readLine();
@@ -77,9 +76,9 @@ public final class csv_get_help {
                 double loanAmount = Double.parseDouble(data[2]);
                 LocalDate date = LocalDate.parse(data[4]);
 
-                Loan loan = new Loan(loanId, customerId, loanAmount,date);
+                Loan loan = new Loan(loanId, customerId, loanAmount, date);
 
-                if((loanList.get(customerId) == null)){
+                if ((loanList.get(customerId) == null)) {
                     loanList.put(customerId, new ArrayList<>());
                 }
 
@@ -92,7 +91,7 @@ public final class csv_get_help {
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new RuntimeException(e);
         }
-        
+
     }
 
     public static void populateCreditList(HashMap<Integer, ArrayList<CreditCard>> creditList) {
@@ -113,11 +112,12 @@ public final class csv_get_help {
                 int creditLimit = Integer.parseInt(data[8]);
                 double cashAdvancedPayable = Double.parseDouble(data[9]);
                 double cashAdvanceLimit = Double.parseDouble(data[10]);
-                
-                CreditCard card = new CreditCard(creditCardID, customerID, accountNo,balance, remainingCredit, creditLimit, cardNo, CVV,expiryDate,cashAdvancedPayable, cashAdvanceLimit);
-                
-                if (creditList.get(customerID) == null){
-                    creditList.put(customerID,new ArrayList<>());
+
+                CreditCard card = new CreditCard(creditCardID, customerID, accountNo, balance, remainingCredit,
+                        creditLimit, cardNo, CVV, expiryDate, cashAdvancedPayable, cashAdvanceLimit);
+
+                if (creditList.get(customerID) == null) {
+                    creditList.put(customerID, new ArrayList<>());
                 }
                 creditList.get(customerID).add(card);
             }
