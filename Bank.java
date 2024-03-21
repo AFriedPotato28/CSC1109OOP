@@ -403,7 +403,7 @@ public class Bank {
                 this.creditCards = new ArrayList<CreditCard>();
             }
 
-            this.creditCards.add(creditCard);
+            this.creditList.get(customerId).add(creditCard);
             csv_update_help.updateCreditCardToCSV(creditCard);
             System.out.println("Credit Card application successful!");
         } else {
@@ -793,8 +793,8 @@ public class Bank {
     public double totalLoanAmount() {
         double totalLoan = 0.0;
 
-        if (this.loans.size() < 0) {
-            return 0.0;
+        if (this.loans == null) {
+            return totalLoan;
         }
 
         for (Loan loan : this.loans) {
@@ -846,6 +846,8 @@ public class Bank {
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
+        
+
         for (Loan loan : this.loans) {
             if (dateNow.isAfter(loan.getLoanDueDate())) {
                 double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
@@ -861,12 +863,14 @@ public class Bank {
 
     public void printLoans() {
         System.out.println("Outstanding Loans:");
-        for (Loan loan : this.loans) {
-            if (loan.getLoanAmount() > 0) {
-                System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
-                        + " Loan Deadline: " + loan.getLoanDueDate());
+        if(this.loans != null){
+            for (Loan loan : this.loans) {
+                if (loan.getLoanAmount() > 0) {
+                    System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
+                            + " Loan Deadline: " + loan.getLoanDueDate());
+                }
+    
             }
-
         }
     }
 }

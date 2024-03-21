@@ -558,9 +558,11 @@ public class BankSystem {
     }
 
     private static void repayLoan(Scanner scanner, Bank bank) {
-        bank.updateOverdueLoans();
-        bank.printLoans();
-
+        if(bank.totalLoanAmount() != 0.0){
+            bank.updateOverdueLoans();
+            bank.printLoans();
+        }
+        
         try {
             int repayLoanId = Integer
                     .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
