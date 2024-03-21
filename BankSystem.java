@@ -1,34 +1,40 @@
 import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import implementations.Security;
 
 public class BankSystem {
+    private static final int TIME_TO_KICK = 5; // time to kick in seconds
+    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
     public static void main(String[] args) {
         Bank bank = new Bank("Matthias");
         Security securityInstance = new Security();
 
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
-        //Things to do add threading to userInfo to kick user out of logged in page if no interaction for too long 
+
         String userInfo = "";
 
         do {
             if (!bank.validateUsername(userInfo)) {
-
+                // User is not logged in. Handle account creation or login.
                 bank.welcomeMessage();
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Create new Account");
                 System.out.println("2. Login to Account");
                 System.out.println("0. Exit");
-
-                System.out.println("Enter your choice: ");
+                System.out.print("Enter your choice: ");
 
                 try {
                     choice = scanner.nextInt();
                 } catch (Exception e) {
                     System.out.println("Please enter a valid choice");
-                    scanner = new Scanner(System.in);
+                    scanner.nextLine(); // consume the newline
                     choice = -1;
                 }
 
@@ -38,15 +44,11 @@ public class BankSystem {
                         break;
                     case 2:
                         userInfo = loginToAccount(scanner, bank, securityInstance);
-                        break;
-                    default:
-                        if (choice != 0) {
-                            System.out.println("Please enter between 1 : Creating Account or 2: Login Account");
-                        }
+                        // Once logged in, initiate the logout timer
+                        //initiateLogoutTimer();
                         break;
                 }
             } else {
-
                 System.out.println("\nChoose an action:");
                 System.out.println("1. Transfer / Withdraw / Deposit");
                 System.out.println("2. Credit Card Options");
@@ -91,13 +93,30 @@ public class BankSystem {
                     default:
                         break;
                 }
+               
             }
-
         } while (choice != 0);
 
         scanner.close();
-
+        scheduler.shutdownNow(); // Properly shutdown the scheduler
     }
+
+    private static void initiateLogoutTimer() {
+        scheduler.schedule(() -> {
+            System.out.println("You have been logged out due to inactivity.");
+            System.exit(0); // or any other way to handle logout
+        }, TIME_TO_KICK, TimeUnit.SECONDS);
+    }
+
+    private static void resetLogoutTimer() {
+        scheduler.shutdownNow(); // Cancel any previously running tasks
+        scheduler = Executors.newScheduledThreadPool(1); // Reinitialize the scheduler
+        initiateLogoutTimer();
+    }
+
+
+
+
 
     /* This creates a reusable code of proompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
@@ -390,7 +409,7 @@ public class BankSystem {
 
     private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo) {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-        bank.getCustomerCreditCards(customerId);
+
         int choice = -1;
 
         do {
@@ -433,7 +452,7 @@ public class BankSystem {
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println(
                                 "There is no existing credit card for you to explore. Please apply your credit card");
-                        return;
+                        break;
                     }
 
                     bank.cancelCreditCard(scanner, customerId, userInfo);
@@ -442,7 +461,7 @@ public class BankSystem {
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println(
                                 "There is no existing credit card for you to explore. Please apply your credit card");
-                        return;
+                        break;
                     }
                     bank.payCreditCardBills(scanner, customerId, userInfo);
                     break;
@@ -450,7 +469,7 @@ public class BankSystem {
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println(
                                 "There is no existing credit card for you to explore. Please apply your credit card");
-                        return;
+                        break;
                     }
 
                     bank.CashAdvanceWithdrawal(scanner, customerId, userInfo);
@@ -459,7 +478,7 @@ public class BankSystem {
                     if (bank.getCreditCardCount(customerId) == 0) {
                         System.out.println(
                                 "There is no existing credit card for you to explore. Please apply your credit card");
-                        return;
+                        break;
                     }
 
                     bank.payCashAdvancePayables(scanner, customerId, userInfo);
@@ -557,7 +576,7 @@ public class BankSystem {
 
             double repayLoanAmount = Double
                     .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
-            if (bank.checkExistingLoan(repayLoanId).get().getLoanAmount() >= repayLoanAmount) {
+            if (bank.checkExistingLoan(repayLoanId).get().getLoanAmount() >= repayLoanAmount && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0) {
                 bank.repayLoan(repayLoanId, repayLoanAmount);
             } else {
                 System.out.println("The amount you have input is over the amount you are repaying");

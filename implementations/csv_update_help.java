@@ -2,6 +2,7 @@ package implementations;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -400,6 +401,27 @@ public final class csv_update_help {
        file.delete();
        newFile.renameTo(file);
    }
+
+    public static void writeCSVToCreditCard(HashMap<Integer, ArrayList<CreditCard>> creditList) {
+        StringBuilder sb = new StringBuilder("credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advanced_payable,cash_advancement_limit \n");
+        
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./CSV/mock_credit_card.csv"))){
+
+            for (Map.Entry<Integer, ArrayList<CreditCard>> entry : creditList.entrySet()){
+                for (CreditCard card : entry.getValue()){
+                    sb.append(card.getCreditCardId() + "," + card.getCustomerId() + "," + 
+                    card.getAccountNo() + "," + card.getCardNumber() + "," + 
+                    card.getEncryptedCVV() + "," + card.getExpiryDate() + ","  + 
+                    card.getBalance() + "," + card.getRemainingCredit() + "," + 
+                    card.getCashAdvancePayable() + "," + card.getCashAdvanceLimit() + "\n");
+                }
+            }
+            writer.append(sb);
+        } catch (Exception e){
+            return;
+        }
+
+    }
 
     private static String escapeDoubleQuotes(String str) {
         if (str == null) {
