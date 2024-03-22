@@ -1,3 +1,4 @@
+package implementations;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -9,8 +10,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
@@ -57,7 +56,7 @@ public class Security {
      */
     public int generateOTP(String username) {
         SecureRandom rand = new SecureRandom();
-        int otp = rand.nextInt(1000000);
+        int otp = rand.nextInt(100000,1000000);
         // Store inside OTP map to validate
         otpMap.put(username, otp);
         System.out.println(otp);

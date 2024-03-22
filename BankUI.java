@@ -1,4 +1,7 @@
 import javax.swing.*;
+
+import implementations.Security;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -61,7 +64,7 @@ public class BankUI extends JFrame {
         while (!accountType.equals("1") && !accountType.equals("2")) {
             accountType = JOptionPane.showInputDialog(this, "Invalid account type. Please enter again:");
         }
-        bank.addCustomer(new Customer(0,name,username,password,""));
+        bank.addCustomer(name,username,password);
         JOptionPane.showMessageDialog(this, "Account created successfully!");
     }
 

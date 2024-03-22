@@ -1,3 +1,4 @@
+package implementations;
 import java.time.LocalDate;
 
 /**
@@ -108,6 +109,10 @@ public class Loan extends Account{
      */
     public void setLoanAmount(double loanAmount) {
         this.loanAmount = loanAmount;
+    }
+
+    public void deductLoanAmount(double loanAmount) {
+        this.loanAmount -= loanAmount;
     }
 
 
