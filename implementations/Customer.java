@@ -1,3 +1,4 @@
+package implementations;
 /**
  * Represent a customer associated with the Bank
  * Each customer has a Customer ID, name, username and password.
@@ -12,7 +13,10 @@ public class Customer {
     /**
      * Construct a Customer object.
      */
-    public Customer(){
+    public Customer(String name, String username, String password){
+        this.name = name;
+        this.username = username;
+        this.password = password;
     }
 
     public Customer(int id, String name, String username, String password,String salt){
