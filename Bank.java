@@ -399,8 +399,8 @@ public class Bank {
         if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
 
-            if (this.creditCards == null) {
-                this.creditCards = new ArrayList<CreditCard>();
+            if(this.creditCards == null) {
+                this.creditCards = new ArrayList<>();
             }
 
             this.creditCards.add(creditCard);
@@ -479,6 +479,7 @@ public class Bank {
             }
 
             this.creditCards.remove(card);
+
             csv_update_help.writeCSVToCreditCard(this.creditList);
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
 
@@ -558,6 +559,7 @@ public class Bank {
                 Account savingsAccount = getAccountInfo();
                 savingsAccount.withdraw(paymentAmount);
                 csv_update_help.updateCSVOfAccount(this.accounts);
+                System.out.println("Your current savings account has " + getBalance()+ " left");
             }
         } else {
             // Payment failed
@@ -793,8 +795,8 @@ public class Bank {
     public double totalLoanAmount() {
         double totalLoan = 0.0;
 
-        if (this.loans.size() < 0) {
-            return 0.0;
+        if (this.loans == null) {
+            return totalLoan;
         }
 
         for (Loan loan : this.loans) {
@@ -818,7 +820,13 @@ public class Bank {
          } else {
             addAccount(customerId, "2", loanAmount);
         }
-        this.loanList.get(customerId).add(newLoan);
+
+        if ( this.loans == null){
+            this.loans = new ArrayList<>();
+        }
+
+        this.loans.add(newLoan);
+
         csv_update_help.addLoanToCsv(newLoan);
     }
 
@@ -829,6 +837,7 @@ public class Bank {
     }
 
     public void repayLoan(int repayLoanId, double repayLoanAmount) {
+
         DecimalFormat df = new DecimalFormat("##.00");
         Account savingsAccount = getAccountInfo();
 
@@ -839,13 +848,17 @@ public class Bank {
         accountInformation.get().withdraw(repayLoanAmount);
         Loan newLoanItems = checkExistingLoan(repayLoanId).get();
         newLoanItems.deductLoanAmount(repayLoanAmount);
-
+        
         csv_update_help.updateCSVOfLoan(this.loanList, newLoanItems);
         csv_update_help.updateCSVOfAccount(this.accounts);
+
+        System.out.println("Succesfully updated your loan and your current savings account balance is :" + getBalance());
     }
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
+        
+
         for (Loan loan : this.loans) {
             if (dateNow.isAfter(loan.getLoanDueDate())) {
                 double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
@@ -861,12 +874,14 @@ public class Bank {
 
     public void printLoans() {
         System.out.println("Outstanding Loans:");
-        for (Loan loan : this.loans) {
-            if (loan.getLoanAmount() > 0) {
-                System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
-                        + " Loan Deadline: " + loan.getLoanDueDate());
+        if(this.loans != null){
+            for (Loan loan : this.loans) {
+                if (loan.getLoanAmount() > 0) {
+                    System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
+                            + " Loan Deadline: " + loan.getLoanDueDate());
+                }
+    
             }
-
         }
     }
 }
