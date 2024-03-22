@@ -567,7 +567,7 @@ public class BankSystem {
             int repayLoanId = Integer
                     .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
 
-            if (!bank.checkExistingLoan(repayLoanId).isPresent()) {
+            if (!bank.checkExistingLoan(repayLoanId).isPresent() || bank.checkExistingLoan(repayLoanId).get().getLoanAmount() == 0) {
                 System.out.println("Invalid input, your account does not have a loan corresponding with this loanID.");
                 return;
             }

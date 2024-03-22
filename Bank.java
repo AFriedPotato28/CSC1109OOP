@@ -399,11 +399,11 @@ public class Bank {
         if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
 
-            if (this.creditCards == null) {
-                this.creditCards = new ArrayList<CreditCard>();
+            if(this.creditCards == null) {
+                this.creditCards = new ArrayList<>();
             }
 
-            this.creditList.get(customerId).add(creditCard);
+            this.creditCards.add(creditCard);
             csv_update_help.updateCreditCardToCSV(creditCard);
             System.out.println("Credit Card application successful!");
         } else {
@@ -818,7 +818,13 @@ public class Bank {
          } else {
             addAccount(customerId, "2", loanAmount);
         }
-        this.loanList.get(customerId).add(newLoan);
+
+        if ( this.loans == null){
+            this.loans = new ArrayList<>();
+        }
+
+        this.loans.add(newLoan);
+
         csv_update_help.addLoanToCsv(newLoan);
     }
 
