@@ -295,7 +295,7 @@ public final class csv_update_help {
                             + loan.getInterestRate() + "," + loan.getLoanDueDate() + "\n");
                 }
             }
-            System.out.println(newLoanItems.getLoanId());
+
             writer.append(sb);
         } catch (IOException e) {
             e.printStackTrace();
