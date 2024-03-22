@@ -479,6 +479,7 @@ public class Bank {
             }
 
             this.creditCards.remove(card);
+
             csv_update_help.writeCSVToCreditCard(this.creditList);
             System.out.println("Credit card ending in " + cardNumberToDelete + " has been deleted.");
 
@@ -558,6 +559,7 @@ public class Bank {
                 Account savingsAccount = getAccountInfo();
                 savingsAccount.withdraw(paymentAmount);
                 csv_update_help.updateCSVOfAccount(this.accounts);
+                System.out.println("Your current savings account has " + getBalance()+ " left");
             }
         } else {
             // Payment failed
@@ -835,6 +837,7 @@ public class Bank {
     }
 
     public void repayLoan(int repayLoanId, double repayLoanAmount) {
+
         DecimalFormat df = new DecimalFormat("##.00");
         Account savingsAccount = getAccountInfo();
 
@@ -845,9 +848,11 @@ public class Bank {
         accountInformation.get().withdraw(repayLoanAmount);
         Loan newLoanItems = checkExistingLoan(repayLoanId).get();
         newLoanItems.deductLoanAmount(repayLoanAmount);
-
+        
         csv_update_help.updateCSVOfLoan(this.loanList, newLoanItems);
         csv_update_help.updateCSVOfAccount(this.accounts);
+
+        System.out.println("Succesfully updated your loan and your current savings account balance is :" + getBalance());
     }
 
     public void updateOverdueLoans() {
