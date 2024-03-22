@@ -561,6 +561,11 @@ public class BankSystem {
         if(bank.totalLoanAmount() != 0.0){
             bank.updateOverdueLoans();
             bank.printLoans();
+
+        } else{
+            
+            System.out.println("Rejected, You dont have any loans in your bank.");
+            return;
         }
         
         try {
@@ -574,12 +579,14 @@ public class BankSystem {
 
             double repayLoanAmount = Double
                     .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
-            if (bank.checkExistingLoan(repayLoanId).get().getLoanAmount() >= repayLoanAmount
-                    && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0) {
-                bank.repayLoan(repayLoanId, repayLoanAmount);
-            } else {
+
+            if (repayLoanAmount > bank.checkExistingLoan(repayLoanId).get().getLoanAmount() && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0 ){
                 System.out.println("The amount you have input is over the amount you are repaying");
+                return;
             }
+
+
+            bank.repayLoan(repayLoanId, repayLoanAmount);
         } catch (Exception e) {
             return;
         }

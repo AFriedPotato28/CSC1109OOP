@@ -305,10 +305,13 @@ public final class csv_update_help {
     }
 
     public static void writeCSVToCreditCard(HashMap<Integer, ArrayList<CreditCard>> creditList) {
+        File temp = new File(tempFile);
+        File originalFile = new File("./CSV/mock_credit_card.csv");
+
         StringBuilder sb = new StringBuilder(
                 "credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advancement_payable,cash_advanced_limit \n");
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./CSV/mock_credit_card.csv"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
 
             for (Map.Entry<Integer, ArrayList<CreditCard>> entry : creditList.entrySet()) {
                 for (CreditCard card : entry.getValue()) {
@@ -323,6 +326,10 @@ public final class csv_update_help {
         } catch (Exception e) {
             return;
         }
+
+        originalFile.delete();
+        temp.renameTo(originalFile);
+
     }
     
     /**
