@@ -34,19 +34,38 @@ public class BankUI extends JFrame {
     }
 
     private JPanel loginPanel(){
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
         nameLabel = new JLabel("Name:");
-        inputPanel.add(nameLabel);
+        gbc.gridy = 0;
+        inputPanel.add(nameLabel,gbc);
+
         nameField = new JTextField();
-        inputPanel.add(nameField);
+        nameField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        inputPanel.add(nameField,gbc);
+
         usernameLabel = new JLabel("Username:");
-        inputPanel.add(usernameLabel);
+        gbc.gridy = 2;
+        inputPanel.add(usernameLabel,gbc);
+
         usernameField = new JTextField();
-        inputPanel.add(usernameField);
+        usernameField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        inputPanel.add(usernameField,gbc);
+
         passwordLabel = new JLabel("Password:");
-        inputPanel.add(passwordLabel);
+        gbc.gridy = 4;
+        inputPanel.add(passwordLabel,gbc);
+
         passwordField = new JPasswordField();
-        inputPanel.add(passwordField);
+        passwordField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 5;
+        inputPanel.add(passwordField,gbc);
+
         createAccountButton = new JButton("Create Account");
         createAccountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
