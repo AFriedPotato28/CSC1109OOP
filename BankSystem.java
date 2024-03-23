@@ -331,7 +331,6 @@ public class BankSystem {
         }
 
         double transferAmount = 0.0;
-
         if (valid == true) {
             try {
                 System.out.println("Please enter a valid transfer amount. Press -1 to exit.");
@@ -382,7 +381,6 @@ public class BankSystem {
 
     private static void deposit(Scanner scanner, Bank bank, String username) {
         double money = 0.0;
-
         try {
 
             System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
@@ -430,16 +428,19 @@ public class BankSystem {
             switch (choice) {
                 case 1:
                     int accountNo = bank.getAccountNo();
-                    int annualIncome;
+                    int annualIncome = 0;
                     do {
-                        annualIncome = Integer.parseInt(
+                        try {
+                            annualIncome = Integer.parseInt(
                                 promptInput("Please enter your annual income: (Please enter -1 to exit) ", scanner));
-                        if (annualIncome == -1)
-                            return;
-
-                        if (annualIncome < 15000) {
-                            System.out
-                                    .println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                            
+                            if(annualIncome == -1) {
+                                return;
+                            } else if (annualIncome < 15000) {
+                                System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                            }
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid annual income... please try again");
                         }
                     } while (annualIncome < 15000);
                     bank.applyCreditCard(customerId, accountNo, annualIncome);

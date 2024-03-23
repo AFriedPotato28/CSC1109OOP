@@ -288,7 +288,7 @@ public class CreditCard {
         // check if the total cash advance amount to be withdrawn totals less than 30%
         // of the credit limit
         // AND less than or equal to the remaining balance
-        if (totalCashAdvanceAmount + this.cashAdvancePayable < this.cashAdvanceLimit
+        if (totalCashAdvanceAmount + this.cashAdvancePayable <= this.cashAdvanceLimit
                 && totalCashAdvanceAmount <= this.creditLimit) {
             this.cashAdvancePayable += totalCashAdvanceAmount;
             this.remainingCredit -= totalCashAdvanceAmount;
@@ -326,7 +326,7 @@ public class CreditCard {
         }
 
         // Check if payment amount exceed cash advance payable
-        if (paymentAmount > this.cashAdvancePayable) {
+        if (paymentAmount > this.cashAdvancePayable && paymentAmount < this.cashAdvanceLimit) {
             System.out.println("Payment amount exceeds the cash advance payable!");
             System.out.println("\nCash advance payable: " + this.cashAdvancePayable);
             return false;

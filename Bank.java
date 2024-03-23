@@ -2,6 +2,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -452,7 +453,6 @@ public class Bank {
             for (CreditCard card : this.creditCards) {
                 String last4Digits = card.getCardNumber().substring(12, 16).toString();
                 System.out.println("Card Number: **** **** **** " + last4Digits); // Display the last 4 digits
-
             }
 
             // Prompt user to select which credit card to delete
@@ -539,14 +539,20 @@ public class Bank {
             return;
         }
 
-        // Prompt user to enter payment amount
-        System.out.println("Enter the payment amount: ");
-        double paymentAmount = scanner.nextDouble();
-
-        if (paymentAmount == 0) {
-            System.out.println("Payment amount is invalid. ");
-            return;
-        }
+        double paymentAmount = 0.0;
+        do {
+            // Prompt user to enter payment amount
+            System.out.println("Enter the payment amount: ");
+            try {
+                paymentAmount = scanner.nextDouble();
+                if(paymentAmount <= 0.0) {
+                    System.out.println("Payment amount cannot be lesser or equals to 0.0...");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid payment amount... please try again.");
+                scanner = new Scanner(System.in);
+            }
+        } while (paymentAmount <= 0.0);
 
         // Find the credit card with the specific card number and pay the bill
         CreditCard card = creditCardExists.get();
@@ -634,12 +640,24 @@ public class Bank {
 
         // Prompt user to enter withdrawal amount
         System.out.println(
-                "Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher.");
-        System.out.println("\nEnter the withdrawal amount: ");
+                "Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher. \n");
+        int withdrawalAmount = 0;
+        do {
+            // Prompt user to enter payment amount
+            System.out.println("Enter the withdrawal amount: ");
+            try {
+                withdrawalAmount = scanner.nextInt();
+                if(withdrawalAmount <= 0.0) {
+                    System.out.println("Withdrawal amount cannot be lesser or equals to 0.0...");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid withdrawal amount... please try again.");
+                scanner = new Scanner(System.in);
+            }
+        } while (withdrawalAmount <= 0.0);
 
         try {
-            double withdrawalAmount = scanner.nextDouble();
-            double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 1.05);
+            double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 0.95);
             CreditCard card = creditCardExists.get();
 
             if (card.cashAdvanceWithdrawal(withdrawalAmount)) {
@@ -695,13 +713,24 @@ public class Bank {
             return;
         }
 
-        // Prompt user to enter payment amount
-        System.out.println("Enter the payment amount: ");
-        double paymentAmount = scanner.nextDouble();
+        double paymentAmount = 0.0;
+        do {
+            // Prompt user to enter payment amount
+            System.out.println("Enter the payment amount: ");
+            try {
+                paymentAmount = scanner.nextDouble();
+                if(paymentAmount <= 0.0) {
+                    System.out.println("Payment amount cannot be lesser or equals to 0.0...");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid payment amount... please try again.");
+                scanner = new Scanner(System.in);
+            }
+        } while (paymentAmount <= 0.0);
+
         // Find the credit card with the specific card number and pay the cash advance
         // payable
         CreditCard creditCard = creditCardExists.get();
-
         if (creditCard.payCashAdvancePayable(paymentAmount)) {
             // Payment successful
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
