@@ -400,7 +400,7 @@ public class Bank {
         if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
 
-            if(this.creditCards == null) {
+            if (this.creditCards == null) {
                 this.creditCards = new ArrayList<>();
             }
 
@@ -413,7 +413,6 @@ public class Bank {
         }
 
     }
-
 
     /**
      * Attempts to cancels a credit card for a given customer.
@@ -545,7 +544,7 @@ public class Bank {
             System.out.println("Enter the payment amount: ");
             try {
                 paymentAmount = scanner.nextDouble();
-                if(paymentAmount <= 0.0) {
+                if (paymentAmount <= 0.0) {
                     System.out.println("Payment amount cannot be lesser or equals to 0.0...");
                 }
             } catch (InputMismatchException e) {
@@ -565,7 +564,7 @@ public class Bank {
                 Account savingsAccount = getAccountInfo();
                 savingsAccount.withdraw(paymentAmount);
                 csv_update_help.updateCSVOfAccount(this.accounts);
-                System.out.println("Your current savings account has " + getBalance()+ " left");
+                System.out.println("Your current savings account has " + getBalance() + " left");
             }
         } else {
             // Payment failed
@@ -647,7 +646,7 @@ public class Bank {
             System.out.println("Enter the withdrawal amount: ");
             try {
                 withdrawalAmount = scanner.nextInt();
-                if(withdrawalAmount <= 0.0) {
+                if (withdrawalAmount <= 0.0) {
                     System.out.println("Withdrawal amount cannot be lesser or equals to 0.0...");
                 }
             } catch (InputMismatchException e) {
@@ -719,7 +718,7 @@ public class Bank {
             System.out.println("Enter the payment amount: ");
             try {
                 paymentAmount = scanner.nextDouble();
-                if(paymentAmount <= 0.0) {
+                if (paymentAmount <= 0.0) {
                     System.out.println("Payment amount cannot be lesser or equals to 0.0...");
                 }
             } catch (InputMismatchException e) {
@@ -736,7 +735,7 @@ public class Bank {
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                     creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " was successful.");
             csv_update_help.updateExistingCreditCardBills(creditCard, cardNumber);
-            
+
             Account savingsAccount = getAccountInfo();
             savingsAccount.withdraw(paymentAmount);
             csv_update_help.updateCSVOfAccount(this.accounts);
@@ -805,7 +804,7 @@ public class Bank {
         customer.setSalt(HashedPasswordandSalt.get(1));
         boolean success = csv_update_help.updateCSVOfCustomerData(userInfo, this.customers, HashedPasswordandSalt);
 
-        if(success){
+        if (success) {
             System.out.println("Successfully updated your new password");
         }
     }
@@ -839,18 +838,19 @@ public class Bank {
         LocalDate loanDueDate = calculateLoanDueDate(loanAmount);
         Loan newLoan = new Loan(newLoanId, customerId, loanAmount, loanDueDate);
 
-        Optional<Account> accountInformation = this.account.stream().filter((account) -> account.getAccountType().equals("Loan")).findFirst();
+        Optional<Account> accountInformation = this.account.stream()
+                .filter((account) -> account.getAccountType().equals("Loan")).findFirst();
 
         if (accountInformation.isPresent()) {
             Account account = accountInformation.get();
             account.deposit(loanAmount);
             csv_update_help.updateCSVOfAccount(this.accounts);
 
-         } else {
+        } else {
             addAccount(customerId, "2", loanAmount);
         }
 
-        if ( this.loans == null){
+        if (this.loans == null) {
             this.loans = new ArrayList<>();
         }
 
@@ -872,21 +872,22 @@ public class Bank {
 
         savingsAccount.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
 
-        Optional<Account> accountInformation = this.account.stream().filter((account) -> account.getAccountType().equals("Loan")).findFirst();
+        Optional<Account> accountInformation = this.account.stream()
+                .filter((account) -> account.getAccountType().equals("Loan")).findFirst();
 
         accountInformation.get().withdraw(repayLoanAmount);
         Loan newLoanItems = checkExistingLoan(repayLoanId).get();
         newLoanItems.deductLoanAmount(repayLoanAmount);
-        
+
         csv_update_help.updateCSVOfLoan(this.loanList, newLoanItems);
         csv_update_help.updateCSVOfAccount(this.accounts);
 
-        System.out.println("Succesfully updated your loan and your current savings account balance is :" + getBalance());
+        System.out
+                .println("Succesfully updated your loan and your current savings account balance is :" + getBalance());
     }
 
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
-        
 
         for (Loan loan : this.loans) {
             if (dateNow.isAfter(loan.getLoanDueDate())) {
@@ -903,13 +904,13 @@ public class Bank {
 
     public void printLoans() {
         System.out.println("Outstanding Loans:");
-        if(this.loans != null){
+        if (this.loans != null) {
             for (Loan loan : this.loans) {
                 if (loan.getLoanAmount() > 0) {
                     System.out.println("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
                             + " Loan Deadline: " + loan.getLoanDueDate());
                 }
-    
+
             }
         }
     }

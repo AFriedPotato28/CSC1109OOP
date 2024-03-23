@@ -330,15 +330,17 @@ public class BankSystem {
             return;
         }
 
-        double transferAmount = 0.0;
+        double money = 0.0;
         if (valid == true) {
             try {
-                System.out.println("Please enter a valid transfer amount. Press -1 to exit.");
-                transferAmount = scanner.nextDouble();
-                scanner.nextLine();
+                do {
+                    System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
+                    money = scanner.nextDouble();
 
-                if (transferAmount == -1.0)
-                    return;
+                    if (money == -1.0)
+                        return;
+
+                } while (money < -1.0);
 
             } catch (InputMismatchException | IllegalArgumentException e) {
                 System.out.println("That's not a valid number. Please enter a valid amount.");
@@ -346,8 +348,8 @@ public class BankSystem {
             }
         }
 
-        if (bank.transferAmount(transferAmount, recipientUsername)) {
-            System.out.println("Successfully transferred " + transferAmount + " to " + recipientUsername + ".");
+        if (bank.transferAmount(money, recipientUsername)) {
+            System.out.println("Successfully transferred " + money + " to " + recipientUsername + ".");
             System.out.println("Your current balance is: " + bank.getBalance());
             return;
         }
@@ -360,11 +362,14 @@ public class BankSystem {
         System.out.println("You currently have " + bank.getBalance() + " in your bank account");
 
         try {
-            System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
-            money = scanner.nextDouble();
+            do {
+                System.out.println("Please enter a valid withdraw amount, Press -1 to exit.");
+                money = scanner.nextDouble();
 
-            if (money == -1.0)
-                return;
+                if (money == -1.0)
+                    return;
+
+            } while (money < -1.0);
 
         } catch (InputMismatchException e) {
             scanner.nextLine();
@@ -383,11 +388,14 @@ public class BankSystem {
         double money = 0.0;
         try {
 
-            System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
-            money = scanner.nextDouble();
+            do {
+                System.out.println("Please enter a valid deposit amount, Press -1 to exit.");
+                money = scanner.nextDouble();
 
-            if (money == -1.0)
-                return;
+                if (money == -1.0)
+                    return;
+
+            } while (money < -1.0);
 
         } catch (InputMismatchException e) {
             scanner.nextLine();
@@ -432,12 +440,14 @@ public class BankSystem {
                     do {
                         try {
                             annualIncome = Integer.parseInt(
-                                promptInput("Please enter your annual income: (Please enter -1 to exit) ", scanner));
-                            
-                            if(annualIncome == -1) {
+                                    promptInput("Please enter your annual income: (Please enter -1 to exit) ",
+                                            scanner));
+
+                            if (annualIncome == -1) {
                                 return;
                             } else if (annualIncome < 15000) {
-                                System.out.println("Unable to apply for a credit card! (Annual income is less than $15000)");
+                                System.out.println(
+                                        "Unable to apply for a credit card! (Annual income is less than $15000)");
                             }
                         } catch (NumberFormatException e) {
                             System.out.println("Invalid annual income... please try again");
@@ -559,21 +569,22 @@ public class BankSystem {
     }
 
     private static void repayLoan(Scanner scanner, Bank bank) {
-        if(bank.totalLoanAmount() != 0.0){
+        if (bank.totalLoanAmount() != 0.0) {
             bank.updateOverdueLoans();
             bank.printLoans();
 
-        } else{
-            
+        } else {
+
             System.out.println("Rejected, You dont have any loans in your bank.");
             return;
         }
-        
+
         try {
             int repayLoanId = Integer
                     .parseInt(promptInput("Please enter LoanID of the loan you are repaying", scanner));
 
-            if (!bank.checkExistingLoan(repayLoanId).isPresent() || bank.checkExistingLoan(repayLoanId).get().getLoanAmount() == 0) {
+            if (!bank.checkExistingLoan(repayLoanId).isPresent()
+                    || bank.checkExistingLoan(repayLoanId).get().getLoanAmount() == 0) {
                 System.out.println("Invalid input, your account does not have a loan corresponding with this loanID.");
                 return;
             }
@@ -581,11 +592,11 @@ public class BankSystem {
             double repayLoanAmount = Double
                     .parseDouble(promptInput("Please enter the amount you are repaying", scanner));
 
-            if (repayLoanAmount > bank.checkExistingLoan(repayLoanId).get().getLoanAmount() && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0 ){
+            if (repayLoanAmount > bank.checkExistingLoan(repayLoanId).get().getLoanAmount()
+                    && bank.checkExistingLoan(repayLoanId).get().getLoanAmount() > 0) {
                 System.out.println("The amount you have input is over the amount you are repaying");
                 return;
             }
-
 
             bank.repayLoan(repayLoanId, repayLoanAmount);
         } catch (Exception e) {
