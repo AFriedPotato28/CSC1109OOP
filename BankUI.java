@@ -13,6 +13,7 @@ public class BankUI extends JFrame {
     private JLabel nameLabel, usernameLabel, passwordLabel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private boolean isNewAccount = false;
 
     public BankUI(String title) {
         super(title);
@@ -25,6 +26,7 @@ public class BankUI extends JFrame {
         JPanel inputPanel = loginPanel();
         cardPanel.add(inputPanel, "Login");
         cardPanel.add(mainMenuPanel(), "Main Menu");
+        cardPanel.add(transactionPanel(), "Transaction");
         add(cardPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,16 +104,50 @@ public class BankUI extends JFrame {
     private void login() {
         String loginUsername = usernameField.getText();
         String loginPassword = passwordField.getText();
-        while (!bank.validateLogin(loginUsername, loginPassword)) {
-            JOptionPane.showMessageDialog(this, "Wrong credentials. Please try again.");
+        int count = 0;
+        long lockoutEndTime = 0;
+        boolean needReEnter = false;
+
+        while (count < 3) {
+            if (System.currentTimeMillis() < lockoutEndTime) {
+                long remainingTime = lockoutEndTime - System.currentTimeMillis() / 1000;
+                JOptionPane.showMessageDialog(this, "Too many failed attempt, please try again after " + remainingTime + " seconds.");
+                return;
+            }
+
+            if (needReEnter || count ==0 && isNewAccount){
             loginUsername = JOptionPane.showInputDialog(this, "Please enter your username:");
-            loginPassword = JOptionPane.showInputDialog(this, "Please enter your password:");
-            break;
+            JPasswordField passwordField = new JPasswordField();
+            Object[] fields = {"Please enter your password:", passwordField};
+            int confirm = JOptionPane.showConfirmDialog(this, fields, "Password", JOptionPane.OK_CANCEL_OPTION);
+            if (confirm == JOptionPane.OK_OPTION) {
+                loginPassword = new String(passwordField.getPassword());
+            } else{
+                    return;
+            }
+            needReEnter = false;
+        }
+
+            if (!bank.validateLogin(loginUsername, loginPassword)) {
+                JOptionPane.showMessageDialog(this, "Wrong credentials. Please try again.");
+                count++;
+                needReEnter = true;
+            } else {
+                    JOptionPane.showMessageDialog(this, "Login successful!");
+                    cardLayout.show(cardPanel, "Main Menu");
+                    return;
+            }
+        }
+
+        if (count >= 3) {
+            JOptionPane.showMessageDialog(this, "Too many failed attempt. You are locked out for 30 seconds. ");
+            lockoutEndTime = System.currentTimeMillis() + 30000;
         }
         // Assuming OTP generation and authentication logic here
+    }
 
-        JOptionPane.showMessageDialog(this, "Login successful!");
-        cardLayout.show(cardPanel, "Main Menu");
+    public void setNewAccount (boolean isNew) {
+        isNewAccount = isNew;
     }
 
     private JPanel mainMenuPanel() {
@@ -129,11 +165,13 @@ public class BankUI extends JFrame {
 
         JPanel buttonPanel = new JPanel(new GridLayout(1,4,10,10));
         JButton transactionButton = new JButton("Transaction");
-        /*transactionButton.addActionListener(new ActionListener() {
+        transactionButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e){
-                transaction();
+                cardLayout.show(cardPanel, "Transaction");
+                transactionPanel();
             }
-        });*/
+        });
         buttonPanel.add(transactionButton);
 
         JButton creditCardButton = new JButton("Credit Card");
@@ -177,12 +215,63 @@ public class BankUI extends JFrame {
         return mainMenuPanel;
     }
 
-    /*private JPanel transaction(){
+    private JPanel transactionPanel(){
+        JPanel transactionPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        return transaction;
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        transactionPanel.add(messageLabel,gbc);
+
+        JButton withdrawButton = new JButton("Withdraw");
+        withdrawButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        /*withdrawButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                cardLayout.show(cardPanel, "Withdraw");
+                withdraw();
+            }
+        });*/
+        transactionPanel.add(withdrawButton,gbc);
+
+        JButton depositButton = new JButton("Deposit");
+        depositButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 2;
+        /*depositButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                cardLayout.show(cardPanel, "Deposit");
+                deposit();
+            }
+        });*/
+        transactionPanel.add(depositButton,gbc);
+
+        JButton transferButton = new JButton("Transfer");
+        transferButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        /*transferButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                cardLayout.show(cardPanel, "Transfer");
+                transfer();
+            }
+        });*/
+        transactionPanel.add(transferButton,gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 4;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                cardLayout.show(cardPanel, "Main Menu");
+            }
+        });
+        transactionPanel.add(backButton,gbc);
+
+        return transactionPanel;
     }
 
-    private JPanel creditCard(){
+    /*private JPanel creditCard(){
         return creditCard;
     }
 
