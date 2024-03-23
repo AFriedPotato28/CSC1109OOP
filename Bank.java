@@ -668,7 +668,7 @@ public class Bank {
                     // Withdrawal successful
                     System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                    csv_update_help.updateExistingCreditCardBills(card, cardNumber);
+                    csv_update_help.writeCSVToCreditCard(this.creditList);
                     return;
                 }
             }
@@ -736,15 +736,14 @@ public class Bank {
         // Find the credit card with the specific card number and pay the cash advance
         // payable
         CreditCard creditCard = creditCardExists.get();
-        if (creditCard.payCashAdvancePayable(paymentAmount)) {
+        Account savingsAccount = getAccountInfo();
+        if (creditCard.payCashAdvancePayable(savingsAccount,paymentAmount) ) {
             // Payment successful
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
                     creditCard.getCardNumber().substring(creditCard.getCardNumber().length() - 4) + " was successful.");
-            csv_update_help.updateExistingCreditCardBills(creditCard, cardNumber);
-
-            Account savingsAccount = getAccountInfo();
-            savingsAccount.withdraw(paymentAmount);
+            csv_update_help.writeCSVToCreditCard(this.creditList);
             csv_update_help.updateCSVOfAccount(this.accounts);
+
             System.out.println("Your current balance is: " + getBalance());
         } else {
             // Payment failed

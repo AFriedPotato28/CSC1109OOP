@@ -317,28 +317,33 @@ public class CreditCard {
     }
 
     /**
-     * Attempts to pay the cash advance payable on the credit card.
+     * Attempts to pay the cash advance payable on the credit card and checks with the account balance to validate.
      * 
      * @param paymentAmount The amount paid on the cash advance payable.
      * @return True if the payment is successful, False otherwise.
      */
-    public boolean payCashAdvancePayable(double paymentAmount) {
+    public boolean payCashAdvancePayable(Account account,double paymentAmount) {
         // Check if the payment amount is valid
         if (paymentAmount < 0) {
             System.out.println("Payment amount is invalid!");
             return false;
         }
-
+      
         // Check if payment amount exceed cash advance payable
-        if (paymentAmount > this.cashAdvancePayable && paymentAmount < this.cashAdvanceLimit) {
+        if (paymentAmount > this.cashAdvancePayable ) {
             System.out.println("Payment amount exceeds the cash advance payable!");
             System.out.println("\nCash advance payable: " + this.cashAdvancePayable);
+            return false;
+        } else if (paymentAmount > account.getBalance()) {
+            System.out.println("Payment amount exceeds your account balance!");
+            System.out.println("\nCash advance payable: " + account.getBalance());
             return false;
         }
 
         // Deduct the payment amount from the cash advance payable
         this.cashAdvancePayable -= paymentAmount;
-
+        //updates the account balance
+        account.withdraw(paymentAmount);
         // Update remainingCredit
         this.remainingCredit += paymentAmount;
 
