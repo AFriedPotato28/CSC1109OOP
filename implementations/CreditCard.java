@@ -98,19 +98,21 @@ public class CreditCard {
     }
 
     /**
-     * Construct an existing credit card with the specific Credit Card ID, Customer
-     * ID, account number, balance,
-     * credit limit, card number, CVV and expiry date.
+     * Constructs an existing credit card with the specific Credit Card ID, Customer
+     * ID, account number, balance, credit limit, card number, CVV, expiry date, cash
+     * advance payable, and cash advance limit.
      *
-     * @param creditCardId The unique identifier of the credit card
-     * @param customerId   The customer ID associated with the credit card.
-     * @param accountNo    The account number associated with the credit card.
-     * @param balance      The outstanding balance of the credit bill
-     * @param creditLimit  The credit limit of the credit card.
-     * @param cardNumber   The card number associated with the credit card.
-     * @param cvv          The Card Verification Value (CVV) associated with the
-     *                     credit card.
-     * @param expiryDate   The expiry date of the credit card.
+     * @param creditCardId        The unique identifier of the credit card.
+     * @param customerId          The customer ID associated with the credit card.
+     * @param accountNo           The account number associated with the credit card.
+     * @param balance             The outstanding balance of the credit bill.
+     * @param remainingCredit     The remaining credit usable on the credit card.
+     * @param creditLimit         The credit limit of the credit card.
+     * @param cardNumber          The card number associated with the credit card.
+     * @param cvv                 The Card Verification Value (CVV) associated with the credit card.
+     * @param expiryDate          The expiry date of the credit card.
+     * @param cashAdvancedPayable The cash advance payable on the credit card.
+     * @param cashAdvanceLimit    The cash advance limit for the credit card.
      */
     public CreditCard(int creditCardId, int customerId, int accountNo, double balance, double remainingCredit,
             int creditLimit, String cardNumber, String cvv, YearMonth expiryDate, double cashAdvancedPayable,
@@ -248,7 +250,8 @@ public class CreditCard {
     /**
      * Attempts to pay the credit card bill with the specified payment amount.
      *
-     * @param paymentAmount The amount to be paid.
+     * @param account        The savings account from which the payment amount will be deducted.
+     * @param paymentAmount  The amount to be paid.
      * @return True if the payment is successful, False otherwise.
      */
     public boolean payCreditBill(Account account,double paymentAmount) {
@@ -286,24 +289,24 @@ public class CreditCard {
     /**
      * Attempts to withdraw cash advance from the ATM using the credit card.
      * 
-     * @param withdrawalAmount The amount to be withdrawn as cash advance.
+     * @param finalWithdrawalAmount The amount to be withdrawn as cash advance.
      * @return True if the cash advance withdrawal is successful, False otherwise.
      */
-    public boolean cashAdvanceWithdrawal(double finalWithdrawlAmount) {
+    public boolean cashAdvanceWithdrawal(double finalWithdrawalAmount) {
         // Implementation of cash advance withdrawal logic goes here
         // cash advance fee
         DecimalFormat df = new DecimalFormat("##.00");
-        finalWithdrawlAmount = Double.parseDouble(df.format(finalWithdrawlAmount));
+        finalWithdrawalAmount = Double.parseDouble(df.format(finalWithdrawalAmount));
         // check if the total cash advance amount to be withdrawn totals less than 30%
         // of the credit limit
         // AND less than or equal to the remaining balance
-        if (finalWithdrawlAmount + this.cashAdvancePayable <= this.cashAdvanceLimit
-                && finalWithdrawlAmount <= this.creditLimit) {
-            this.cashAdvancePayable += finalWithdrawlAmount;
-            this.remainingCredit -= finalWithdrawlAmount;
+        if (finalWithdrawalAmount + this.cashAdvancePayable <= this.cashAdvanceLimit
+                && finalWithdrawalAmount <= this.creditLimit) {
+            this.cashAdvancePayable += finalWithdrawalAmount;
+            this.remainingCredit -= finalWithdrawalAmount;
             return true;
         } else {
-            if (finalWithdrawlAmount + this.cashAdvancePayable >= this.cashAdvanceLimit) {
+            if (finalWithdrawalAmount + this.cashAdvancePayable >= this.cashAdvanceLimit) {
                 double cashAdvanceBalance = this.cashAdvanceLimit - this.cashAdvancePayable;
                 System.out.println("\nCash advance withdrawal amount exceeds 30% of the credit limit!");
                 System.out.println("Cash advance remaining credit: " + cashAdvanceBalance);
@@ -321,8 +324,9 @@ public class CreditCard {
 
     /**
      * Attempts to pay the cash advance payable on the credit card and checks with the account balance to validate.
-     * 
-     * @param paymentAmount The amount paid on the cash advance payable.
+     *
+     * @param account        The savings account from which the payment amount will be deducted.
+     * @param paymentAmount  The amount paid on the cash advance payable.
      * @return True if the payment is successful, False otherwise.
      */
     public boolean payCashAdvancePayable(Account account,double paymentAmount) {
