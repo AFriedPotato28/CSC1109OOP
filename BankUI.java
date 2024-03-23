@@ -4,6 +4,7 @@ import implementations.Security;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.NoSuchElementException;
 
 public class BankUI extends JFrame {
     private Bank bank;
@@ -27,6 +28,7 @@ public class BankUI extends JFrame {
         cardPanel.add(inputPanel, "Login");
         cardPanel.add(mainMenuPanel(), "Main Menu");
         cardPanel.add(transactionPanel(), "Transaction");
+        cardPanel.add(withdrawPanel(), "Withdraw");
         add(cardPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -220,47 +222,58 @@ public class BankUI extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        double accountBalance = 0.0;
+        try{
+            accountBalance = bank.getBalance();
+        } catch(NoSuchElementException e){
+            System.out.println("User Information not set");
+        } 
+        JLabel balanceLabel = new JLabel(String.format("Account Balance: $.2f", accountBalance));
+        gbc.insets = new Insets(10,10,10,10);
+        gbc.gridy = 0;
+        transactionPanel.add(balanceLabel, gbc);
 
         JLabel messageLabel = new JLabel("Please choose an action:");
-        gbc.gridy = 0;
+        gbc.gridy = 1;
         transactionPanel.add(messageLabel,gbc);
 
         JButton withdrawButton = new JButton("Withdraw");
         withdrawButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 1;
-        /*withdrawButton.addActionListener(new ActionListener() {
+        gbc.gridy = 2;
+        withdrawButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 cardLayout.show(cardPanel, "Withdraw");
-                withdraw();
             }
-        });*/
+        });
         transactionPanel.add(withdrawButton,gbc);
 
         JButton depositButton = new JButton("Deposit");
         depositButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         /*depositButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 cardLayout.show(cardPanel, "Deposit");
-                deposit();
+                depositPanel();
             }
         });*/
         transactionPanel.add(depositButton,gbc);
 
         JButton transferButton = new JButton("Transfer");
         transferButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         /*transferButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 cardLayout.show(cardPanel, "Transfer");
-                transfer();
+                transferPanel();
             }
         });*/
         transactionPanel.add(transferButton,gbc);
 
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 cardLayout.show(cardPanel, "Main Menu");
@@ -271,16 +284,62 @@ public class BankUI extends JFrame {
         return transactionPanel;
     }
 
+    private JPanel withdrawPanel() {
+        JPanel withdrawPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel withdrawMessage = new JLabel("Please state amount to withdraw:");
+        gbc.gridy = 0;
+        withdrawPanel.add(withdrawMessage, gbc);
+
+        JTextField withdrawAmountField = new JTextField();
+        withdrawAmountField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        withdrawPanel.add(withdrawAmountField,gbc);
+
+        JButton submitButton = new JButton("Submit");
+        /*submitButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                withdraw();
+            }
+        });*/
+        gbc.gridy = 2;
+        withdrawPanel.add(submitButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                cardLayout.show(cardPanel, "Transaction");
+            }
+        });
+        gbc.gridy = 3;
+        withdrawPanel.add(backButton,gbc);
+
+        return withdrawPanel;
+    }
+
+     /*private JPanel depositPanel() {
+
+        return depositPanel;
+    }*/
+
+     /*private JPanel transferPanel() {
+
+        return transferPanel;
+    }*/
+
     /*private JPanel creditCard(){
-        return creditCard;
+        return creditCardPanel;
     }
 
     private JPanel setting(){
-        return setting;
+        return settingPanel;
     }
 
     private JPanel loan(){
-        return loan;
+        return loanPanel;
     }*/
 
     public static void main(String[] args) {
