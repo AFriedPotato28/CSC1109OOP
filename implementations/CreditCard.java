@@ -289,28 +289,21 @@ public class CreditCard {
      * @param cashAdvanceAmount The amount to be withdrawn as cash advance.
      * @return True if the cash advance withdrawal is successful, False otherwise.
      */
-    public boolean cashAdvanceWithdrawal(double withdrawalAmount) {
+    public boolean cashAdvanceWithdrawal(double finalWithdrawlAmount) {
         // Implementation of cash advance withdrawal logic goes here
-        double minCashAdvanceFee = 10.00; // minimum cash advance fee set at $10.00
-        double cashAdvanceFee = Math.max(minCashAdvanceFee, 0.05 * withdrawalAmount); // cash advance fee set at 5% of
-        // the cash advance amount or
-        // $10.00, whichever is higher
-        double totalCashAdvanceAmount = withdrawalAmount + cashAdvanceFee; // total cash advance amount including the
         // cash advance fee
         DecimalFormat df = new DecimalFormat("##.00");
-        totalCashAdvanceAmount = Double.parseDouble(df.format(totalCashAdvanceAmount));
+        finalWithdrawlAmount = Double.parseDouble(df.format(finalWithdrawlAmount));
         // check if the total cash advance amount to be withdrawn totals less than 30%
         // of the credit limit
         // AND less than or equal to the remaining balance
-        if (totalCashAdvanceAmount + this.cashAdvancePayable <= this.cashAdvanceLimit
-                && totalCashAdvanceAmount <= this.creditLimit) {
-            this.cashAdvancePayable += totalCashAdvanceAmount;
-            this.remainingCredit -= totalCashAdvanceAmount;
+        if (finalWithdrawlAmount + this.cashAdvancePayable <= this.cashAdvanceLimit
+                && finalWithdrawlAmount <= this.creditLimit) {
+            this.cashAdvancePayable += finalWithdrawlAmount;
+            this.remainingCredit -= finalWithdrawlAmount;
             return true;
         } else {
-            // error message if the total cash advance amount withdrawn exceeds 30% of the
-            // credit limit
-            if (totalCashAdvanceAmount + this.cashAdvancePayable >= this.cashAdvanceLimit) {
+            if (finalWithdrawlAmount + this.cashAdvancePayable >= this.cashAdvanceLimit) {
                 double cashAdvanceBalance = this.cashAdvanceLimit - this.cashAdvancePayable;
                 System.out.println("\nCash advance withdrawal amount exceeds 30% of the credit limit!");
                 System.out.println("Cash advance remaining credit: " + cashAdvanceBalance);

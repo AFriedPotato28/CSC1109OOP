@@ -611,33 +611,35 @@ public class Bank {
     public void CashAdvanceWithdrawal(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
         System.out.println("Credit cards for customer " + username + ":");
-
+        
+        ArrayList<CreditCard> tempCards = new ArrayList<>();
         for (CreditCard card : this.creditCards) {
-            if (card.getCustomerId() == customerId) {
-                System.out.println(
+            if ((card.getCashAdvanceLimit()
+                - card.getCashAdvancePayable()) > 20) {
+                    System.out.println(
                         "Card Number ending in " +
                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) +
                                 " (Remaining Credit "
-                                + ((int) (0.3 * card.getCreditLimit() - card.getCashAdvancePayable()) * 0.95)
+                                + ((int) (0.3 * card.getCreditLimit() - card.getCashAdvancePayable())) * 0.95
                                 + ")");
+                    tempCards.add(card);
             }
+        }
+
+        if(tempCards.size() < 1) {
+            System.out.println("No cards is available for cash advance withdrawl");
+            return;
         }
 
         // Prompt user to select which credit card to withdraw from
         System.out.println("Enter the card number to withdraw from: ");
         String cardNumber = scanner.next();
 
-        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+        Optional<CreditCard> creditCardExists = tempCards.stream()
                 .filter((card) -> card.getCardNumber().equals(cardNumber)).findFirst();
 
         if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
-            return;
-        }
-
-        if ((creditCardExists.get().getCashAdvanceLimit()
-                - creditCardExists.get().getCashAdvancePayable()) < 20) {
-            System.out.println("Credit card with the specified card number cannot withdraw anymore");
             return;
         }
 
@@ -664,7 +666,7 @@ public class Bank {
             CreditCard card = creditCardExists.get();
 
             if (card.isExpired()) {
-                if (card.cashAdvanceWithdrawal(withdrawalAmount)) {
+                if (card.cashAdvanceWithdrawal(finalwithdrawalAmount)) {
                     // Withdrawal successful
                     System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
                             card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
