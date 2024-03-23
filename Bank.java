@@ -278,6 +278,7 @@ public class Bank {
         this.account = this.accounts.get(accounts.getCustomerId());
         this.loans = this.loanList.get(accounts.getCustomerId());
         this.creditCards = this.creditList.get(accounts.getCustomerId());
+        csv_update_help.writeCSVToCreditCard(this.creditList);
 
     }
 

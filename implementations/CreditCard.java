@@ -1,6 +1,7 @@
 package implementations;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.YearMonth;
 
 /**
@@ -357,6 +358,22 @@ public class CreditCard {
         YearMonth expiryDate = this.expiryDate;
 
         return currentDate.isBefore(expiryDate);
+    }
+
+    /**
+     * Checks credit card has balance left
+     * increment by 5% to the balance if unpaid
+     * 
+     */
+
+    public void computeInterestRate() {
+        LocalDate localDate = LocalDate.now();
+        localDate.withDayOfMonth(1);
+        double interest_rate = 0.05;
+
+        if (localDate.withDayOfMonth(1).equals(localDate)) {
+            this.balance = (1 + interest_rate) * this.balance;
+        }
     }
 
 }
