@@ -1,4 +1,5 @@
 package implementations;
+
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -56,7 +57,7 @@ public class Security {
      */
     public int generateOTP(String username) {
         SecureRandom rand = new SecureRandom();
-        int otp = rand.nextInt(100000,1000000);
+        int otp = rand.nextInt(100000, 1000000);
         // Store inside OTP map to validate
         otpMap.put(username, otp);
         System.out.println(otp);
@@ -95,6 +96,16 @@ public class Security {
         return matcher.matches();
     }
 
+    /**
+     * 
+     * Encrypts the password with HashAlgorithm SHA256 algorithm with password and
+     * salt values.
+     * 
+     * @param password the password to be encrypted.
+     * @param Salt     the salt to be used for validation.
+     * @return the password in hashed version
+     */
+
     public static String hashPassword(String password, String Salt) {
         try {
 
@@ -109,6 +120,12 @@ public class Security {
         }
     }
 
+    /**
+     * Generates a new random key to be used as salt for the password.
+     * 
+     * @return string values with 16 bytes length
+     */
+
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
@@ -116,6 +133,12 @@ public class Security {
         return Base64.getEncoder().encodeToString(salt);
     }
 
+    /**
+     * Hashes the CVV to be stored in the CSV.
+     * 
+     * @param cvv takes in the string value of CVV
+     * @return hash value of the string CVV
+     */
     // Method to hash the CVV using SHA-256
     public static String hashCVV(String cvv) {
         try {
@@ -137,7 +160,15 @@ public class Security {
         }
     }
 
-    // Method to verify the CVV
+    /**
+     * Compares provided CVV against the Hashed CVV.
+     * 
+     * @param providedCVV     This is the hashed CVV to compare against the stored
+     *                        CVV.
+     * @param storedHashedCVV this will be the CVV stored in the CSV and retrieve
+     * @return True or False depending on the compared CVV
+     */
+
     public static boolean verifyCVV(String providedCVV, String storedHashedCVV) {
         String hashedProvidedCVV = hashCVV(providedCVV);
         return hashedProvidedCVV != null && hashedProvidedCVV.equals(storedHashedCVV);
@@ -162,6 +193,14 @@ public class Security {
         return result;
     }
 
+    /**
+     * This sets the username and password of the current user.
+     * 
+     * @param username the username of the current user
+     * @param password the password of the current user
+     * @param salt     the salt of the current user
+     */
+
     public void setLoginAccount(String username, String password, String salt) {
         String hashPass = hashPassword(password, salt);
 
@@ -172,6 +211,15 @@ public class Security {
         passwordMap.put(username, hashPass);
     }
 
+    /**
+     * Validates the username and password against the current logged in user.
+     * 
+     * @param username the current logged in username
+     * @param password the current logged in password
+     * @param salt     the current logged in salt
+     * @return true or false based on the current user settings.
+     */
+
     public boolean authenticateUser(String username, String password, String salt) {
         String hashPass = hashPassword(password, salt);
         if (passwordMap.containsKey(username) && passwordMap.containsValue(hashPass)) {
@@ -179,6 +227,14 @@ public class Security {
         }
         return false;
     }
+
+    /**
+     * This is meant to validate user is correctly stored in the database/CSV and
+     * whether the current user is the correct user.
+     * 
+     * @param Username the current logged in user username
+     * @return true or false based on the username
+     */
 
     public boolean validateUsername(String Username) {
 
@@ -189,8 +245,7 @@ public class Security {
         return false;
     }
 
-
-      /**
+    /**
      * Logs the activity of the user.
      * 
      * @param accountID      The accountID of the user.
