@@ -115,6 +115,7 @@ public final class csv_get_help {
 
                 CreditCard card = new CreditCard(creditCardID, customerID, accountNo, balance, remainingCredit,
                         creditLimit, cardNo, CVV, expiryDate, cashAdvancedPayable, cashAdvanceLimit);
+                card.computeInterestRate();
 
                 if (creditList.get(customerID) == null) {
                     creditList.put(customerID, new ArrayList<>());
@@ -129,5 +130,4 @@ public final class csv_get_help {
             throw new RuntimeException(e);
         }
     }
-
 }

@@ -278,6 +278,7 @@ public class Bank {
         this.account = this.accounts.get(accounts.getCustomerId());
         this.loans = this.loanList.get(accounts.getCustomerId());
         this.creditCards = this.creditList.get(accounts.getCustomerId());
+        csv_update_help.writeCSVToCreditCard(this.creditList);
 
     }
 
@@ -616,7 +617,8 @@ public class Bank {
                 System.out.println(
                         "Card Number ending in " +
                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) +
-                                " (Remaining Credit " + (0.3 * card.getCreditLimit() - card.getCashAdvancePayable())
+                                " (Remaining Credit "
+                                + ((int) (0.3 * card.getCreditLimit() - card.getCashAdvancePayable()) * 0.95)
                                 + ")");
             }
         }
@@ -631,8 +633,10 @@ public class Bank {
         if (!(creditCardExists.isPresent())) {
             System.out.println("Credit card with the specified card number not found.");
             return;
-        } else if ((creditCardExists.get().getCashAdvanceLimit()
-                - creditCardExists.get().getCashAdvancePayable()) <= 0) {
+        }
+
+        if ((creditCardExists.get().getCashAdvanceLimit()
+                - creditCardExists.get().getCashAdvancePayable()) < 20) {
             System.out.println("Credit card with the specified card number cannot withdraw anymore");
             return;
         }
@@ -640,12 +644,12 @@ public class Bank {
         // Prompt user to enter withdrawal amount
         System.out.println(
                 "Do note that cash advance withdrawal fee of $10 or 5% of cash withdrawal amount will be charged, whichever is higher. \n");
-        int withdrawalAmount = 0;
+        double withdrawalAmount = 0;
         do {
             // Prompt user to enter payment amount
             System.out.println("Enter the withdrawal amount: ");
             try {
-                withdrawalAmount = scanner.nextInt();
+                withdrawalAmount = scanner.nextDouble();
                 if (withdrawalAmount <= 0.0) {
                     System.out.println("Withdrawal amount cannot be lesser or equals to 0.0...");
                 }
@@ -656,19 +660,21 @@ public class Bank {
         } while (withdrawalAmount <= 0.0);
 
         try {
-            double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 0.95);
+            double finalwithdrawalAmount = Math.max(10 + withdrawalAmount, withdrawalAmount * 1.05);
             CreditCard card = creditCardExists.get();
 
-            if (card.cashAdvanceWithdrawal(withdrawalAmount)) {
-                // Withdrawal successful
-                System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
-                        card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                csv_update_help.updateExistingCreditCardBills(card, cardNumber);
-            } else {
-                // Withdrawal failed
-                System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
-                        card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+            if (card.isExpired()) {
+                if (card.cashAdvanceWithdrawal(withdrawalAmount)) {
+                    // Withdrawal successful
+                    System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
+                            card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+                    csv_update_help.updateExistingCreditCardBills(card, cardNumber);
+                    return;
+                }
             }
+            // Withdrawal failed
+            System.out.println("Withdrawal of $" + finalwithdrawalAmount + " for card ending in " +
+                    card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
 
         } catch (Exception e) {
             return;

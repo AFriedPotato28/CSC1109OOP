@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -51,7 +52,7 @@ public final class csv_update_help {
         StringBuilder sb = new StringBuilder("id ,name, username, password, salt \n");
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
-         
+
             for (Customer cust : customers) {
                 int customerId = cust.getCustomerId();
                 String customerName = cust.getName();
@@ -64,7 +65,8 @@ public final class csv_update_help {
                     customerSalt = HashedPasswordandSalt.get(1);
                 }
 
-                sb.append(customerId + "," + customerName + "," + customerUserName + "," + customerPassword + "," + customerSalt  + "\n" );
+                sb.append(customerId + "," + customerName + "," + customerUserName + "," + customerPassword + ","
+                        + customerSalt + "\n");
             }
 
             writer.append(sb);
@@ -100,8 +102,9 @@ public final class csv_update_help {
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
             for (Map.Entry<Integer, ArrayList<Account>> entry : accounts.entrySet()) {
-                for (Account account : entry.getValue()) { 
-                    sb.append(account.getCustomerId() + "," + account.getCustomerId() + "," + account.getAccountType() + "," + account.getBalance() + "," + account.getTransactionLimit() + "\n");
+                for (Account account : entry.getValue()) {
+                    sb.append(account.getCustomerId() + "," + account.getCustomerId() + "," + account.getAccountType()
+                            + "," + account.getBalance() + "," + account.getTransactionLimit() + "\n");
                 }
             }
 
@@ -231,6 +234,7 @@ public final class csv_update_help {
     }
 
     public static void updateExistingCreditCardBills(CreditCard card, String cardNo) {
+        DecimalFormat df = new DecimalFormat("##.00");
         StringBuilder sb = new StringBuilder(
                 "credit_card_id,customer_id,account_number,card_number,cvv,expiration_date,balance,remaining_credit,credit_limit,cash_advancement_payable,cash_advanced_limit\n");
         File originalFile = new File("./CSV/mock_credit_card.csv");
@@ -243,9 +247,9 @@ public final class csv_update_help {
                 String[] data = sLine.split(",");
 
                 if (card.getCreditCardId() == Integer.parseInt(data[0]) && card.getCardNumber().equals(cardNo)) {
-                    data[6] = String.valueOf(card.getBalance());
-                    data[7] = String.valueOf(card.getRemainingCredit());
-                    data[9] = String.valueOf(card.getCashAdvancePayable());
+                    data[6] = String.valueOf(df.format(card.getBalance()));
+                    data[7] = String.valueOf(df.format(card.getRemainingCredit()));
+                    data[9] = String.valueOf(df.format(card.getCashAdvancePayable()));
                 }
 
                 String line = String.join(",", data);
@@ -331,7 +335,7 @@ public final class csv_update_help {
         temp.renameTo(originalFile);
 
     }
-    
+
     /**
      * Attempts to update the credit card to the CSV file.
      * 
