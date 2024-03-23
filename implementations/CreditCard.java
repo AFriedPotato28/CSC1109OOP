@@ -286,7 +286,7 @@ public class CreditCard {
     /**
      * Attempts to withdraw cash advance from the ATM using the credit card.
      * 
-     * @param cashAdvanceAmount The amount to be withdrawn as cash advance.
+     * @param withdrawalAmount The amount to be withdrawn as cash advance.
      * @return True if the cash advance withdrawal is successful, False otherwise.
      */
     public boolean cashAdvanceWithdrawal(double finalWithdrawlAmount) {
@@ -376,7 +376,6 @@ public class CreditCard {
      * increment by 5% to the balance if unpaid
      * 
      */
-
     public void computeInterestRate() {
         LocalDate localDate = LocalDate.now();
         localDate.withDayOfMonth(1);

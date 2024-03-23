@@ -26,6 +26,9 @@ public class Branch {
      */
     private int closingTime;
 
+    /**
+     * The functions of the branch.
+     */
     private String functions;
 
     /**
@@ -115,7 +118,7 @@ public class Branch {
     /**
      * Set the Branch Name
      * 
-     * @param branchId The branch name is set
+     * @param branchName The branch name is set
      */
     public void setBranchName(String branchName) {
         this.branchName = branchName;
@@ -123,8 +126,8 @@ public class Branch {
 
     /**
      * Set the Branch Address
-     * 
-     * @param branchId The branch Address is set
+     *
+     * @param branchAddress The branch Address is set
      */
     public void setBranchAddress(String branchAddress) {
         this.branchAddress = branchAddress;
@@ -133,7 +136,7 @@ public class Branch {
     /**
      * Set the Branch Opening Hour
      * 
-     * @param branchId The branch opening hour is set
+     * @param openingTime The branch opening hour is set
      */
     public void setOpeningTime(int openingTime) {
         this.openingTime = openingTime;
@@ -142,7 +145,7 @@ public class Branch {
     /**
      * Set the Branch Closing Hour
      * 
-     * @param branchId The branch closing time is set
+     * @param closingTime The branch closing time is set
      */
     public void setClosingTime(int closingTime) {
         this.closingTime = closingTime;

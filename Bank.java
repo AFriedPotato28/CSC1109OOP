@@ -202,76 +202,81 @@ public class Bank {
         addAccount(userId, "1", 0);
     }
 
-    /**
-     * Attempts to add a new account to the bank.
-     * 
-     * @param customerID       The ID of the customer.
-     * @param accountType      The type of account to add.
-     *                         accountType - The type of account to add.
-     * 
-     *                         if accountType is "1", set accountType to "Savings",
-     *                         else if accountType is "2", set accountType to
-     *                         "Credit Card", else set accountType to "Loan".
-     * 
-     *                         if customerID exists, set customerIdExists to true,
-     *                         else customerIDExists remains false.
-     * 
-     *                         if accountType exists, set accountTypeExists to true,
-     *                         else accountTypeExists remains false.
-     * 
-     *                         Calculate the size of the account.
-     * 
-     *                         Create a new account object with the new size of the
-     *                         account, customerID, accountType, balance, and
-     *                         transactionLimit.
-     * @param accountNo        - The new size of the account.
-     * @param customerID       - The ID of the customer.
-     * @param accountType      - The type of account to add.
-     * @param balance          - The balance of the account, set to 0.
-     * @param transactionLimit - The transaction limit of the account, set to 500.
-     * 
-     *                         if customerID does not exist, add a new account to
-     *                         the list of accounts.
-     *                         if accountType does not exist, add a new account to
-     *                         the list of accounts and generate a new CSV file for
-     *                         the account.
-     *                         return true if the account was added successfully,
-     *                         else return false.
-     */
-    public boolean addAccount(Integer customerID, String accountType, double balance) {
+        /**
+         * Attempts to add a new account to the bank.
+         *
+         * @param customerID       The ID of the customer.
+         * @param accountType      The type of account to add.
+         *                         accountType - The type of account to add.
+         *
+         *                         if accountType is "1", set accountType to "Savings",
+         *                         else if accountType is "2", set accountType to
+         *                         "Credit Card", else set accountType to "Loan".
+         *
+         *                         if customerID exists, set customerIdExists to true,
+         *                         else customerIDExists remains false.
+         *
+         *                         if accountType exists, set accountTypeExists to true,
+         *                         else accountTypeExists remains false.
+         *
+         *                         Calculate the size of the account.
+         *
+         *                         Create a new account object with the new size of the
+         *                         account, customerID, accountType, balance, and
+         *                         transactionLimit.
+         * @param accountNo        - The new size of the account.
+         * @param customerID       - The ID of the customer.
+         * @param accountType      - The type of account to add.
+         * @param balance          - The balance of the account, set to 0.
+         * @param transactionLimit - The transaction limit of the account, set to 500.
+         *
+         *                         if customerID does not exist, add a new account to
+         *                         the list of accounts.
+         *                         if accountType does not exist, add a new account to
+         *                         the list of accounts and generate a new CSV file for
+         *                         the account.
+         *                         return true if the account was added successfully,
+         *                         else return false.
+         */
+        public boolean addAccount(Integer customerID, String accountType, double balance) {
 
-        boolean customerIdExists = false;
-        boolean accountTypeExists = false;
-        accountType = accountType.equals("1") ? "Savings" : "Loan";
+            boolean customerIdExists = false;
+            boolean accountTypeExists = false;
+            accountType = accountType.equals("1") ? "Savings" : "Loan";
 
-        for (Map.Entry<Integer, ArrayList<Account>> entry : this.accounts.entrySet()) {
-            List<Account> accounts = entry.getValue();
-            if (entry.getKey() == customerID) {
-                customerIdExists = true;
-                for (Account account : accounts) {
-                    if (account.getAccountType().equalsIgnoreCase(accountType)) {
-                        accountTypeExists = true;
+            for (Map.Entry<Integer, ArrayList<Account>> entry : this.accounts.entrySet()) {
+                List<Account> accounts = entry.getValue();
+                if (entry.getKey() == customerID) {
+                    customerIdExists = true;
+                    for (Account account : accounts) {
+                        if (account.getAccountType().equalsIgnoreCase(accountType)) {
+                            accountTypeExists = true;
+                        }
                     }
                 }
             }
+
+            int sizeOfAccount = (int) this.accounts.values().stream().flatMap(List::stream).count();
+
+            int transactionLimit = accountType.equalsIgnoreCase("Savings") ? 500 : 0;
+            Account account = new Account((sizeOfAccount + 1), customerID, accountType, balance, transactionLimit);
+            if (!customerIdExists) {
+                this.accounts.put(customerID, new ArrayList<>());
+            }
+
+            if (!accountTypeExists || account.getAccountType().equalsIgnoreCase("Loan")) {
+                this.accounts.get(customerID).add(account);
+                csv_update_help.generateCSVtoAccount(customerID, account);
+                return true;
+            }
+            return false;
         }
 
-        int sizeOfAccount = (int) this.accounts.values().stream().flatMap(List::stream).count();
-
-        int transactionLimit = accountType.equalsIgnoreCase("Savings") ? 500 : 0;
-        Account account = new Account((sizeOfAccount + 1), customerID, accountType, balance, transactionLimit);
-        if (!customerIdExists) {
-            this.accounts.put(customerID, new ArrayList<>());
-        }
-
-        if (!accountTypeExists || account.getAccountType().equalsIgnoreCase("Loan")) {
-            this.accounts.get(customerID).add(account);
-            csv_update_help.generateCSVtoAccount(customerID, account);
-            return true;
-        }
-        return false;
-    }
-
+    /**
+     * Populates user information including account details, loans, and credit cards.
+     *
+     * @param username The username of the user to populate information for.
+     */
     public void populateUserInfo(String username) {
 
         Account accounts = getAccountInfo(username);
@@ -282,6 +287,12 @@ public class Bank {
 
     }
 
+    /**
+     * Retrieves account information for a given username.
+     *
+     * @param username The username of the user to retrieve account information for.
+     * @return The account information for the specified user.
+     */
     private Account getAccountInfo(String username) {
         Optional<Account> accountInformation = this.accounts.entrySet().stream()
                 .filter(entry -> entry.getKey() == retrieveUserInfo(username).getCustomerId())
@@ -291,27 +302,54 @@ public class Bank {
         return accountInfo;
     }
 
+    /**
+     * Retrieves the account number of the current account.
+     *
+     * @return The account number.
+     */
     public int getAccountNo() {
 
         return this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings")).findFirst().get()
                 .getAccountNo();
     }
 
+    /**
+     * Retrieves the balance of the current account.
+     *
+     * @return The account balance.
+     */
     public double getBalance() {
         return this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings")).findFirst().get()
                 .getBalance();
     }
 
+    /**
+     * Retrieves the transaction limit of the current account.
+     *
+     * @return The transaction limit.
+     */
     public double getTransactionLimit() {
         return this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings")).findFirst().get()
                 .getTransactionLimit();
     }
 
+    /**
+     * Retrieves the account information for the current account.
+     *
+     * @return The account information.
+     */
     public Account getAccountInfo() {
         return this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings"))
                 .findFirst().get();
     }
 
+    /**
+     * Withdraws money from the current account.
+     *
+     * @param money The amount to withdraw.
+     * @param username The username of the user initiating the withdrawal.
+     * @return True if the withdrawal was successful, false otherwise.
+     */
     public boolean withdraw(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
@@ -324,6 +362,13 @@ public class Bank {
         return false;
     }
 
+    /**
+     * Deposits money into the current account.
+     *
+     * @param money The amount to deposit.
+     * @param username The username of the user initiating the deposit.
+     * @return True if the deposit was successful, false otherwise.
+     */
     public boolean deposit(double money, String username) {
         Account accountInformation = getAccountInfo(username);
         if (accountInformation.getCustomerId() == retrieveUserInfo(username).getCustomerId()) {
@@ -335,6 +380,13 @@ public class Bank {
         return false;
     }
 
+    /**
+     * Changes the transaction limit of the current account.
+     *
+     * @param limit The new transaction limit.
+     * @param userInfo The username of the user initiating the change.
+     * @return True if the transaction limit change was successful, false otherwise.
+     */
     public boolean changeTransactionLimit(int limit, String userInfo) {
         Account accountInformation = getAccountInfo(userInfo);
         if (accountInformation.getCustomerId() == retrieveUserInfo(userInfo).getCustomerId()) {
@@ -346,6 +398,13 @@ public class Bank {
         return false;
     }
 
+    /**
+     * Transfers money from the current account to another account.
+     *
+     * @param money The amount to transfer.
+     * @param recipient The username of the recipient account.
+     * @return True if the transfer was successful, false otherwise.
+     */
     public boolean transferAmount(double money, String recipient) {
         Account toAccount = getAccountInfo(recipient);
         Account personalAccount = getAccountInfo();
@@ -759,7 +818,11 @@ public class Bank {
     /* end creditcard */
 
     /**
-     * authentication
+     * Validates a user login attempt.
+     *
+     * @param loginUsername The username provided during login.
+     * @param loginPassword The password provided during login.
+     * @return True if the login credentials are valid, false otherwise.
      */
     public boolean validateLogin(String loginUsername, String loginPassword) {
         Optional<Customer> customerOptional = this.customers.stream()
@@ -776,18 +839,43 @@ public class Bank {
         return true;
     }
 
+    /**
+     * Generates a One-Time Password (OTP) for the given username.
+     *
+     * @param loginUsername The username for which to generate the OTP.
+     * @return The generated OTP.
+     */
     public int generateOTP(String loginUsername) {
         return securityInstance.generateOTP(loginUsername);
     }
 
+    /**
+     * Authenticates a One-Time Password (OTP) for the given username.
+     *
+     * @param loginUsername The username for which to authenticate the OTP.
+     * @param OTP The OTP to authenticate.
+     * @return True if the OTP is authenticated, false otherwise.
+     */
     public boolean authenticateOTP(String loginUsername, int OTP) {
         return securityInstance.authenticateWithOTP(loginUsername, OTP);
     }
 
+    /**
+     * Validates a username.
+     *
+     * @param username The username to validate.
+     * @return True if the username is valid, false otherwise.
+     */
     public boolean validateUsername(String username) {
         return securityInstance.validateUsername(username);
     }
 
+    /**
+     * Retrieves user information for the given username.
+     *
+     * @param username The username for which to retrieve information.
+     * @return The user information.
+     */
     public Customer retrieveUserInfo(String username) {
         Optional<Customer> customerOptional = this.customers.stream()
                 .filter(customer -> customer.getUserName().equalsIgnoreCase(username)).findFirst();
@@ -795,14 +883,33 @@ public class Bank {
         return customer;
     }
 
+    /**
+     * Sets login details (username and password) for a user.
+     *
+     * @param username The username to set.
+     * @param password The password to set.
+     */
     public void setLoginDetails(String username, String password) {
         securityInstance.setLoginAccount(username, password, retrieveUserInfo(username).getSalt());
     }
 
+    /**
+     * Authenticates user login details (username and password).
+     *
+     * @param username The username to authenticate.
+     * @param password The password to authenticate.
+     * @return True if the login details are authenticated, false otherwise.
+     */
     public boolean authenticateDetails(String username, String password) {
         return securityInstance.authenticateUser(username, password, retrieveUserInfo(username).getSalt());
     }
 
+    /**
+     * Resets the password for a user.
+     *
+     * @param userInfo The username for which to reset the password.
+     * @param newPassword The new password to set.
+     */
     public void resetPassword(String userInfo, String newPassword) {
         Customer customer = retrieveUserInfo(userInfo);
 
@@ -818,15 +925,31 @@ public class Bank {
 
     /** Final Authentication */
 
+    /**
+     * Checks if a loan with the given loan ID exists.
+     *
+     * @param loanId The ID of the loan to check.
+     * @return An Optional containing the loan if it exists, otherwise an empty Optional.
+     */
     public Optional<Loan> checkExistingLoan(int loanId) {
         Optional<Loan> loanOptional = this.loans.stream().filter((loan) -> loan.getLoanId() == loanId).findFirst();
         return loanOptional;
     }
 
+    /**
+     * Calculates the total count of loans.
+     *
+     * @return The total count of loans.
+     */
     public int totalLoanCount() {
         return (int) this.loanList.values().stream().flatMap(ArrayList::stream).count();
     }
 
+    /**
+     * Calculates the total amount of all loans.
+     *
+     * @return The total amount of all loans.
+     */
     public double totalLoanAmount() {
         double totalLoan = 0.0;
 
@@ -840,6 +963,12 @@ public class Bank {
         return totalLoan;
     }
 
+    /**
+     * Applies a loan for a customer.
+     *
+     * @param customerId The ID of the customer applying for the loan.
+     * @param loanAmount The amount of the loan to apply.
+     */
     public void applyLoan(int customerId, double loanAmount) {
         int newLoanId = totalLoanCount() + 1;
         LocalDate loanDueDate = calculateLoanDueDate(loanAmount);
@@ -866,12 +995,24 @@ public class Bank {
         csv_update_help.addLoanToCsv(newLoan);
     }
 
+    /**
+     * Calculates the due date of a loan based on the loan amount.
+     *
+     * @param loanAmount The amount of the loan.
+     * @return The due date of the loan.
+     */
     public LocalDate calculateLoanDueDate(double loanAmount) {
         LocalDate currentDate = LocalDate.now();
 
         return currentDate.plusDays(loanAmount > 50000 ? 60 : loanAmount > 30000 ? 40 : loanAmount > 20000 ? 30 : 3);
     }
 
+    /**
+     * Repays a loan.
+     *
+     * @param repayLoanId The ID of the loan to repay.
+     * @param repayLoanAmount The amount to repay.
+     */
     public void repayLoan(int repayLoanId, double repayLoanAmount) {
 
         DecimalFormat df = new DecimalFormat("##.00");
@@ -893,6 +1034,9 @@ public class Bank {
                 .println("Succesfully updated your loan and your current savings account balance is :" + getBalance());
     }
 
+    /**
+     * Updates overdue loans by increasing their outstanding amount due to late payment.
+     */
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
 
@@ -909,6 +1053,9 @@ public class Bank {
         }
     }
 
+    /**
+     * Prints information about outstanding loans.
+     */
     public void printLoans() {
         System.out.println("Outstanding Loans:");
         if (this.loans != null) {

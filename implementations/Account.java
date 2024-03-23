@@ -26,13 +26,10 @@ public class Account {
         this.transactionLimit = transactionLimit;
     }
     /* private intiator */
-    public Account() {}
-
     /**
-     * Constructs a new Account object with the specified customer ID.
-     * @param customerId The customer ID associated with the account.
+     * Default constructor.
      */
-
+    public Account() {}
 
 
     /**
@@ -105,7 +102,6 @@ public class Account {
 
     /**
      * Deposits an amount into the account.
-     *
      * @param amount The amount to deposit.
      * Updates the balance of the account.
      */
@@ -115,7 +111,6 @@ public class Account {
 
     /**
      * Withdraws an amount from the account.
-     *
      * @param amount The amount to withdraw.
      * @return True if the withdrawal was successful, false otherwise.
      */

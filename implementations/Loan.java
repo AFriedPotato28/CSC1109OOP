@@ -37,7 +37,7 @@ public class Loan extends Account {
      *
      * @param loanId      The unique identifier of the loan.
      * @param loanAmount  The amount of the loan.
-     * @param loanDueDate Calculated due date by which the loan should be paid.
+     * @param loanDuration Calculated due date by which the loan should be paid.
      * @param customerId  The customer id associated with loan class.
      */
     public Loan(int loanId, int customerId, double loanAmount, LocalDate loanDuration) {
@@ -110,7 +110,6 @@ public class Loan extends Account {
      * 
      * @param loanId get the loan identifier that loan should be set
      */
-
     public void setLoanId(int loanId) {
         this.loanId = loanId;
     }

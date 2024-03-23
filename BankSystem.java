@@ -7,10 +7,18 @@ import java.util.concurrent.TimeUnit;
 
 import implementations.Security;
 
+/**
+ * Main class for the Bank System.
+ */
 public class BankSystem {
     private static final int TIME_TO_KICK = 5; // time to kick in seconds
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    /**
+     * Main method to run the Bank System.
+     *
+     * @param args Command-line arguments.
+     */
     public static void main(String[] args) {
         Bank bank = new Bank("Matthias");
         Security securityInstance = new Security();
@@ -101,6 +109,9 @@ public class BankSystem {
         scheduler.shutdownNow(); // Properly shutdown the scheduler
     }
 
+    /**
+     * Initiates the logout timer.
+     */
     private static void initiateLogoutTimer() {
         scheduler.schedule(() -> {
             System.out.println("You have been logged out due to inactivity.");
@@ -108,18 +119,35 @@ public class BankSystem {
         }, TIME_TO_KICK, TimeUnit.SECONDS);
     }
 
+    /**
+     * Resets the logout timer.
+     */
     private static void resetLogoutTimer() {
         scheduler.shutdownNow(); // Cancel any previously running tasks
         scheduler = Executors.newScheduledThreadPool(1); // Reinitialize the scheduler
         initiateLogoutTimer();
     }
 
-    /* This creates a reusable code of proompting Input */
+    /**
+     * Prompt user for input with a message.
+     *
+     * @param prompt  The message to prompt the user.
+     * @param scanner The scanner object for user input.
+     * @return The user input as a String.
+     */
+    /* This creates a reusable code of prompting Input */
     private static String promptInput(String prompt, Scanner scanner) {
         System.out.println(prompt);
         return scanner.next();
     }
 
+    /**
+     * Creates a new account with user-provided details.
+     *
+     * @param scanner          The scanner object for user input.
+     * @param bank             The Bank object to add the customer to.
+     * @param securityInstance The Security object for password validation.
+     */
     private static void createAccountDetails(Scanner scanner, Bank bank, Security securityInstance) {
         String name = promptInput("Please enter your name:", scanner);
         String username = promptInput("Please enter your username:", scanner);
@@ -132,6 +160,14 @@ public class BankSystem {
         bank.addCustomer(name, username, password);
     }
 
+    /**
+     * Logs the user into their account.
+     *
+     * @param scanner          The scanner object for user input.
+     * @param bank             The Bank object to validate login credentials.
+     * @param securityInstance The Security object for OTP authentication.
+     * @return The username of the logged-in user.
+     */
     private static String loginToAccount(Scanner scanner, Bank bank, Security securityInstance) {
         String loginUsername = promptInput("Please enter your username", scanner);
         String loginPassword = promptInput("Please enter your password", scanner);
@@ -165,10 +201,12 @@ public class BankSystem {
     }
 
     /**
-     * @param scanner
-     * @param bank
-     * @param securityInstance
-     * @param userInfo
+     * Resets the user's password.
+     *
+     * @param scanner          The scanner object for user input.
+     * @param bank             The Bank object to reset the password for.
+     * @param securityInstance The Security object for password validation and hashing.
+     * @param userInfo         The username of the user whose password is being reset.
      */
     private static void resetPassword(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
         String currentPassword = promptInput("Please enter your current password", scanner);
@@ -194,12 +232,13 @@ public class BankSystem {
     }
 
     /**
-     * @param scanner
-     * @param bank
-     * @param securityInstance
-     * @param userInfo
+     * Displays and handles settings options for the user.
+     *
+     * @param scanner          The scanner object for user input.
+     * @param bank             The Bank object to perform settings operations.
+     * @param securityInstance The Security object for security-related operations.
+     * @param userInfo         The username of the logged-in user.
      */
-
     private static void settings(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
 
         int accountChoice = -1;
@@ -236,17 +275,25 @@ public class BankSystem {
 
     }
 
+    /**
+     * Displays the current balance of the user's bank account.
+     *
+     * @param scanner  The scanner object for user input.
+     * @param bank     The Bank object from which the balance is retrieved.
+     * @param userInfo The username of the logged-in user.
+     */
     private static void checkBalance(Scanner scanner, Bank bank, String userInfo) {
         double balance = bank.getBalance();
         System.out.println("Your current balance is " + balance + " left in your bank");
     }
 
     /**
-     * @param scanner
-     * @param bank
-     * @param userInfo
+     * Allows the user to change their transaction limit.
+     *
+     * @param scanner  The scanner object for user input.
+     * @param bank     The Bank object associated with the user's account.
+     * @param userInfo The username of the logged-in user.
      */
-
     private static void changeTransactionLimit(Scanner scanner, Bank bank, String userInfo) {
 
         int limit = 0;
@@ -278,6 +325,14 @@ public class BankSystem {
         }
     }
 
+    /**
+     * Allows the user to perform transfer, withdrawal, or deposit actions.
+     *
+     * @param scanner          The scanner object for user input.
+     * @param bank             The Bank object associated with the user's account.
+     * @param securityInstance The Security instance for security-related operations.
+     * @param userInfo         The username of the logged-in user.
+     */
     private static void transferOrWithDraworDeposit(Scanner scanner, Bank bank, Security securityInstance,
             String userInfo) {
 
@@ -316,6 +371,13 @@ public class BankSystem {
         } while (accountChoice != 0);
     }
 
+    /**
+     * Transfers money from the user's bank account to another user's account.
+     *
+     * @param scanner         The scanner object for user input.
+     * @param bank            The Bank object associated with the user's account.
+     * @param username        The username of the user initiating the transfer.
+     */
     private static void transferAmount(Scanner scanner, Bank bank, String username) {
         boolean valid = false;
         System.out.println("You currently have $" + bank.getBalance() + " in your bank account");
@@ -357,6 +419,13 @@ public class BankSystem {
         System.out.println("Transfer failed.");
     }
 
+    /**
+     * Withdraws money from the user's bank account.
+     *
+     * @param scanner  The scanner object for user input.
+     * @param bank     The Bank object associated with the user's account.
+     * @param username The username of the user initiating the withdrawal.
+     */
     private static void withdraw(Scanner scanner, Bank bank, String username) {
         double money = 0.0;
         System.out.println("You currently have " + bank.getBalance() + " in your bank account");
@@ -384,6 +453,13 @@ public class BankSystem {
         System.out.println("You have failed to withdraw " + money);
     }
 
+    /**
+     * Deposits money into the user's bank account.
+     *
+     * @param scanner  The scanner object for user input.
+     * @param bank     The Bank object associated with the user's account.
+     * @param username The username of the user initiating the deposit.
+     */
     private static void deposit(Scanner scanner, Bank bank, String username) {
         double money = 0.0;
         try {
@@ -409,6 +485,13 @@ public class BankSystem {
         System.out.println("You have not updated your account and your current balance is " + bank.getBalance());
     }
 
+    /**
+     * Provides various options related to credit cards such as applying, canceling, paying bills, and cash advance operations.
+     *
+     * @param scanner   The scanner object for user input.
+     * @param bank      The Bank object associated with the user's account.
+     * @param userInfo  The username of the logged-in user.
+     */
     private static void creditCardOptions(Scanner scanner, Bank bank, String userInfo) {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
 
@@ -496,6 +579,13 @@ public class BankSystem {
         } while (choice != 6);
     }
 
+    /**
+     * Provides various options related to loans such as applying for a loan and repaying a loan.
+     *
+     * @param scanner   The scanner object for user input.
+     * @param bank      The Bank object associated with the user's account.
+     * @param userInfo  The username of the logged-in user.
+     */
     private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
         int choice = -1;
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
@@ -527,6 +617,13 @@ public class BankSystem {
 
     }
 
+    /**
+     * Allows the user to apply for a loan by specifying the loan amount.
+     *
+     * @param scanner       The scanner object for user input.
+     * @param bank          The Bank object associated with the user's account.
+     * @param customerId    The ID of the customer applying for the loan.
+     */
     private static void applyLoan(Scanner scanner, Bank bank, int customerId) {
         double bankBalance = bank.getBalance();
         double currentTotalLoanAmount = bank.totalLoanAmount();
@@ -568,6 +665,12 @@ public class BankSystem {
         } while (loanAmount <= 0);
     }
 
+    /**
+     * Allows the user to repay a loan by specifying the loan ID and the amount to repay.
+     *
+     * @param scanner   The scanner object for user input.
+     * @param bank      The Bank object associated with the user's account.
+     */
     private static void repayLoan(Scanner scanner, Bank bank) {
         if (bank.totalLoanAmount() != 0.0) {
             bank.updateOverdueLoans();

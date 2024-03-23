@@ -35,10 +35,10 @@ public class Security {
 
     /**
      * Authenticates a user with the Bank using One-Time Password (OTP).
-     * 
-     * @param accountID The account ID of the user.
-     * @param otp       The OTP entered by the user.
-     * @return True if user enters correct OTP, false otherwise.
+     *
+     * @param username The username of the user.
+     * @param otp      The OTP entered by the user.
+     * @return True if the user enters the correct OTP, false otherwise.
      */
     public boolean authenticateWithOTP(String username, int otp) {
 
@@ -51,8 +51,8 @@ public class Security {
 
     /**
      * Generates an OTP for the user.
-     * 
-     * @param accountID The accountID of the user.
+     *
+     * @param username The username of the user.
      * @return The generated OTP.
      */
     public int generateOTP(String username) {

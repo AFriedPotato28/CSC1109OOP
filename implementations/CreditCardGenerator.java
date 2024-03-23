@@ -19,7 +19,12 @@ public final class CreditCardGenerator {
 
     /**
      * Generates a unique and valid credit card number.
+     *
+     * @param accountNo     The account number associated with the credit card.
+     * @param creditCardId  The unique identifier of the credit card.
+     * @return              A String representing the generated credit card number.
      */
+
     public static String generateCardNumber(int accountNo, int creditCardId) {
         // Logic to generate a unique and valid card number
         StringBuilder cardNumber = new StringBuilder();
