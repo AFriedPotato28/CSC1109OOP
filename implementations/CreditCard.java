@@ -1,4 +1,6 @@
 package implementations;
+
+import java.text.DecimalFormat;
 import java.time.YearMonth;
 
 /**
@@ -284,7 +286,8 @@ public class CreditCard {
         // $10.00, whichever is higher
         double totalCashAdvanceAmount = withdrawalAmount + cashAdvanceFee; // total cash advance amount including the
         // cash advance fee
-
+        DecimalFormat df = new DecimalFormat("##.00");
+        totalCashAdvanceAmount = Double.parseDouble(df.format(totalCashAdvanceAmount));
         // check if the total cash advance amount to be withdrawn totals less than 30%
         // of the credit limit
         // AND less than or equal to the remaining balance
@@ -353,6 +356,7 @@ public class CreditCard {
         // Get the expiry date of the credit card
         YearMonth expiryDate = this.expiryDate;
 
-        return expiryDate.isBefore(currentDate);
+        return currentDate.isBefore(expiryDate);
     }
+
 }
