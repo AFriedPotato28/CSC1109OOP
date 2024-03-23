@@ -9,9 +9,13 @@ public class Customer {
     private String username;
     private String password;
     private String salt;
-    
+
     /**
      * Construct a Customer object.
+     *
+     * @param name     The name of the customer.
+     * @param username The username of the customer.
+     * @param password The password of the customer.
      */
     public Customer(String name, String username, String password){
         this.name = name;
@@ -19,6 +23,16 @@ public class Customer {
         this.password = password;
     }
 
+
+    /**
+     * Construct a Customer object with specific customer ID, name, username, password, and salt.
+     *
+     * @param id       The unique identifier of the customer.
+     * @param name     The name of the customer.
+     * @param username The username of the customer.
+     * @param password The password of the customer.
+     * @param salt     The salt used for password hashing.
+     */
     public Customer(int id, String name, String username, String password,String salt){
         this.customerId = id;
         this.name = name;
@@ -27,8 +41,11 @@ public class Customer {
         this.salt = salt;
 
     }
-    
 
+    /**
+     * Retrieves the username of the customer.
+     * @return The username of the customer.
+     */
     public String getUserName(){
         return this.username;
     }
@@ -73,11 +90,21 @@ public class Customer {
         this.password = password;
     }
 
+    /**
+     * Sets the salt used for password hashing.
+     * @param salt The new salt of the customer.
+     */
     public void setSalt(String salt){
         this.salt = salt;
     }
 
-
+    /**
+     * Sets the customer details including customer ID, password, and salt.
+     *
+     * @param customerId The customer ID.
+     * @param password   The password of the customer.
+     * @param salt       The salt used for password hashing.
+     */
     public void setItems(int customerId, String password, String salt){
         this.customerId = customerId;
         this.password = password;

@@ -36,12 +36,12 @@ public class Insurance {
     private int premiumAge = 55;
 
     /**
-     * Constructs a new Insurance instance with specified ID and Type.
-     * Initialize the beneficiary list and sets default value for coverage amiount
-     * and insurance premium.
-     * 
-     * @param insuranceID   The unique indentifier for the insurance.
-     * @param insuranceType The type of insurance.
+     * Constructs a new Insurance instance with the specified customer ID, insurance type, and beneficiary name.
+     * Initializes the beneficiary list and sets default values for coverage amount and insurance premium.
+     *
+     * @param customerId      The unique identifier for the customer associated with the insurance.
+     * @param insuranceType   The type of insurance.
+     * @param beneficiaryName The name of the beneficiary.
      */
     public Insurance(int customerId, String insuranceType, String beneficiaryName) {
         this.insuranceID = ++lastAssignedId;
