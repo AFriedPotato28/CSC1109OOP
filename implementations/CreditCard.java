@@ -251,12 +251,21 @@ public class CreditCard {
      * @param paymentAmount The amount to be paid.
      * @return True if the payment is successful, False otherwise.
      */
-    public boolean payCreditBill(double paymentAmount) {
+    public boolean payCreditBill(Account account,double paymentAmount) {
+        DecimalFormat df = new DecimalFormat("##.00");
+        paymentAmount = Double.parseDouble(df.format(paymentAmount));
+
         // Check if the payment amount is valid
         if (paymentAmount < 0) {
             System.out.println("Payment amount is invalid!");
             return false;
         }
+
+        if (account.getBalance() < paymentAmount){
+            System.out.println("Payment amount exceeds your savings account");
+            return false;
+        }
+
 
         // Check if payment amount exceed credit bill balance
         if (paymentAmount > this.balance) {
@@ -266,7 +275,8 @@ public class CreditCard {
 
         // Deduct the payment amount from the balance
         this.balance -= paymentAmount;
-
+        //deducts from account also
+        account.withdraw(paymentAmount);
         // Update remainingCredit
         this.remainingCredit += paymentAmount;
 
@@ -323,6 +333,9 @@ public class CreditCard {
      * @return True if the payment is successful, False otherwise.
      */
     public boolean payCashAdvancePayable(Account account,double paymentAmount) {
+        DecimalFormat df = new DecimalFormat("##.00");
+        paymentAmount = Double.parseDouble(df.format(paymentAmount));
+
         // Check if the payment amount is valid
         if (paymentAmount < 0) {
             System.out.println("Payment amount is invalid!");

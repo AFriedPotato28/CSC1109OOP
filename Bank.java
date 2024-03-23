@@ -556,21 +556,21 @@ public class Bank {
 
         // Find the credit card with the specific card number and pay the bill
         CreditCard card = creditCardExists.get();
-        if (getBalance() >= paymentAmount) {
-            if (card.payCreditBill(paymentAmount)) {
-                // Payment successful
-                System.out.println("Payment of $" + paymentAmount + " for card ending in " +
-                        card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
-                csv_update_help.updateExistingCreditCardBills(card, cardNumber);
-                Account savingsAccount = getAccountInfo();
-                savingsAccount.withdraw(paymentAmount);
-                csv_update_help.updateCSVOfAccount(this.accounts);
-                System.out.println("Your current savings account has " + getBalance() + " left");
-            }
-        } else {
-            // Payment failed
+        Account savingsAccount = getAccountInfo();
+  
+    
+        if (card.payCreditBill(savingsAccount,paymentAmount)) {
+            // Payment successful
             System.out.println("Payment of $" + paymentAmount + " for card ending in " +
-                    card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
+                    card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.");
+            csv_update_help.writeCSVToCreditCard(this.creditList);
+            csv_update_help.updateCSVOfAccount(this.accounts);
+            System.out.println("Your current savings account has " + getBalance() + " left");
+        }
+        else {
+        // Payment failed
+        System.out.println("Payment of $" + paymentAmount + " for card ending in " +
+                card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.");
 
         }
     }
