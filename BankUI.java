@@ -1,15 +1,11 @@
 import javax.swing.*;
-
 import implementations.Security;
-import implementations.Account;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.util.NoSuchElementException;
 
 public class BankUI extends JFrame {
     private Bank bank;
-    private Account account;
     private Security securityInstance;
     private JTextField nameField, usernameField, passwordField;
     private JButton createAccountButton, loginButton;
@@ -44,15 +40,13 @@ public class BankUI extends JFrame {
          */
         cardPanel.add(settingPanel(), "Setting");
         cardPanel.add(resetPasswordPanel(), "Reset Password");
-        /*
-         * cardPanel.add(changeTransactionLimitPanel(), "Change Transaction Limit");
-         */
+        cardPanel.add(changeTransactionLimitPanel(), "Change Transaction Limit");
+         
         cardPanel.add(loanPanel(), "Loan");
-        /*
-         * cardPanel.add(applyLoanPanel(), "Apply Loan");
-         * cardPanel.add(payLoanPanel(), "Pay Loan");
-         * cardPanel.add(viewLoanPanel(), "View Loan");
-         */
+        cardPanel.add(applyLoanPanel(), "Apply Loan");
+        //cardPanel.add(payLoanPanel(), "Pay Loan");
+        cardPanel.add(viewLoanPanel(), "View Loan");
+        
         add(cardPanel, BorderLayout.CENTER);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -425,13 +419,10 @@ public class BankUI extends JFrame {
             try{
             String withdrawAmountText = withdrawAmountField.getText();
             double withdrawAmount = Double.parseDouble(withdrawAmountText);
-            boolean withdrawalSuccessful = bank.withdraw(withdrawAmount, userInfo);
-
-            /*
-             * Do a transaction limit here
-             * 
-             */
-            if (withdrawalSuccessful) {
+            double transactionLimit = bank.getTransactionLimit();
+            
+            if (bank.getBalance() > withdrawAmount && transactionLimit < withdrawAmount) {
+                bank.withdraw(withdrawAmount, userInfo);
                 JOptionPane.showMessageDialog(null, "Withdrawal successful");
                 updateAccountBalance();
                 cardLayout.show(cardPanel, "Transaction");
@@ -516,7 +507,7 @@ public class BankUI extends JFrame {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel AccountHolderMessage = new JLabel("Please type account holder to transfer to: ");
+        JLabel AccountHolderMessage = new JLabel("Please type the username of account holder to transfer to: ");
         gbc.gridy = 0;
         transferPanel.add(AccountHolderMessage, gbc);
 
@@ -751,10 +742,11 @@ public class BankUI extends JFrame {
         resetPasswordPanel.add(reenterNewPasswordField, gbc);
 
         JButton submitButton = new JButton("Submit");
-        
         submitButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
+            
+
             String newPassword = newPasswordField.getText();
             String reenterNewPassword = reenterNewPasswordField.getText();
 
@@ -762,17 +754,13 @@ public class BankUI extends JFrame {
                 JOptionPane.showMessageDialog(null, "The new passwords does not match");
             }
 
-            /*
-             * Do a if statement here to check if old password matches
-             */
-            
             bank.resetPassword(userInfo, newPassword);
             JOptionPane.showMessageDialog(null, "Password has been successfully changed");
 
            cardLayout.show(cardPanel, "Login");
             }
         });
-        gbc.gridy = 7;
+        gbc.gridy = 6;
         resetPasswordPanel.add(submitButton, gbc);
 
         JButton backButton = new JButton("Back");
@@ -781,12 +769,66 @@ public class BankUI extends JFrame {
                 cardLayout.show(cardPanel, "Setting");
             }
         });
-        gbc.gridy = 5;
+        gbc.gridy = 7;
         resetPasswordPanel.add(backButton, gbc);
 
         return resetPasswordPanel;
     }
-     
+   
+    private JPanel changeTransactionLimitPanel() {
+        JPanel changeTransactionLimitPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel transactionLimit = new JLabel("Please set new transaction limit:");
+        gbc.gridy = 0;
+        changeTransactionLimitPanel.add(transactionLimit, gbc);
+
+        JTextField transactionLimitField = new JTextField();
+        transactionLimitField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        changeTransactionLimitPanel.add(transactionLimitField, gbc);
+
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                try{
+                    int newLimit = Integer.parseInt(transactionLimitField.getText());
+
+                    if (newLimit <= 0){
+                        JOptionPane.showMessageDialog(null, "Transaction Limit must be more than 0.");
+                        return;
+                    }
+                    boolean limitUpdated = bank.changeTransactionLimit(newLimit, userInfo);
+                    if (limitUpdated) {
+                        JOptionPane.showMessageDialog(null, "Transaction Limit updated successfully.");
+                        cardLayout.show(cardPanel, "Setting");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Failed to update the Transaction Limit.");
+                    }
+                } catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                }
+            }
+        });
+        gbc.gridy = 2;
+        changeTransactionLimitPanel.add(submitButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Setting");
+            }
+        });
+        changeTransactionLimitPanel.add(backButton, gbc);
+
+        return changeTransactionLimitPanel;
+    }
+
     private JPanel loanPanel() {
         JPanel loanPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -801,13 +843,13 @@ public class BankUI extends JFrame {
         gbc.insets.top = 0;
         loanPanel.add(messageLabel, gbc);
 
-        JButton applyLoanButton = new JButton("Apply Loan ");
+        JButton applyLoanButton = new JButton("Apply Loan");
         gbc.gridy = 1;
         gbc.insets.top = verticalSpacing;
         applyLoanButton.setPreferredSize(new Dimension(200, 30));
         applyLoanButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                cardLayout.show(cardPanel, " Apply Loan");
+                cardLayout.show(cardPanel, "Apply Loan");
             }
         });
         loanPanel.add(applyLoanButton, gbc);
@@ -844,24 +886,108 @@ public class BankUI extends JFrame {
         return loanPanel;
     }
 
-    /*
-     * private JPanel applyLoanPanel() {
-     * return applyLoanPanel();
-     * }
-     */
+    private JPanel applyLoanPanel() {
+        JPanel applyLoanPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
-    /*
-     * private JPanel payLoanPanel() {
-     * return payLoanPanel();
-     * }
-     */
+        JLabel messageLabel = new JLabel("Please key in how much you wish to loan:");
+        gbc.gridy = 0;
+        applyLoanPanel.add(messageLabel, gbc);
 
-    /*
-     * private JPanel viewLoanPanel() {
-     * return viewLoanPanel();
-     * }
-     */
+        JTextField loanAmountTextField = new JTextField();
+        loanAmountTextField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        applyLoanPanel.add(loanAmountTextField, gbc);
 
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                try{
+                    double loanAmount = Double.parseDouble(loanAmountTextField.getText());
+                    int customerId = bank.getAccountNo();
+                    bank.applyLoan(customerId, loanAmount);
+                    JOptionPane.showMessageDialog(null, "Loan application submitted successfully");
+                } catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                }
+            }
+        });
+        gbc.gridy = 2;
+        applyLoanPanel.add(submitButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Loan");
+            }
+        });
+        applyLoanPanel.add(backButton, gbc);
+
+      return applyLoanPanel;
+      }
+     
+
+    
+    /*private JPanel payLoanPanel() {
+        JPanel payLoanPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        
+
+        return payLoanPanel();
+     }*/
+     
+    
+    private JPanel viewLoanPanel() {
+        JPanel viewLoanPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+
+        JLabel titleLabel = new JLabel("Outstanding Loans", SwingConstants.CENTER);
+        gbc.gridy = 0;
+        viewLoanPanel.add(titleLabel, gbc);
+
+        JTextArea loanTextArea = new JTextArea(10, 40);
+        gbc.gridy = 1;
+        loanTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(loanTextArea);
+        viewLoanPanel.add(scrollPane, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 2;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Loan");
+            }
+        });
+        viewLoanPanel.add(backButton, gbc);
+
+        updateLoanDisplay(loanTextArea);
+
+        return viewLoanPanel;
+    }
+     
+    public void updateLoanDisplay(JTextArea loansTextArea){
+        new Thread(() -> {
+            System.out.println(bank.getLoanString().toString());
+            String loansDisplay = bank.getLoanString().toString();
+            SwingUtilities.invokeLater(() -> loansTextArea.setText(loansDisplay.toString()));
+        }).start();
+
+
+    }// you need any help just drop me a tttext in tele
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
