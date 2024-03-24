@@ -1072,11 +1072,10 @@ public class Bank {
 
     public StringBuilder getLoanString(){
         StringBuilder sb = new StringBuilder();
-
         for (Loan loan : this.loans) {
             if (loan.getLoanAmount() > 0){
                  sb.append("Loan ID: " + loan.getLoanId() + ", Loan amount: " + loan.getLoanAmount()
-                            + " Loan Deadline: " + loan.getLoanDueDate());
+                            + " Loan Deadline: " + loan.getLoanDueDate() + "\n");
             }
         }
 

@@ -11,7 +11,7 @@ import implementations.Security;
  * Main class for the Bank System.
  */
 public class BankSystem {
-    private static final int TIME_TO_KICK = 5; // time to kick in seconds
+    private static final int TIME_TO_KICK = 20; // time to kick in seconds
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
@@ -26,7 +26,7 @@ public class BankSystem {
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
 
-        String userInfo = "";
+       String userInfo = "";
 
         do {
             if (!bank.validateUsername(userInfo)) {
@@ -53,7 +53,7 @@ public class BankSystem {
                     case 2:
                         userInfo = loginToAccount(scanner, bank, securityInstance);
                         // Once logged in, initiate the logout timer
-                        // initiateLogoutTimer();
+                        initiateLogoutTimer(userInfo);
                         break;
                 }
             } else {
@@ -66,7 +66,7 @@ public class BankSystem {
                 System.out.println("0. Exit");
 
                 System.out.println("Enter your choice: ");
-
+                resetLogoutTimer(userInfo);
                 try {
                     choice = scanner.nextInt();
                 } catch (Exception e) {
@@ -109,23 +109,35 @@ public class BankSystem {
         scheduler.shutdownNow(); // Properly shutdown the scheduler
     }
 
+    private static String setUserInfoToNothing(String userInfo){
+        return userInfo = "";
+    }
+
     /**
      * Initiates the logout timer.
      */
-    private static void initiateLogoutTimer() {
+    private static void initiateLogoutTimer(String userInfo) {
         scheduler.schedule(() -> {
             System.out.println("You have been logged out due to inactivity.");
-            System.exit(0); // or any other way to handle logout
+            setUserInfoToNothing(userInfo);
+            return;
         }, TIME_TO_KICK, TimeUnit.SECONDS);
+    }
+
+    private static void initiateWarningTimer(){
+        scheduler.schedule(() -> {
+            System.out.println("You will be logged out due to inactivity in 5 more seconds.");
+        }, TIME_TO_KICK-5,TimeUnit.SECONDS);
     }
 
     /**
      * Resets the logout timer.
      */
-    private static void resetLogoutTimer() {
+    private static void resetLogoutTimer(String userInfo) {
         scheduler.shutdownNow(); // Cancel any previously running tasks
         scheduler = Executors.newScheduledThreadPool(1); // Reinitialize the scheduler
-        initiateLogoutTimer();
+        initiateWarningTimer();
+        initiateLogoutTimer(userInfo);
     }
 
     /**
@@ -242,7 +254,7 @@ public class BankSystem {
     private static void settings(Scanner scanner, Bank bank, Security securityInstance, String userInfo) {
 
         int accountChoice = -1;
-
+        resetLogoutTimer(userInfo);
         do {
             System.out.println("\nChoose an action:");
             System.out.println("1. Reset Password");
@@ -337,7 +349,7 @@ public class BankSystem {
             String userInfo) {
 
         int accountChoice = -1;
-
+        resetLogoutTimer(userInfo);
         do {
             System.out.println("\nChoose an action:");
             System.out.println("1. Transfer");
@@ -496,7 +508,7 @@ public class BankSystem {
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
 
         int choice = -1;
-
+        resetLogoutTimer(userInfo);
         do {
 
             System.out.println("1. Apply Credit Card");
@@ -589,7 +601,7 @@ public class BankSystem {
     private static void loanOptions(Scanner scanner, Bank bank, String userInfo) {
         int choice = -1;
         int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-
+        resetLogoutTimer(userInfo);
         do {
 
             System.out.println("1. Apply Loan");

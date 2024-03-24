@@ -8,6 +8,7 @@ public class BankUI extends JFrame {
     private Bank bank;
     private Security securityInstance;
     private JTextField nameField, usernameField, passwordField;
+    private JTextArea loanTextArea;
     private JButton createAccountButton, loginButton;
     private JLabel nameLabel, usernameLabel, passwordLabel, balanceLabel;
     private CardLayout cardLayout;
@@ -718,7 +719,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 0;
         resetPasswordPanel.add(oldPassword, gbc);
 
-        JTextField oldPasswordField = new JTextField();
+        JTextField oldPasswordField = new JPasswordField();
         oldPasswordField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 1;
         resetPasswordPanel.add(oldPasswordField, gbc);
@@ -727,7 +728,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 2;
         resetPasswordPanel.add(newPassword, gbc);
 
-        JTextField newPasswordField = new JTextField();
+        JTextField newPasswordField = new JPasswordField();
         newPasswordField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 3;
         resetPasswordPanel.add(newPasswordField, gbc);
@@ -736,7 +737,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 4;
         resetPasswordPanel.add(reenterNewPassword, gbc);
 
-        JTextField reenterNewPasswordField = new JTextField();
+        JTextField reenterNewPasswordField = new JPasswordField();
         newPasswordField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 5;
         resetPasswordPanel.add(reenterNewPasswordField, gbc);
@@ -745,17 +746,30 @@ public class BankUI extends JFrame {
         submitButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-            
-
+           
             String newPassword = newPasswordField.getText();
             String reenterNewPassword = reenterNewPasswordField.getText();
 
-            if (!newPassword.equals(reenterNewPassword)) {
-                JOptionPane.showMessageDialog(null, "The new passwords does not match", "Error", JOptionPane.ERROR_MESSAGE);
+            if (!bank.authenticateDetails(userInfo, oldPasswordField.getText())){
+                JOptionPane.showMessageDialog(null, "Your current password does not match");
+                return;
+            }
+
+            if(!securityInstance.validatePassword(newPassword)){
+                JOptionPane.showMessageDialog(null, "Your new password does not meet the basic requirements of password");
+                return;
+            }
+
+            if (!newPassword.equals(reenterNewPassword) || newPassword.equals("")) {
+                JOptionPane.showMessageDialog(null, "The new passwords does not match or cannot be null.");
+                return;
             }
 
             bank.resetPassword(userInfo, newPassword);
-            JOptionPane.showMessageDialog(null, "Password has been successfully changed", "Success", JOptionPane.INFORMATION_MESSAGE);
+            oldPasswordField.setText("");
+            reenterNewPasswordField.setText("");
+            newPasswordField.setText("");
+            JOptionPane.showMessageDialog(null, "Password has been successfully changed");
 
            cardLayout.show(cardPanel, "Login");
             }
@@ -870,6 +884,7 @@ public class BankUI extends JFrame {
         viewLoanButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "View Loan");
+                updateLoanDisplay();
             }
         });
         loanPanel.add(viewLoanButton, gbc);
@@ -908,9 +923,10 @@ public class BankUI extends JFrame {
             public void actionPerformed(ActionEvent e){
                 try{
                     double loanAmount = Double.parseDouble(loanAmountTextField.getText());
-                    int customerId = bank.getAccountNo();
+                    int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
                     bank.applyLoan(customerId, loanAmount);
                     JOptionPane.showMessageDialog(null, "Loan application submitted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    updateLoanDisplay();
                 } catch (NumberFormatException ex){
                     JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -964,6 +980,7 @@ public class BankUI extends JFrame {
             double repayLoanAmount = Double.parseDouble(repayAmountField.getText().trim());
             bank.repayLoan(repayLoanId, repayLoanAmount);
             JOptionPane.showMessageDialog(null, "Loan repayment successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            updateLoanDisplay();
          } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
          } catch (Exception ex) {
@@ -997,7 +1014,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 0;
         viewLoanPanel.add(titleLabel, gbc);
 
-        JTextArea loanTextArea = new JTextArea(10, 40);
+        loanTextArea = new JTextArea(10, 40);
         gbc.gridy = 1;
         loanTextArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(loanTextArea);
@@ -1013,16 +1030,14 @@ public class BankUI extends JFrame {
         });
         viewLoanPanel.add(backButton, gbc);
 
-        updateLoanDisplay(loanTextArea);
-
         return viewLoanPanel;
     }
      
-    public void updateLoanDisplay(JTextArea loansTextArea){
+    public void updateLoanDisplay(){
         new Thread(() -> {
             System.out.println(bank.getLoanString().toString());
             String loansDisplay = bank.getLoanString().toString();
-            SwingUtilities.invokeLater(() -> loansTextArea.setText(loansDisplay.toString()));
+            SwingUtilities.invokeLater(() -> loanTextArea.setText(loansDisplay));
         }).start();
 
 
