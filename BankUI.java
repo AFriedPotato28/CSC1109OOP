@@ -415,13 +415,26 @@ public class BankUI extends JFrame {
         withdrawPanel.add(withdrawAmountField, gbc);
 
         JButton submitButton = new JButton("Submit");
-        /*
-         * submitButton.addActionListener(new ActionListener(){
-         * public void actionPerformed(ActionEvent e){
-         * withdraw();
-         * }
-         * });
-         */
+        
+         submitButton.addActionListener(new ActionListener(){
+         public void actionPerformed(ActionEvent e){
+            try{
+            String withdrawAmountText = withdrawAmountField.getText();
+            double withdrawAmount = Double.parseDouble(withdrawAmountText);
+            boolean withdrawalSuccessful = bank.withdraw(withdrawAmount, userInfo);
+            if (withdrawalSuccessful) {
+                JOptionPane.showMessageDialog(null, "Withdrawal successful");
+                updateAccountBalance();
+                cardLayout.show(cardPanel, "Transaction");
+                } else {
+                    JOptionPane.showMessageDialog(null,"Withdrawal failed. Please try again");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid number");
+            }
+        }
+    });
+         
         gbc.gridy = 2;
         withdrawPanel.add(submitButton, gbc);
 
@@ -453,13 +466,26 @@ public class BankUI extends JFrame {
         depositPanel.add(depositAmountField, gbc);
 
         JButton submitButton = new JButton("Submit");
-        /*
-         * submitButton.addActionListener(new ActionListener(){
-         * public void actionPerformed(ActionEvent e){
-         * deposit();
-         * }
-         * });
-         */
+        
+        submitButton.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+        try {
+            String depositAmountText = depositAmountField.getText();
+            double depositAmount = Double.parseDouble(depositAmountText);
+            boolean depositSuccessful = bank.deposit(depositAmount, userInfo);
+            if(depositSuccessful){
+                JOptionPane.showMessageDialog(null, "Deposit Successful");
+                updateAccountBalance();
+                cardLayout.show(cardPanel, "Transaction");
+            } else {
+                JOptionPane.showMessageDialog(null, "Deposit Failed. Please try again.");
+            }
+         } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+         }
+        }
+        });
+         
         gbc.gridy = 2;
         depositPanel.add(submitButton, gbc);
 
@@ -521,12 +547,7 @@ public class BankUI extends JFrame {
 
         return transferPanel;
     }
-
-    /*
-     * public void withdraw(){
-     * 
-     * }
-     */
+     
 
     /*
      * public void deposit(){
@@ -702,7 +723,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 3;
         resetPasswordPanel.add(newPasswordField, gbc);
 
-        JLabel reenterNewPassword = new JLabel("Please enter new password:");
+        JLabel reenterNewPassword = new JLabel("Please reenter new password:");
         gbc.gridy = 4;
         resetPasswordPanel.add(reenterNewPassword, gbc);
 
