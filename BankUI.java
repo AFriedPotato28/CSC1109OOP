@@ -4,6 +4,7 @@ import implementations.Security;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import java.util.NoSuchElementException;
 
 public class BankUI extends JFrame {
@@ -11,7 +12,7 @@ public class BankUI extends JFrame {
     private Security securityInstance;
     private JTextField nameField, usernameField, passwordField;
     private JButton createAccountButton, loginButton;
-    private JLabel nameLabel, usernameLabel, passwordLabel;
+    private JLabel nameLabel, usernameLabel, passwordLabel, balanceLabel;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private boolean isNewAccount = false;
@@ -194,7 +195,8 @@ public class BankUI extends JFrame {
 
                 OTPField.addKeyListener(new KeyAdapter() {
                     public void keyPressed(KeyEvent event) {
-                        if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9' || event.getKeyChar() == (char) 8) {
+                        if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                                || event.getKeyChar() == (char) 8) {
                             OTPField.setEditable(true);
 
                         } else {
@@ -207,7 +209,9 @@ public class BankUI extends JFrame {
 
                 while (counter <= 3 && JOptionPane.showConfirmDialog(this, fields, "One Time Password",
                         JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
-                    if (bank.authenticateOTP(loginUsername, Integer.parseInt(OTPField.getText()))) {
+
+                    if (!OTPField.getText().equals("")
+                            && bank.authenticateOTP(loginUsername, Integer.parseInt(OTPField.getText()))) {
                         JOptionPane.showMessageDialog(this, "Login successful!");
                         userInfo = loginUsername;
                         bank.populateUserInfo(userInfo);
@@ -215,10 +219,13 @@ public class BankUI extends JFrame {
                         cardLayout.show(cardPanel, "Main Menu");
                         return;
                     }
+
                     JOptionPane.showMessageDialog(this, "You have " + (3 - counter) + " attempts left");
                     counter++;
                 }
+
                 OTPDialog.setVisible(false);
+                JOptionPane.showMessageDialog(this, "You have tried more than 3 attempts");
                 return;
             }
         }
@@ -251,8 +258,9 @@ public class BankUI extends JFrame {
         transactionButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                updateAccountBalance();
                 cardLayout.show(cardPanel, "Transaction");
-                transactionPanel();
+
             }
         });
         buttonPanel.add(transactionButton);
@@ -302,6 +310,22 @@ public class BankUI extends JFrame {
         return mainMenuPanel;
     }
 
+    public void updateAccountBalance() {
+        new Thread(() -> {
+            try {
+                double accountBalance = bank.getBalance(); // Fetch balance in background thread
+                // Now update the GUI on the EDT
+                SwingUtilities.invokeLater(() -> {
+                    balanceLabel.setText(String.format("Account Balance: $%.2f", accountBalance));
+                    balanceLabel.revalidate();
+                    balanceLabel.repaint();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     private JPanel transactionPanel() {
         JPanel transactionPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -310,12 +334,17 @@ public class BankUI extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
 
         double accountBalance = 0.0;
+
         try {
             accountBalance = bank.getBalance();
+            System.out.println("Current account balance: " + accountBalance);
         } catch (NoSuchElementException e) {
             System.out.println("User Information not set");
         }
-        JLabel balanceLabel = new JLabel(String.format("Account Balance: $.2f", accountBalance));
+
+        balanceLabel = new JLabel(String.format("Account Balance: $%.2f",
+                accountBalance));
+
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.gridy = 0;
         transactionPanel.add(balanceLabel, gbc);
@@ -363,6 +392,9 @@ public class BankUI extends JFrame {
             }
         });
         transactionPanel.add(backButton, gbc);
+
+        transactionPanel.revalidate();
+        transactionPanel.repaint();
 
         return transactionPanel;
     }

@@ -44,7 +44,7 @@ public class Security {
 
         // implementation of authentication with OTP goes here
         if (otpMap.containsKey(username) && otpMap.containsValue(otp)) {
-            System.out.println(username + otp);
+
             return true;
         }
         return false;
