@@ -44,7 +44,7 @@ public class BankUI extends JFrame {
          
         cardPanel.add(loanPanel(), "Loan");
         cardPanel.add(applyLoanPanel(), "Apply Loan");
-        //cardPanel.add(payLoanPanel(), "Pay Loan");
+        cardPanel.add(payLoanPanel(), "Pay Loan");
         cardPanel.add(viewLoanPanel(), "View Loan");
         
         add(cardPanel, BorderLayout.CENTER);
@@ -423,14 +423,14 @@ public class BankUI extends JFrame {
             
             if (bank.getBalance() > withdrawAmount && transactionLimit < withdrawAmount) {
                 bank.withdraw(withdrawAmount, userInfo);
-                JOptionPane.showMessageDialog(null, "Withdrawal successful");
+                JOptionPane.showMessageDialog(null, "Withdrawal successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
                 cardLayout.show(cardPanel, "Transaction");
                 } else {
-                    JOptionPane.showMessageDialog(null,"Withdrawal failed. Please try again");
+                    JOptionPane.showMessageDialog(null,"Withdrawal failed. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid number");
+                JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     });
@@ -474,14 +474,14 @@ public class BankUI extends JFrame {
             double depositAmount = Double.parseDouble(depositAmountText);
             boolean depositSuccessful = bank.deposit(depositAmount, userInfo);
             if(depositSuccessful){
-                JOptionPane.showMessageDialog(null, "Deposit Successful");
+                JOptionPane.showMessageDialog(null, "Deposit Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
                 cardLayout.show(cardPanel, "Transaction");
             } else {
-                JOptionPane.showMessageDialog(null, "Deposit Failed. Please try again.");
+                JOptionPane.showMessageDialog(null, "Deposit Failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
          } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
          }
         }
         });
@@ -533,14 +533,14 @@ public class BankUI extends JFrame {
             double amount = Double.parseDouble(transferField.getText());
             boolean transferSuccessful = bank.transferAmount(amount, recipient);
             if (transferSuccessful) {
-                JOptionPane.showMessageDialog(null, "Transfer successful");
+                JOptionPane.showMessageDialog(null, "Transfer successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
                 cardLayout.show(cardPanel, "Transaction");
             } else {
-                JOptionPane.showMessageDialog(null, "Transfer failed. Please try again");
+                JOptionPane.showMessageDialog(null, "Transfer failed. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
          });
@@ -751,11 +751,11 @@ public class BankUI extends JFrame {
             String reenterNewPassword = reenterNewPasswordField.getText();
 
             if (!newPassword.equals(reenterNewPassword)) {
-                JOptionPane.showMessageDialog(null, "The new passwords does not match");
+                JOptionPane.showMessageDialog(null, "The new passwords does not match", "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             bank.resetPassword(userInfo, newPassword);
-            JOptionPane.showMessageDialog(null, "Password has been successfully changed");
+            JOptionPane.showMessageDialog(null, "Password has been successfully changed", "Success", JOptionPane.INFORMATION_MESSAGE);
 
            cardLayout.show(cardPanel, "Login");
             }
@@ -798,18 +798,18 @@ public class BankUI extends JFrame {
                     int newLimit = Integer.parseInt(transactionLimitField.getText());
 
                     if (newLimit <= 0){
-                        JOptionPane.showMessageDialog(null, "Transaction Limit must be more than 0.");
+                        JOptionPane.showMessageDialog(null, "Transaction Limit must be more than 0.", "Error", JOptionPane.ERROR_MESSAGE);
                         return;
                     }
                     boolean limitUpdated = bank.changeTransactionLimit(newLimit, userInfo);
                     if (limitUpdated) {
-                        JOptionPane.showMessageDialog(null, "Transaction Limit updated successfully.");
+                        JOptionPane.showMessageDialog(null, "Transaction Limit updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                         cardLayout.show(cardPanel, "Setting");
                     } else {
-                        JOptionPane.showMessageDialog(null, "Failed to update the Transaction Limit.");
+                        JOptionPane.showMessageDialog(null, "Failed to update the Transaction Limit.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (NumberFormatException ex){
-                    JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -910,9 +910,9 @@ public class BankUI extends JFrame {
                     double loanAmount = Double.parseDouble(loanAmountTextField.getText());
                     int customerId = bank.getAccountNo();
                     bank.applyLoan(customerId, loanAmount);
-                    JOptionPane.showMessageDialog(null, "Loan application submitted successfully");
+                    JOptionPane.showMessageDialog(null, "Loan application submitted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } catch (NumberFormatException ex){
-                    JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                    JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -931,21 +931,60 @@ public class BankUI extends JFrame {
 
       return applyLoanPanel;
       }
-     
-
     
-    /*private JPanel payLoanPanel() {
+    private JPanel payLoanPanel() {
         JPanel payLoanPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(5,5,5,5);
 
+        JLabel loanIdLabel = new JLabel("Loan ID: ");
+        gbc.gridy = 0;
+        payLoanPanel.add(loanIdLabel, gbc);
         
+        JTextField loanIdField = new JTextField(10);
+        gbc.gridy = 1;
+        payLoanPanel.add(loanIdField, gbc);
+        
+        JLabel repayAmountLabel = new JLabel("Repayment Amount: ");
+        gbc.gridy = 2;
+        payLoanPanel.add(repayAmountLabel, gbc);
+        
+        JTextField repayAmountField = new JTextField(10);
+        gbc.gridy = 3;
+        payLoanPanel.add(repayAmountField, gbc);
 
-        return payLoanPanel();
-     }*/
-     
+        JButton submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+        try {
+            int repayLoanId = Integer.parseInt(loanIdField.getText().trim());
+            double repayLoanAmount = Double.parseDouble(repayAmountField.getText().trim());
+            bank.repayLoan(repayLoanId, repayLoanAmount);
+            JOptionPane.showMessageDialog(null, "Loan repayment successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
+         } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+         } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Error repaying." + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+         }
+        }
+        });
+        gbc.gridy = 4;
+        payLoanPanel.add(submitButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Loan");
+            }
+        });
+        gbc.gridy = 5;
+        payLoanPanel.add(backButton, gbc);
+
+        return payLoanPanel;
+     } 
     
     private JPanel viewLoanPanel() {
         JPanel viewLoanPanel = new JPanel(new GridBagLayout());
@@ -987,7 +1026,7 @@ public class BankUI extends JFrame {
         }).start();
 
 
-    }// you need any help just drop me a tttext in tele
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
