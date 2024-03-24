@@ -116,13 +116,27 @@ public class BankUI extends JFrame {
             name = JOptionPane.showInputDialog(this, "Please enter your name");
         }
 
-        while (username.isBlank()) {
-            username = JOptionPane.showInputDialog(this, "Please enter username");
+        while (bank.validateUsername(username) || username.isBlank()) {
+
+            JTextField usernameField = new JTextField();
+            Object[] fields = { "Please enter a valid username", usernameField };
+            int confirm = JOptionPane.showConfirmDialog(this, fields, "Username", JOptionPane.OK_CANCEL_OPTION);
+            if (confirm == JOptionPane.OK_OPTION) {
+                username = usernameField.getText();
+            } else {
+                return;
+            }
         }
 
         while (!securityInstance.validatePassword(password)) {
-            password = JOptionPane.showInputDialog(this,
-                    "Password does not meet requirements. Please enter again:");
+            JPasswordField passwordField = new JPasswordField();
+            Object[] fields = { "Please enter a valid password", passwordField };
+            int confirm = JOptionPane.showConfirmDialog(this, fields, "Password", JOptionPane.OK_CANCEL_OPTION);
+            if (confirm == JOptionPane.OK_OPTION) {
+                password = new String(passwordField.getPassword());
+            } else {
+                return;
+            }
         }
 
         bank.addCustomer(name, username, password);
@@ -165,10 +179,46 @@ public class BankUI extends JFrame {
                 count++;
                 needReEnter = true;
             } else {
-                JOptionPane.showMessageDialog(this, "Login successful!");
-                // OTP generation and authentication logic here.
+                bank.setLoginDetails(loginUsername, loginPassword);
+                int OTP = bank.generateOTP(loginUsername);
+                int counter = 1;
 
-                cardLayout.show(cardPanel, "Main Menu");
+                JDialog OTPDialog = new JDialog();
+                OTPDialog.setTitle("One Time Password");
+                OTPDialog.add(new JLabel("Your one time password is " + OTP));
+                OTPDialog.setSize(250, 150);
+                OTPDialog.setModal(false); // Make the dialog non-modal
+                OTPDialog.setVisible(true);
+
+                JTextField OTPField = new JTextField();
+
+                OTPField.addKeyListener(new KeyAdapter() {
+                    public void keyPressed(KeyEvent event) {
+                        if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9' || event.getKeyChar() == (char) 8) {
+                            OTPField.setEditable(true);
+
+                        } else {
+                            OTPField.setEditable(false);
+                        }
+                    }
+                });
+
+                Object[] fields = { "Please enter your one time password", OTPField };
+
+                while (counter <= 3 && JOptionPane.showConfirmDialog(this, fields, "One Time Password",
+                        JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+                    if (bank.authenticateOTP(loginUsername, Integer.parseInt(OTPField.getText()))) {
+                        JOptionPane.showMessageDialog(this, "Login successful!");
+                        userInfo = loginUsername;
+                        bank.populateUserInfo(userInfo);
+                        OTPDialog.setVisible(false);
+                        cardLayout.show(cardPanel, "Main Menu");
+                        return;
+                    }
+                    JOptionPane.showMessageDialog(this, "You have " + (3 - counter) + " attempts left");
+                    counter++;
+                }
+                OTPDialog.setVisible(false);
                 return;
             }
         }
