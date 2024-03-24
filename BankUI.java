@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 import implementations.Security;
-
+import implementations.Account;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 
 public class BankUI extends JFrame {
     private Bank bank;
+    private Account account;
     private Security securityInstance;
     private JTextField nameField, usernameField, passwordField;
     private JButton createAccountButton, loginButton;
@@ -43,6 +44,9 @@ public class BankUI extends JFrame {
          */
         cardPanel.add(settingPanel(), "Setting");
         cardPanel.add(resetPasswordPanel(), "Reset Password");
+        /*
+         * cardPanel.add(changeTransactionLimitPanel(), "Change Transaction Limit");
+         */
         cardPanel.add(loanPanel(), "Loan");
         /*
          * cardPanel.add(applyLoanPanel(), "Apply Loan");
@@ -422,6 +426,11 @@ public class BankUI extends JFrame {
             String withdrawAmountText = withdrawAmountField.getText();
             double withdrawAmount = Double.parseDouble(withdrawAmountText);
             boolean withdrawalSuccessful = bank.withdraw(withdrawAmount, userInfo);
+
+            /*
+             * Do a transaction limit here
+             * 
+             */
             if (withdrawalSuccessful) {
                 JOptionPane.showMessageDialog(null, "Withdrawal successful");
                 updateAccountBalance();
@@ -526,13 +535,25 @@ public class BankUI extends JFrame {
         transferPanel.add(transferField, gbc);
 
         JButton submitButton = new JButton("Submit");
-        /*
-         * submitButton.addActionListener(new ActionListener(){
-         * public void actionPerformed(ActionEvent e){
-         * transfer();
-         * }
-         * });
-         */
+        submitButton.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent e){
+            try{
+            String recipient = accountHolderField.getText();
+            double amount = Double.parseDouble(transferField.getText());
+            boolean transferSuccessful = bank.transferAmount(amount, recipient);
+            if (transferSuccessful) {
+                JOptionPane.showMessageDialog(null, "Transfer successful");
+                updateAccountBalance();
+                cardLayout.show(cardPanel, "Transaction");
+            } else {
+                JOptionPane.showMessageDialog(null, "Transfer failed. Please try again");
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid number.");
+                }
+            }
+         });
+         
         gbc.gridy = 4;
         transferPanel.add(submitButton, gbc);
 
@@ -547,19 +568,6 @@ public class BankUI extends JFrame {
 
         return transferPanel;
     }
-     
-
-    /*
-     * public void deposit(){
-     * 
-     * }
-     */
-
-    /*
-     * public void transfer(){
-     * 
-     * }
-     */
 
     private JPanel creditCardPanel() {
         JPanel creditCardPanel = new JPanel(new GridBagLayout());
@@ -686,9 +694,19 @@ public class BankUI extends JFrame {
         });
         settingPanel.add(resetPasswordButton, gbc);
 
+        JButton changeTransactionLimitButton = new JButton("Change Transaction Limit");
+        gbc.gridy = 2;
+        changeTransactionLimitButton.setPreferredSize(new Dimension(200,30));
+        changeTransactionLimitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Change Transaction Limit");
+            }
+        });
+        settingPanel.add(changeTransactionLimitButton, gbc);
+
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "Main Menu");
@@ -733,14 +751,28 @@ public class BankUI extends JFrame {
         resetPasswordPanel.add(reenterNewPasswordField, gbc);
 
         JButton submitButton = new JButton("Submit");
-        /*
-         * submitButton.addActionListener(new ActionListener(){
-         * public void actionPerformed(ActionEvent e){
-         * resetPassword();
-         * }
-         * });
-         */
-        gbc.gridy = 6;
+        
+        submitButton.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+            String newPassword = newPasswordField.getText();
+            String reenterNewPassword = reenterNewPasswordField.getText();
+
+            if (!newPassword.equals(reenterNewPassword)) {
+                JOptionPane.showMessageDialog(null, "The new passwords does not match");
+            }
+
+            /*
+             * Do a if statement here to check if old password matches
+             */
+            
+            bank.resetPassword(userInfo, newPassword);
+            JOptionPane.showMessageDialog(null, "Password has been successfully changed");
+
+           cardLayout.show(cardPanel, "Login");
+            }
+        });
+        gbc.gridy = 7;
         resetPasswordPanel.add(submitButton, gbc);
 
         JButton backButton = new JButton("Back");
@@ -754,13 +786,7 @@ public class BankUI extends JFrame {
 
         return resetPasswordPanel;
     }
-
-    /*
-     * public void resetPassword(){
-     * 
-     * }
-     */
-
+     
     private JPanel loanPanel() {
         JPanel loanPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
