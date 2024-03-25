@@ -67,6 +67,16 @@ public class Loan extends Account {
     public int getCustomerId() {
         return this.customerId;
     }
+    
+     /**
+     * Sets the customer identificator of the loan policy
+     * 
+     * @param customerId The customer identification of the loan policy.
+     */
+
+     public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+    }
 
     /**
      * Gets the amount of the loan.
@@ -133,16 +143,6 @@ public class Loan extends Account {
 
     public void deductLoanAmount(double loanAmount) {
         this.loanAmount -= loanAmount;
-    }
-
-    /**
-     * Sets the customer identificator of the loan policy
-     * 
-     * @param customerId The customer identification of the loan policy.
-     */
-
-    public void setCustomerId(int customerId) {
-        this.customerId = customerId;
     }
 
 }

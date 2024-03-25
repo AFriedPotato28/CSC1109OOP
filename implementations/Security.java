@@ -51,7 +51,7 @@ public class Security {
     }
 
     /**
-     * Generates an OTP for the user.
+     * Generates an One Time Password for the user.
      *
      * @param username The username of the user.
      * @return The generated OTP.
@@ -67,7 +67,14 @@ public class Security {
     }
 
     /**
-     * Validates the password of the user.
+     * Validates the password requirements of the user inputted.
+     * 
+     * The password must contain at least one digit [0-9].
+     * The password must contain at least one lowercase letter [a-z].
+     * The password must contain at least one uppercase letter [A-Z].
+     * The password must contain at least one special character [*[@#$%^&+=!].
+     * The password must be eight characters or longer.
+     * The password must be less than 20 characters.
      * 
      * @param password The password to be validated.
      * @return True if the password is valid, false otherwise.
@@ -99,8 +106,7 @@ public class Security {
 
     /**
      * 
-     * Encrypts the password with HashAlgorithm SHA256 algorithm with password and
-     * salt values.
+     * Encrypts the password with HashAlgorithm SHA256 algorithm with password and salt bytes and returns for storing purpose.
      * 
      * @param password the password to be encrypted.
      * @param Salt     the salt to be used for validation.
@@ -122,7 +128,7 @@ public class Security {
     }
 
     /**
-     * Generates a new random key to be used as salt for the password.
+     * Generates a new random key value using 16 bytes to be used as salt for the password.
      * 
      * @return string values with 16 bytes length
      */
@@ -135,7 +141,7 @@ public class Security {
     }
 
     /**
-     * Hashes the CVV to be stored in the CSV.
+     * Hashes the CVV of credit card in SHA-256 Algorithm to be stored in the CSV 
      * 
      * @param cvv takes in the string value of CVV
      * @return hash value of the string CVV
@@ -162,7 +168,7 @@ public class Security {
     }
 
     /**
-     * Compares provided CVV against the Hashed CVV.
+     * Verifies whether the CVV provided by user is a valid CVV against stored CVV
      * 
      * @param providedCVV     This is the hashed CVV to compare against the stored
      *                        CVV.
@@ -176,11 +182,11 @@ public class Security {
     }
 
     /**
-     * Resets the password of the user.
+     * Generates a new salt value and hashes the provided password using new salt values and sets new login account.
      * 
      * @param username    The username of an account.
      * @param newPassword The new password to be set.
-     * @return True if the password is valid, false otherwise.
+     * @return ArrayList containing salt and new password to be stored in CSV.
      */
     public ArrayList<String> resetPassword(String username, String newPassword) {
 
