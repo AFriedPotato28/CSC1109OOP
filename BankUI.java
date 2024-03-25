@@ -411,6 +411,20 @@ public class BankUI extends JFrame {
         JTextField withdrawAmountField = new JTextField();
         withdrawAmountField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 1;
+       
+
+        withdrawAmountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8) {
+                            withdrawAmountField.setEditable(true);
+
+                } else {
+                    withdrawAmountField.setEditable(false);
+                }
+            }
+        });
+
         withdrawPanel.add(withdrawAmountField, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -421,8 +435,13 @@ public class BankUI extends JFrame {
             String withdrawAmountText = withdrawAmountField.getText();
             double withdrawAmount = Double.parseDouble(withdrawAmountText);
             double transactionLimit = bank.getTransactionLimit();
-            
-            if (bank.getBalance() > withdrawAmount && transactionLimit < withdrawAmount) {
+
+            if (withdrawAmount <= 0){
+                JOptionPane.showMessageDialog(null,"Value cannot be negative");
+                return;
+            }
+
+            if (bank.getBalance() >= withdrawAmount && withdrawAmount <= transactionLimit ) {
                 bank.withdraw(withdrawAmount, userInfo);
                 JOptionPane.showMessageDialog(null, "Withdrawal successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
@@ -464,6 +483,19 @@ public class BankUI extends JFrame {
         JTextField depositAmountField = new JTextField();
         depositAmountField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 1;
+
+        depositAmountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8) {
+                            depositAmountField.setEditable(true);
+
+                } else {
+                    depositAmountField.setEditable(false);
+                }
+            }
+        });
+
         depositPanel.add(depositAmountField, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -473,6 +505,12 @@ public class BankUI extends JFrame {
         try {
             String depositAmountText = depositAmountField.getText();
             double depositAmount = Double.parseDouble(depositAmountText);
+
+            if(depositAmount <= 0){
+                JOptionPane.showMessageDialog(null, "Value cannot be negative");
+                return;
+            }
+
             boolean depositSuccessful = bank.deposit(depositAmount, userInfo);
             if(depositSuccessful){
                 JOptionPane.showMessageDialog(null, "Deposit Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -524,6 +562,19 @@ public class BankUI extends JFrame {
         JTextField transferField = new JTextField();
         transferField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 3;
+
+        transferField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char)46) {
+                            transferField.setEditable(true);
+
+                } else {
+                    transferField.setEditable(false);
+                }
+            }
+        });
+
         transferPanel.add(transferField, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -532,6 +583,17 @@ public class BankUI extends JFrame {
             try{
             String recipient = accountHolderField.getText();
             double amount = Double.parseDouble(transferField.getText());
+
+            if(amount <= 0){
+                JOptionPane.showMessageDialog(null, "Value cannot be negative.");
+                return;
+            }
+
+            if(amount <= bank.getTransactionLimit()){
+                JOptionPane.showMessageDialog(null, "Exceeded transaction limit");
+                return;
+            }
+
             boolean transferSuccessful = bank.transferAmount(amount, recipient);
             if (transferSuccessful) {
                 JOptionPane.showMessageDialog(null, "Transfer successful", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -915,6 +977,19 @@ public class BankUI extends JFrame {
         JTextField loanAmountTextField = new JTextField();
         loanAmountTextField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 1;
+
+        loanAmountTextField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char) 46) {
+                            loanAmountTextField.setEditable(true);
+
+                } else {
+                    loanAmountTextField.setEditable(false);
+                }
+            }
+        });
+
         applyLoanPanel.add(loanAmountTextField, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -924,6 +999,12 @@ public class BankUI extends JFrame {
                 try{
                     double loanAmount = Double.parseDouble(loanAmountTextField.getText());
                     int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
+
+                    if(!bank.checkLoanAmount()){
+                        JOptionPane.showMessageDialog(null, "Please check whether your loan amount/balance is valid");
+                        return;
+                    }
+
                     bank.applyLoan(customerId, loanAmount);
                     JOptionPane.showMessageDialog(null, "Loan application submitted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                     updateLoanDisplay();
@@ -970,6 +1051,19 @@ public class BankUI extends JFrame {
         
         JTextField repayAmountField = new JTextField(10);
         gbc.gridy = 3;
+
+        repayAmountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char) 46) {
+                            repayAmountField.setEditable(true);
+
+                } else {
+                    repayAmountField.setEditable(false);
+                }
+            }
+        });
+
         payLoanPanel.add(repayAmountField, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -981,11 +1075,11 @@ public class BankUI extends JFrame {
             bank.repayLoan(repayLoanId, repayLoanAmount);
             JOptionPane.showMessageDialog(null, "Loan repayment successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
             updateLoanDisplay();
-         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
-         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error repaying." + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-         }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error repaying." + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
         });
         gbc.gridy = 4;

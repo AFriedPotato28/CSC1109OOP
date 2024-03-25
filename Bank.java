@@ -1081,4 +1081,18 @@ public class Bank {
 
         return sb;
     }
+
+
+    public boolean checkLoanAmount(){
+        double currentTotalLoanAmount = totalLoanAmount();
+        double maximumLoanAmount = (getBalance() * 2) - currentTotalLoanAmount;
+
+        if (maximumLoanAmount <= 0){
+            return false;
+        }
+
+        return true;
+    }
+
+
 }
