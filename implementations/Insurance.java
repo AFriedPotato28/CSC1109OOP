@@ -2,7 +2,7 @@ package implementations;
 /**
  * Represents insurance policy with various attributes such as ID, type,
  * beneficiaries,
- * Coverage amount, and premium. This class provide methods for managing
+ * coverage amount, and premium. This class provide methods for managing
  * insurance details
  * such as updating coverage, updating premiums and processing claim.
  */

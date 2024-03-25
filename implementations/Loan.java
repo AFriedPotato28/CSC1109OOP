@@ -28,7 +28,7 @@ public class Loan extends Account {
     private double interestRate;
 
     /**
-     * The duration of the loan in months.
+     * The duration of the loan in LocalDate object.
      */
     private LocalDate loanDueDate;
 
@@ -69,7 +69,7 @@ public class Loan extends Account {
     }
     
      /**
-     * Sets the customer identificator of the loan policy
+     * Sets the customer identification of the loan policy
      * 
      * @param customerId The customer identification of the loan policy.
      */
@@ -79,7 +79,7 @@ public class Loan extends Account {
     }
 
     /**
-     * Gets the amount of the loan.
+     * Gets the amount of money loaned.
      * 
      * @return The loan amount.
      */
@@ -97,7 +97,7 @@ public class Loan extends Account {
     }
 
     /**
-     * Retrieves the duration of the loan in months.
+     * Retrieves the duration of the loan in LocalDate object.
      * 
      * @return The loan duration.
      */
@@ -106,7 +106,7 @@ public class Loan extends Account {
     }
 
     /**
-     * Sets the duration of the loan in months.
+     * Sets the duration of the loan using LocalDate object
      * 
      * @param loanDueDate The due date by which the loan should be paid.
      */
@@ -116,7 +116,7 @@ public class Loan extends Account {
 
     /**
      * 
-     * Sets the identification for the loan.
+     * Sets the identification for the loan policy.
      * 
      * @param loanId get the loan identifier that loan should be set
      */
@@ -136,7 +136,7 @@ public class Loan extends Account {
     }
 
     /**
-     * Deducts the loan amount for the loan policy to deduct
+     * Deducts loan amount for actions towards the loan policy e.g. repayment
      * 
      * @param loanAmount The amount of loan that needs to be paid.
      */

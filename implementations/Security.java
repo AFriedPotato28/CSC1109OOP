@@ -51,7 +51,7 @@ public class Security {
     }
 
     /**
-     * Generates an One Time Password for the user.
+     * Generates a One Time Password for the user.
      *
      * @param username The username of the user.
      * @return The generated OTP.
@@ -219,9 +219,9 @@ public class Security {
     }
 
     /**
-     * Validates the username and password against the current logged in user.
+     * Validates the username and password against the current logged-in user.
      * 
-     * @param username the current logged in username
+     * @param username the current logged-in username
      * @param password the current logged in password
      * @param salt     the current logged in salt
      * @return true or false based on the current user settings.
@@ -239,7 +239,7 @@ public class Security {
      * This is meant to validate user is correctly stored in the database/CSV and
      * whether the current user is the correct user.
      * 
-     * @param Username the current logged in user username
+     * @param Username the current logged-in user username
      * @return true or false based on the username
      */
 
@@ -253,7 +253,7 @@ public class Security {
     }
 
     /**
-     * Logs the activity of the user.
+     * Logs the activity of the user into a csv for accountability.
      * 
      * @param accountID      The accountID of the user.
      * @param activityNumber The activity number to be logged.
