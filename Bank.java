@@ -272,6 +272,12 @@ public class Bank {
             return false;
         }
 
+    public boolean findUserExists(String username){
+        Optional<Customer> custOptional = this.customers.stream()
+                .filter((cust) -> cust.getUserName().equalsIgnoreCase(username)).findFirst();
+        
+        return custOptional.isPresent();
+    }
     /**
      * Populates user information including account details, loans, and credit cards.
      *

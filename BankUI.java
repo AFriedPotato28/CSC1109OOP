@@ -1,13 +1,16 @@
 import javax.swing.*;
+
+import implementations.Customer;
 import implementations.Security;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 public class BankUI extends JFrame {
     private Bank bank;
     private Security securityInstance;
-    private JTextField nameField, usernameField, passwordField;
+    private JTextField nameField, usernameField, passwordField,usernameLoginField,passwordLoginField;
     private JTextArea loanTextArea;
     private JButton createAccountButton, loginButton;
     private JLabel nameLabel, usernameLabel, passwordLabel, balanceLabel;
@@ -24,8 +27,11 @@ public class BankUI extends JFrame {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        JPanel inputPanel = loginPanel();
-        cardPanel.add(inputPanel, "Login");
+        JPanel inputPanel = frontPanel();
+        cardPanel.add(inputPanel, "Front Page");
+        cardPanel.add(loginPanel(), "Login");
+        cardPanel.add(registerPanel(), "Register");
+        cardPanel.add(branchPanel(), "Branch");
         cardPanel.add(mainMenuPanel(), "Main Menu");
         cardPanel.add(transactionPanel(), "Transaction");
         cardPanel.add(withdrawPanel(), "Withdraw");
@@ -39,6 +45,15 @@ public class BankUI extends JFrame {
          * cardPanel.add(creditWithdrawalPanel(), "Credit - Cash Withdrawal");
          * cardPanel.add(payCashAdvancePanel(), "Pay Cash Advance");
          */
+
+        cardPanel.add(insurancePanel(), "Insurance");
+        cardPanel.add(applyInsurancePanel(), "Apply Insurance");
+        cardPanel.add(viewInsurancePanel(), "View Insurance");
+        cardPanel.add(cancelInsurancePanel(), "Cancel Insurance");
+
+        cardPanel.add(foreignExchangePanel(), "Foreign Exchange");
+        cardPanel.add(viewForeignExchangePanel(), "View Foreign Exchange");
+
         cardPanel.add(settingPanel(), "Setting");
         cardPanel.add(resetPasswordPanel(), "Reset Password");
         cardPanel.add(changeTransactionLimitPanel(), "Change Transaction Limit");
@@ -56,55 +71,201 @@ public class BankUI extends JFrame {
         setVisible(true);
     }
 
-    private JPanel loginPanel() {
+    private JPanel frontPanel() {
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(0, 75 , 10, 0);
 
-        nameLabel = new JLabel("Name:");
+        JLabel welcomeLabel = new JLabel("Welcome to Matthias Bank! ");
         gbc.gridy = 0;
-        inputPanel.add(nameLabel, gbc);
+        inputPanel.add(welcomeLabel, gbc);
 
-        nameField = new JTextField();
-        nameField.setPreferredSize(new Dimension(200, 30));
+        JLabel chooseActionLabel = new JLabel("What would you like to do today?");
         gbc.gridy = 1;
-        inputPanel.add(nameField, gbc);
+        inputPanel.add(chooseActionLabel, gbc);
 
-        usernameLabel = new JLabel("Username:");
-        gbc.gridy = 2;
-        inputPanel.add(usernameLabel, gbc);
-
-        usernameField = new JTextField();
-        usernameField.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 3;
-        inputPanel.add(usernameField, gbc);
-
-        passwordLabel = new JLabel("Password:");
-        gbc.gridy = 4;
-        inputPanel.add(passwordLabel, gbc);
-
-        passwordField = new JPasswordField();
-        passwordField.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 5;
-        inputPanel.add(passwordField, gbc);
-
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        
         createAccountButton = new JButton("Create Account");
         createAccountButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                createAccount();
+                cardLayout.show(cardPanel, "Register");
             }
         });
-        inputPanel.add(createAccountButton);
+        buttonsPanel.add(createAccountButton);
+
+        loginButton = new JButton("Login");
+        gbc.insets = new Insets(10, 0, 0, 0);
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Login");
+            }
+        });
+        buttonsPanel.add(loginButton);
+
+        JButton BranchButton = new JButton("View Branch");
+        BranchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Branch");
+            }
+        });
+        buttonsPanel.add(BranchButton);
+
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        inputPanel.add(buttonsPanel, gbc);
+
+        return inputPanel;
+    }
+
+    private JPanel loginPanel() {
+        JPanel loginPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // nameLabel = new JLabel("Please enter your Account Name:");
+        // gbc.gridy = 0;
+        // loginPanel.add(nameLabel, gbc);
+
+        // nameField = new JTextField();
+        // nameField.setPreferredSize(new Dimension(200, 30));
+        // gbc.gridy = 1;
+        // loginPanel.add(nameField, gbc);
+
+        usernameLabel = new JLabel("Please enter your Username:");
+        gbc.gridy = 2;
+        loginPanel.add(usernameLabel, gbc);
+
+        usernameLoginField = new JTextField();
+        usernameLoginField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        loginPanel.add(usernameLoginField, gbc);
+        
+        passwordLabel = new JLabel("Please enter your Password:");
+        gbc.gridy = 4;
+        loginPanel.add(passwordLabel, gbc);
+
+        passwordLoginField = new JPasswordField();
+        passwordLoginField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 5;
+        loginPanel.add(passwordLoginField, gbc);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+
         loginButton = new JButton("Login");
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 login();
             }
         });
-        inputPanel.add(loginButton);
+        buttonsPanel.add(loginButton);
 
-        return inputPanel;
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Front Page");
+            }
+        });
+        buttonsPanel.add(backButton, gbc);
+
+        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.gridy = 8;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        loginPanel.add(buttonsPanel, gbc);
+
+        return loginPanel;
+    }
+
+    private JPanel registerPanel() {
+        JPanel registerPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        nameLabel = new JLabel("Please set a name for your account:");
+        gbc.gridy = 0;
+        registerPanel.add(nameLabel, gbc);
+
+        nameField = new JTextField();
+        nameField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        registerPanel.add(nameField, gbc);
+
+        usernameLabel = new JLabel("Please set a new Username:");
+        gbc.gridy = 2;
+        registerPanel.add(usernameLabel, gbc);
+
+        usernameField = new JTextField();
+        usernameField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        registerPanel.add(usernameField, gbc);
+
+        passwordLabel = new JLabel("Please set a new Password:");
+        gbc.gridy = 4;
+        registerPanel.add(passwordLabel, gbc);
+
+        passwordField = new JPasswordField();
+        passwordField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 5;
+        registerPanel.add(passwordField, gbc);
+
+        JLabel reenterNewPassword = new JLabel("Please reenter the password:");
+        gbc.gridy = 6;
+        registerPanel.add(reenterNewPassword, gbc);
+
+        JTextField reenterNewPasswordField = new JPasswordField();
+        reenterNewPasswordField.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 7;
+        registerPanel.add(reenterNewPasswordField, gbc);
+
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        
+        JButton createAccountButton = new JButton("Create Account");
+        createAccountButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String Password = passwordField.getText();
+                String reenterNewPassword = reenterNewPasswordField.getText();
+
+                if(!securityInstance.validatePassword(Password)){
+                    JOptionPane.showMessageDialog(null, "Does not meet the basic requirements of the password of 1 .....","Error",JOptionPane.ERROR_MESSAGE); // help me change this later
+                    return;
+                }
+
+                if (!Password.equals(reenterNewPassword) || Password.equals("")) {
+                    JOptionPane.showMessageDialog(null, "The new passwords does not match or cannot be null.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+
+                } else {
+                    createAccount();
+                    reenterNewPasswordField.setText("");
+                cardLayout.show(cardPanel, "Front Page");
+                }
+            }
+        });
+        buttonsPanel.add(createAccountButton);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Front Page");
+            }
+        });
+        buttonsPanel.add(backButton, gbc);
+
+        gbc.gridy = 8;
+        gbc.insets = new Insets(20, 0, 0 , 0);
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        registerPanel.add(buttonsPanel, gbc);
+
+        return registerPanel;
     }
 
     private void createAccount() {
@@ -139,6 +300,11 @@ public class BankUI extends JFrame {
             }
         }
 
+        if (bank.findUserExists(username)) {
+            JOptionPane.showMessageDialog(null, "The username already exist.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+        }
+
         bank.addCustomer(name, username, password);
         nameField.setText("");
         usernameField.setText("");
@@ -147,12 +313,12 @@ public class BankUI extends JFrame {
     }
 
     private void login() {
-        String loginUsername = usernameField.getText();
-        String loginPassword = passwordField.getText();
+        String loginUsername = usernameLoginField.getText();
+        String loginPassword = passwordLoginField.getText();
         int count = 0;
         long lockoutEndTime = 0;
         boolean needReEnter = false;
-
+     
         while (count < 3) {
             if (System.currentTimeMillis() < lockoutEndTime) {
                 long remainingTime = lockoutEndTime - System.currentTimeMillis() / 1000;
@@ -175,7 +341,7 @@ public class BankUI extends JFrame {
             }
 
             if (!bank.validateLogin(loginUsername, loginPassword)) {
-                JOptionPane.showMessageDialog(this, "Wrong credentials. Please try again.");
+                JOptionPane.showMessageDialog(this, "Wrong credentials. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
                 count++;
                 needReEnter = true;
             } else {
@@ -224,19 +390,33 @@ public class BankUI extends JFrame {
                 }
 
                 OTPDialog.setVisible(false);
-                JOptionPane.showMessageDialog(this, "You have tried more than 3 attempts");
+                JOptionPane.showMessageDialog(this, "You have tried more than 3 attempts", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
         if (count >= 3) {
-            JOptionPane.showMessageDialog(this, "Too many failed attempt. You are locked out for 30 seconds. ");
+            JOptionPane.showMessageDialog(this, "Too many failed attempt. You are locked out for 30 seconds. ", "Error", JOptionPane.ERROR_MESSAGE);
             lockoutEndTime = System.currentTimeMillis() + 30000;
         }
     }
 
     public void setNewAccount(boolean isNew) {
         isNewAccount = isNew;
+    }
+
+    private JPanel branchPanel(){
+        JPanel branchPanel = new JPanel(new GridBagLayout());
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Front Page");
+            }
+        });
+        branchPanel.add(backButton);
+
+        return branchPanel;
     }
 
     private JPanel mainMenuPanel() {
@@ -282,6 +462,24 @@ public class BankUI extends JFrame {
             }
         });
         buttonPanel.add(loanButton);
+
+        JButton insuranceButton = new JButton("Insurance");
+        insuranceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Insurance");
+                insurancePanel();
+            }
+        });
+        buttonPanel.add(insuranceButton);
+
+        JButton foreignExButton = new JButton("Foreign Exchange");
+        foreignExButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Foreign Exchange");
+                foreignExchangePanel();
+            }
+        });
+        buttonPanel.add(foreignExButton);
 
         JButton settingButton = new JButton("Setting");
         settingButton.addActionListener(new ActionListener() {
@@ -437,7 +635,7 @@ public class BankUI extends JFrame {
             double transactionLimit = bank.getTransactionLimit();
 
             if (withdrawAmount <= 0){
-                JOptionPane.showMessageDialog(null,"Value cannot be negative");
+                JOptionPane.showMessageDialog(null,"Value cannot be negative", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -507,7 +705,7 @@ public class BankUI extends JFrame {
             double depositAmount = Double.parseDouble(depositAmountText);
 
             if(depositAmount <= 0){
-                JOptionPane.showMessageDialog(null, "Value cannot be negative");
+                JOptionPane.showMessageDialog(null, "Value cannot be negative", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -585,12 +783,12 @@ public class BankUI extends JFrame {
             double amount = Double.parseDouble(transferField.getText());
 
             if(amount <= 0){
-                JOptionPane.showMessageDialog(null, "Value cannot be negative.");
+                JOptionPane.showMessageDialog(null, "Value cannot be negative.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if(amount <= bank.getTransactionLimit()){
-                JOptionPane.showMessageDialog(null, "Exceeded transaction limit");
+                JOptionPane.showMessageDialog(null, "Exceeded transaction limit", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -723,6 +921,213 @@ public class BankUI extends JFrame {
      * }
      */
 
+    private JPanel foreignExchangePanel() {
+        JPanel foreignExchangePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        foreignExchangePanel.add(messageLabel, gbc);
+
+        JButton viewForeignExButton = new JButton("View Foreign Exchange");
+        viewForeignExButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        gbc.insets.top = verticalSpacing;
+        viewForeignExButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "View Foreign Exchange");
+            }
+        });
+        foreignExchangePanel.add(viewForeignExButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 2;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Main Menu");
+            }
+        });
+        foreignExchangePanel.add(backButton, gbc);
+
+        return foreignExchangePanel;
+    }
+
+    private JPanel viewForeignExchangePanel() {
+        JPanel viewForeignExchangePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        viewForeignExchangePanel.add(messageLabel, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 6;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Foreign Exchange");
+            }
+        });
+        viewForeignExchangePanel.add(backButton, gbc);
+
+        return viewForeignExchangePanel;
+    }
+
+    private JPanel insurancePanel() {
+        JPanel insurancePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        insurancePanel.add(messageLabel, gbc);
+
+        JButton applyInsuranceButton = new JButton("Apply Insurance");
+        applyInsuranceButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 1;
+        gbc.insets.top = verticalSpacing;
+        applyInsuranceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Apply Insurance");
+            }
+        });
+        insurancePanel.add(applyInsuranceButton, gbc);
+
+        JButton viewInsuranceButton = new JButton("View Insurance");
+        viewInsuranceButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 2;
+        gbc.insets.top = verticalSpacing;
+        viewInsuranceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "View Insurance");
+            }
+        });
+        insurancePanel.add(viewInsuranceButton, gbc);
+
+        JButton cancelInsuranceButton = new JButton("Cancel Insurance");
+        cancelInsuranceButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        gbc.insets.top = verticalSpacing;
+        cancelInsuranceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Cancel Insurance");
+            }
+        });
+        insurancePanel.add(cancelInsuranceButton, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 6;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Main Menu");
+            }
+        });
+        insurancePanel.add(backButton, gbc);
+
+
+        return insurancePanel;
+    }
+
+    private JPanel applyInsurancePanel() {
+        JPanel applyInsurancePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        applyInsurancePanel.add(messageLabel, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 6;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Insurance");
+            }
+        });
+        applyInsurancePanel.add(backButton, gbc);
+
+        return applyInsurancePanel;
+    }
+
+    private JPanel viewInsurancePanel() {
+        JPanel viewInsurancePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        viewInsurancePanel.add(messageLabel, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 6;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Insurance");
+            }
+        });
+        viewInsurancePanel.add(backButton, gbc);
+
+        return viewInsurancePanel;
+    }
+
+    private JPanel cancelInsurancePanel() {
+        JPanel cancelInsurancePanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        int verticalSpacing = 10;
+        gbc.insets = new Insets(verticalSpacing, 0, 0, 0);
+
+        JLabel messageLabel = new JLabel("Please choose an action:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        cancelInsurancePanel.add(messageLabel, gbc);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 6;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Insurance");
+            }
+        });
+        cancelInsurancePanel.add(backButton, gbc);
+
+        return cancelInsurancePanel;
+    }
+
     private JPanel settingPanel() {
         JPanel settingPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -813,17 +1218,17 @@ public class BankUI extends JFrame {
             String reenterNewPassword = reenterNewPasswordField.getText();
 
             if (!bank.authenticateDetails(userInfo, oldPasswordField.getText())){
-                JOptionPane.showMessageDialog(null, "Your current password does not match");
+                JOptionPane.showMessageDialog(null, "Your current password does not match","Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if(!securityInstance.validatePassword(newPassword)){
-                JOptionPane.showMessageDialog(null, "Your new password does not meet the basic requirements of password");
+                JOptionPane.showMessageDialog(null, "Your new password does not meet the basic requirements of password", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (!newPassword.equals(reenterNewPassword) || newPassword.equals("")) {
-                JOptionPane.showMessageDialog(null, "The new passwords does not match or cannot be null.");
+                JOptionPane.showMessageDialog(null, "The new passwords does not match or cannot be null.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -831,7 +1236,7 @@ public class BankUI extends JFrame {
             oldPasswordField.setText("");
             reenterNewPasswordField.setText("");
             newPasswordField.setText("");
-            JOptionPane.showMessageDialog(null, "Password has been successfully changed");
+            JOptionPane.showMessageDialog(null, "Password has been successfully changed", "Success", JOptionPane.INFORMATION_MESSAGE);
 
            cardLayout.show(cardPanel, "Login");
             }
