@@ -424,6 +424,25 @@ public class Bank {
     }
 
     /**
+     * Retrieves the list of credit cards associated with the customer.
+     *
+     * @return The list of credit cards.
+     */
+    public List<CreditCard> getCreditCards(int customerId) {
+        List<CreditCard> customerCards = new ArrayList<>();
+
+        if (this.creditCards != null) {
+            for (CreditCard card : this.creditCards) {
+                if (card.getCustomerId() == customerId) {
+                    customerCards.add(card);
+                }
+            }
+        }
+
+        return customerCards;
+    }
+
+    /**
      * Retrieves the number of credit cards for a given customer.
      * 
      * @param customerId The ID of the customer.
@@ -820,6 +839,8 @@ public class Bank {
 
         return;
     }
+
+    
 
     /* end creditcard */
 
