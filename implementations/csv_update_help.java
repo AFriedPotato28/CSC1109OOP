@@ -103,8 +103,11 @@ public final class csv_update_help {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
             for (Map.Entry<Integer, ArrayList<Account>> entry : accounts.entrySet()) {
                 for (Account account : entry.getValue()) {
+                    DecimalFormat df = new DecimalFormat("##.00");
+                    double balance = Double.parseDouble(df.format(account.getBalance()));
+
                     sb.append(account.getCustomerId() + "," + account.getCustomerId() + "," + account.getAccountType()
-                            + "," + account.getBalance() + "," + account.getTransactionLimit() + "\n");
+                            + "," + balance + "," + account.getTransactionLimit() + "\n");
                 }
             }
 

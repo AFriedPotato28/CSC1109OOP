@@ -428,18 +428,14 @@ public class Bank {
      *
      * @return The list of credit cards.
      */
-    public List<CreditCard> getCreditCards(int customerId) {
-        List<CreditCard> customerCards = new ArrayList<>();
+    public StringBuilder getCreditToString() {
+        StringBuilder sb = new StringBuilder();
 
-        if (this.creditCards != null) {
-            for (CreditCard card : this.creditCards) {
-                if (card.getCustomerId() == customerId) {
-                    customerCards.add(card);
-                }
-            }
+        for (CreditCard card : this.creditCards) {
+            sb.append("Card No: " + card.getCardNumber() + " balance: " + card.getBalance()  + "\n");
         }
-
-        return customerCards;
+    
+        return sb;
     }
 
     /**
