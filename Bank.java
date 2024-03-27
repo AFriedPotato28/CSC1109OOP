@@ -151,6 +151,7 @@ public class Bank {
         csv_get_help.populateAccountList(this.accounts);
         csv_get_help.populateListLoan(this.loanList);
         csv_get_help.populateCreditList(this.creditList);
+        updateOverdueLoans();
     }
 
     /** Related to Customers Here */
@@ -1040,8 +1041,9 @@ public class Bank {
 
         DecimalFormat df = new DecimalFormat("##.00");
         Account savingsAccount = getAccountInfo();
+        repayLoanAmount = Double.parseDouble(df.format(repayLoanAmount));
 
-        savingsAccount.withdraw(Double.parseDouble(df.format(repayLoanAmount)));
+        savingsAccount.withdraw(repayLoanAmount);
 
         Optional<Account> accountInformation = this.account.stream()
                 .filter((account) -> account.getAccountType().equals("Loan")).findFirst();
@@ -1049,8 +1051,9 @@ public class Bank {
         accountInformation.get().withdraw(repayLoanAmount);
         Loan newLoanItems = checkExistingLoan(repayLoanId).get();
         newLoanItems.deductLoanAmount(repayLoanAmount);
+        newLoanItems.setLoanAmount(Double.parseDouble(df.format(newLoanItems.getLoanAmount())));
 
-        csv_update_help.updateCSVOfLoan(this.loanList, newLoanItems);
+        csv_update_help.updateCSVOfLoan(this.loanList);
         csv_update_help.updateCSVOfAccount(this.accounts);
 
         System.out
@@ -1062,16 +1065,16 @@ public class Bank {
      */
     public void updateOverdueLoans() {
         LocalDate dateNow = LocalDate.now();
-
-        for (Loan loan : this.loans) {
-            if (dateNow.isAfter(loan.getLoanDueDate())) {
-                double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
-                LocalDate newLoanDueDate = calculateLoanDueDate(newLoanAmount);
-                loan.setLoanAmount(newLoanAmount);
-                loan.setLoanDueDate(newLoanDueDate);
-                csv_update_help.updateLoanToCsv(this.loans);
-                System.out.println("Overdue loanId: " + loan.getLoanId()
-                        + ", the outstanding amount has been increased due to late payment.\n");
+        for(Map.Entry<Integer,ArrayList<Loan>> list : this.loanList.entrySet()){
+            for (Loan loan : list.getValue()) {
+                if (dateNow.isAfter(loan.getLoanDueDate()) && loan.getLoanAmount() > 0) {
+                    DecimalFormat df = new DecimalFormat("##.00");
+                    double newLoanAmount = loan.getLoanAmount() * (1 + loan.getInterestRate());
+                    LocalDate newLoanDueDate = calculateLoanDueDate(newLoanAmount);
+                    loan.setLoanAmount(Double.parseDouble(df.format(newLoanAmount)));
+                    loan.setLoanDueDate(newLoanDueDate);
+                    csv_update_help.updateCSVOfLoan(this.loanList);
+                }
             }
         }
     }
@@ -1104,7 +1107,6 @@ public class Bank {
 
         return sb;
     }
-
 
     public boolean checkLoanAmount(){
         double currentTotalLoanAmount = totalLoanAmount();

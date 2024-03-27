@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -197,45 +196,6 @@ public final class csv_update_help {
 
     }
 
-    public static void updateLoanToCsv(ArrayList<Loan> loans) {
-        try (BufferedReader br = new BufferedReader(new FileReader("./CSV/Loan_Data.csv"));
-                BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String header = br.readLine(); // Read and skip the header line
-            bw.write(header + "\n"); // Write the header line to the new file
-
-            String sLine;
-            while ((sLine = br.readLine()) != null) {
-                String[] data = sLine.split(",");
-                int loanId = Integer.parseInt(data[0]);
-                int customerId = Integer.parseInt(data[1]);
-                double loanAmount = Double.parseDouble(data[2]);
-                double interestRate = Double.parseDouble(data[3]);
-                LocalDate loanDueDate = LocalDate.parse(data[4]);
-
-                // Update records for customerId 3
-                for (Loan loan : loans) {
-                    if (loan.getLoanId() == loanId) {
-                        loanAmount = loan.getLoanAmount();
-                        interestRate = loan.getInterestRate();
-                        loanDueDate = loan.getLoanDueDate();
-                        break;
-                    }
-                }
-
-                bw.write(String.format("%d,%d,%.2f,%.2f,%s\n",
-                        loanId, customerId, loanAmount, interestRate, loanDueDate));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Replace the original file with the updated file
-        File originalFile = new File("./CSV/Loan_Data.csv");
-        File tempsFile = new File(tempFile);
-        tempsFile.renameTo(originalFile);
-    }
-
     public static void updateExistingCreditCardBills(CreditCard card, String cardNo) {
         DecimalFormat df = new DecimalFormat("##.00");
         StringBuilder sb = new StringBuilder(
@@ -287,7 +247,7 @@ public final class csv_update_help {
         }
     }
 
-    public static void updateCSVOfLoan(HashMap<Integer, ArrayList<Loan>> loanList, Loan newLoanItems) {
+    public static void updateCSVOfLoan(HashMap<Integer, ArrayList<Loan>> loanList) {
         File file = new File("./CSV/Loan_Data.csv");
         File newFile = new File(tempFile);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile))) {
@@ -295,10 +255,8 @@ public final class csv_update_help {
 
             for (Map.Entry<Integer, ArrayList<Loan>> entry : loanList.entrySet()) {
                 for (Loan loan : entry.getValue()) {
-                    double loanAmount = loan.getLoanId() == newLoanItems.getLoanId() ? newLoanItems.getLoanAmount()
-                            : loan.getLoanAmount();
-
-                    sb.append(loan.getLoanId() + "," + loan.getCustomerId() + "," + loanAmount + ","
+                  
+                    sb.append(loan.getLoanId() + "," + loan.getCustomerId() + "," + loan.getLoanAmount() + ","
                             + loan.getInterestRate() + "," + loan.getLoanDueDate() + "\n");
                 }
             }
