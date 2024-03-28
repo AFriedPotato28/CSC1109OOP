@@ -325,8 +325,14 @@ public class Bank {
      * @return The account balance.
      */
     public double getBalance() {
-        return this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings")).findFirst().get()
+        DecimalFormat df = new DecimalFormat("##.00");
+
+        double balance = this.account.stream().filter((cust) -> cust.getAccountType().equals("Savings")).findFirst().get()
                 .getBalance();
+
+        balance = Double.parseDouble(df.format(balance));
+    
+        return balance;
     }
 
     /**
@@ -432,7 +438,9 @@ public class Bank {
         StringBuilder sb = new StringBuilder();
 
         for (CreditCard card : this.creditCards) {
-            sb.append("Card No: " + card.getCardNumber() + " balance: " + card.getBalance()  + "\n");
+            if (card.getBalance() > 0 ){
+                sb.append("Card No: " + card.getCardNumber() + " balance: " + card.getBalance()  + "\n");
+            }
         }
     
         return sb;
@@ -475,8 +483,9 @@ public class Bank {
      *                     "You have reached the limit of two credit cards per
      *                     account!".
      */
-    public void applyCreditCard(int customerId, int accountNo, int annualIncome) {
+    public CreditCard applyCreditCard(int customerId, int annualIncome) {
         int existingCreditCardCount = getCreditCardCount(customerId);
+        int accountNo = getAccountNo();
 
         if (existingCreditCardCount < 2) {
             CreditCard creditCard = new CreditCard(customerId, accountNo, annualIncome);
@@ -487,10 +496,11 @@ public class Bank {
 
             this.creditCards.add(creditCard);
             csv_update_help.updateCreditCardToCSV(creditCard);
-            System.out.println("Credit Card application successful!");
+            return creditCard;
         } else {
             // Deny the application of a new credit card
             System.out.println("You have reached the limit of two credit cards per account!");
+            return null;
         }
 
     }
@@ -565,6 +575,30 @@ public class Bank {
 
         } catch (Exception e) {
             return;
+        }
+    }
+
+
+    public boolean cancelCreditCardForGUI(String cardNumberToDelete){
+        try{
+            Optional<CreditCard> cardItem = this.creditCards.stream()
+            .filter((cust) -> cust.getCardNumber().equalsIgnoreCase(cardNumberToDelete)).findFirst();
+            
+            if(cardItem.isEmpty()){
+                return false;
+            }
+
+            CreditCard card = cardItem.get();
+            
+            if(card.getBalance() > 0 || card.getCashAdvancePayable() > 0){
+                return false;
+            }
+
+            this.creditCards.remove(card);
+            csv_update_help.writeCSVToCreditCard(this.creditList);
+            return true;
+        }catch(Exception e){
+            return false;
         }
     }
 
@@ -688,6 +722,42 @@ public class Bank {
      *                   catch any exceptions and return
      * 
      */
+
+    public boolean cashAdvancedWithdrawlForGUI(String cardNo, double withdrawAmount){
+
+        ArrayList<CreditCard> tempCards = new ArrayList<>();
+        for (CreditCard card : this.creditCards) {
+            if ((card.getCashAdvanceLimit()
+                - card.getCashAdvancePayable()) > 20) {
+                tempCards.add(card);
+            }
+        }
+
+        if(tempCards.size() < 1) {
+            System.out.println("No cards is available for cash advance withdrawl");
+            return false;
+        }
+
+        Optional<CreditCard> creditCardExists = tempCards.stream()
+                .filter((card) -> card.getCardNumber().equals(cardNo)).findFirst();
+
+        if (creditCardExists.isEmpty()) {
+            System.out.println("Credit card with the specified card number not found.");
+            return false;
+        }
+
+        double finalwithdrawalAmount = Math.max(10 + withdrawAmount, withdrawAmount * 1.05);
+        CreditCard card = creditCardExists.get();
+
+        if(card.isExpired()){
+            if (card.cashAdvanceWithdrawal(finalwithdrawalAmount)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     public void CashAdvanceWithdrawal(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
         System.out.println("Credit cards for customer " + username + ":");
@@ -772,6 +842,34 @@ public class Bank {
      * @param customerId ID of the customer
      * @param username   Username of the customer
      */
+
+    public boolean payCashAdvancePayablesForGUI(String cardNo, double paymentAmount){
+
+        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+        .filter((card) -> card.getCardNumber().equals(cardNo)).findFirst();
+
+        if (creditCardExists.isEmpty()) {
+            System.out.println("Credit card with the specified card number not found.");
+            return false;
+        } else if (creditCardExists.get().getCashAdvancePayable() == 0) {
+            System.out.println("Credit card with this specified card number has no cash advance payable.");
+            return false;
+        }
+        System.out.println("check here");
+        
+        Account savingsAccount = getAccountInfo();
+        CreditCard creditCard = creditCardExists.get();
+
+        if (creditCard.payCashAdvancePayable(savingsAccount,paymentAmount) ) {
+            csv_update_help.writeCSVToCreditCard(this.creditList);
+            csv_update_help.updateCSVOfAccount(this.accounts);
+
+            return true;
+        } 
+
+        return false;
+    }
+
     public void payCashAdvancePayables(Scanner scanner, int customerId, String username) {
         // Display credit cards for given customer
         System.out.println("Credit cards for customer " + username + ":");
@@ -1118,15 +1216,15 @@ public class Bank {
         return true;
     }
 
-    public String[] getCreditCardNumbers(){
-        String[] creditCardNumbers = new String[2];
-        int i = 0;
+    public ArrayList<String> getCreditCardNumbers(){
+        ArrayList<String> creditCardNumbers = new ArrayList<String>();
 
-        for (CreditCard card :this.creditCards){
-            creditCardNumbers[i] = card.getCardNumber();
-            i++;
+        if(this.creditCards != null){
+            for (CreditCard card :this.creditCards){
+                creditCardNumbers.add(card.getCardNumber());
+            }
         }
-
+        
         return creditCardNumbers;
     } 
 

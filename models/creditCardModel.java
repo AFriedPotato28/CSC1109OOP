@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -18,9 +20,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import implementations.Bank;
+import implementations.CreditCard;
 
 public class creditCardModel {
     private Bank bank; 
@@ -75,6 +79,7 @@ public class creditCardModel {
         gbc.gridy = 2;
         CancelCreditCardButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                updateCancelDropDown();
                 cardLayout.show(cardPanel, "Cancel Credit Card");
             }
         });
@@ -184,9 +189,10 @@ public class creditCardModel {
                         JOptionPane.showMessageDialog(null, "You already have 2 credit cards. You cannot apply for more.", "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         updatecardCountLabel();
-                        int accountNumber = bank.getAccountNo();
                         int annualIncome = 10000; // Hardcoded for now
-                        bank.applyCreditCard(customerId,accountNumber,annualIncome);
+                        CreditCard card = bank.applyCreditCard(customerId,annualIncome);
+                        JOptionPane.showMessageDialog(null,"Successfully applied a new credit card. Your card no is " + card.getCardNumber());
+                        
                     }
                 }
             });
@@ -210,13 +216,14 @@ public class creditCardModel {
         return applyCreditCardPanel;
     }
 
-    public void updateCancelDropDown(){
+    private void updateCancelDropDown(){
         new Thread(() -> {
             try {
                 SwingUtilities.invokeLater(() -> {
-                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+                    ArrayList<String> creditCardNumbers = bank.getCreditCardNumbers();
+                    cancelCreditCardDrop.removeAllItems();
 
-                    if(creditCardNumbers.length == 0){
+                    if(creditCardNumbers.size() == 0){
                         cancelCreditCardDrop.setVisible(false);
                     } else {
                         for (String creditCardNumber : creditCardNumbers){
@@ -252,13 +259,26 @@ public class creditCardModel {
         cancelCreditCardPanel.add(cancelCreditCardDrop, gbc);
 
         try {
-
             JButton cancelButton = new JButton("Cancel Card");
             cancelButton.setPreferredSize(new Dimension(200, 30));
             gbc.gridy = 2;
             cancelButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                //
+                    if(cancelCreditCardDrop.getSelectedItem() == null){
+                        JOptionPane.showMessageDialog(null, "Unable to remove card", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (bank.cancelCreditCardForGUI(cancelCreditCardDrop.getSelectedItem().toString())){
+                        updateCancelDropDown();
+                        JOptionPane.showMessageDialog(null, "Succesfully removed card");
+                        return;
+
+                    }else{
+                        JOptionPane.showMessageDialog(null, "Unable to remove card", "ERROR", JOptionPane.ERROR_MESSAGE);
+                        return;
+
+                    }
                 }
             });
             cancelCreditCardPanel.add(cancelButton, gbc);
@@ -285,9 +305,10 @@ public class creditCardModel {
         new Thread(() -> {
             try {
                 SwingUtilities.invokeLater(() -> {
-                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+                    ArrayList<String> creditCardNumbers = bank.getCreditCardNumbers();
+                    creditCardDropDown.removeAllItems();
 
-                    if(creditCardNumbers.length == 0){
+                    if(creditCardNumbers.size() == 0){
                         creditCardDropDown.setVisible(false);
                     } else {
                         for (String creditCardNumber : creditCardNumbers){
@@ -322,19 +343,50 @@ public class creditCardModel {
         gbc.gridy = 1;
         payCreditBillPanel.add(creditCardDropDown, gbc);
 
+        JLabel paymentLabel = new JLabel("Insert your payment amount");
+        gbc.gridy = 2;
+        gbc.insets.top = 2;
+        payCreditBillPanel.add(paymentLabel, gbc);
+
+        JTextArea amountField = new JTextArea();
+        gbc.gridy = 3;
+
+        amountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char) 46) {
+                            amountField.setEditable(true);
+
+                } else {
+                    amountField.setEditable(false);
+                }
+            }
+        });
+
+        payCreditBillPanel.add(amountField,gbc);
+
         JButton submitButton = new JButton("Submit");
         submitButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 2;
+        gbc.gridy = 4;
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //submitCreditPayment();
+                String cardNo = (String) creditCardDropDown.getSelectedItem();
+                double amount = Double.parseDouble(amountField.getText());
+            
+                if (amount <= 0.0) {
+                    JOptionPane.showMessageDialog(null, "Amount cannot less than or equal to 0", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                
+            
             }
         });
         payCreditBillPanel.add(submitButton, gbc);
 
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 3;
+        gbc.gridy = 5;
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "Credit Card");
@@ -349,7 +401,7 @@ public class creditCardModel {
         new Thread(() -> {
             try {
                 StringBuilder sb = bank.getCreditToString();
-                // Now update the GUI on the EDT
+                
                 SwingUtilities.invokeLater(() -> {
                     creditTextArea.setText(sb.toString());
                     creditTextArea.revalidate();
@@ -401,9 +453,10 @@ public class creditCardModel {
         new Thread(() -> {
             try {
                 SwingUtilities.invokeLater(() -> {
-                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+                    ArrayList<String> creditCardNumbers = bank.getCreditCardNumbers();
+                    cardNumbersComboBox.removeAllItems();
 
-                    if(creditCardNumbers.length == 0){
+                    if(creditCardNumbers.size() == 0){
                         cardNumbersComboBox.setVisible(false);
                     } else {
                         for (String creditCardNumber : creditCardNumbers){
@@ -444,6 +497,19 @@ public class creditCardModel {
 
         JTextField amountField = new JTextField(20);
         gbc.gridy++;
+
+        amountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char) 46) {
+                            amountField.setEditable(true);
+
+                } else {
+                    amountField.setEditable(false);
+                }
+            }
+        });
+
         creditWithdrawalPanel.add(amountField, gbc);
 
         JButton withdrawButton = new JButton("Withdraw");
@@ -451,10 +517,20 @@ public class creditCardModel {
         gbc.gridy++;
         withdrawButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // String cardNumber = (String) cardNumbersComboBox.getSelectedItem();
-                // double amount = Double.parseDouble(amountField.getText());
-                // // Call the method to withdraw cash from the credit card
-                // bank.(cardNumber, amount);
+                String cardNumber = (String) cardNumbersComboBox.getSelectedItem();
+                double amount = Double.parseDouble(amountField.getText());
+                if (amount <= 0.0) {
+                        JOptionPane.showMessageDialog(null, "Amount cannot less than or equal to 0", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                }
+                
+                if(bank.cashAdvancedWithdrawlForGUI(cardNumber, amount)){
+                    JOptionPane.showMessageDialog(null,"Successfully withdraw " + amount + " from your credit card");
+                    enterAmountLabel.setText("");
+                    return;
+                }else{
+                    JOptionPane.showMessageDialog(null,"Failed to withdraw " + amount + " from your credit card due to some factors","ERROR", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         creditWithdrawalPanel.add(withdrawButton, gbc);
@@ -476,9 +552,10 @@ public class creditCardModel {
         new Thread(() -> {
             try {
                 SwingUtilities.invokeLater(() -> {
-                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+                    ArrayList<String> creditCardNumbers = bank.getCreditCardNumbers();
+                    paycardNumbersComboBox.removeAllItems();
 
-                    if(creditCardNumbers.length == 0){
+                    if(creditCardNumbers.size() == 0){
                         paycardNumbersComboBox.setVisible(false);
                     } else {
                         for (String creditCardNumber : creditCardNumbers){
@@ -524,22 +601,44 @@ public class creditCardModel {
 
         JTextField amountField = new JTextField(20);
         gbc.gridy++;
+
+        amountField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'
+                        || event.getKeyChar() == (char) 8 || event.getKeyChar() == (char) 46) {
+                            amountField.setEditable(true);
+
+                } else {
+                    amountField.setEditable(false);
+                }
+            }
+        });
+
         payCashAdvancePanel.add(amountField, gbc);
 
         JButton payButton = new JButton("Pay");
         payButton.setPreferredSize(new Dimension(200, 30));
         gbc.gridy++;
-        // payButton.addActionListener(new ActionListener() {
-        //     public void actionPerformed(ActionEvent e) {
-        //         CreditCard selectedCard = (CreditCard) cardNumbersComboBox.getSelectedItem(); // Get the selected CreditCard object
-        //         double amount = Double.parseDouble(amountField.getText());
-        //         if (selectedCard != null) {
-        //             selectedCard.payCashAdvancePayable(amount); // need help adding account ???
-        //         } else {
-        //             System.out.println("No card selected.");
-        //         }
-        //     }
-        // });
+        payButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String selectedCard = (String) paycardNumbersComboBox.getSelectedItem(); // Get the selected CreditCard object
+                double amount = Double.parseDouble(amountField.getText());
+                
+                if (amount <= 0.0) {
+                    JOptionPane.showMessageDialog(null, "Amount cannot less than or equal to 0", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                if (bank.payCashAdvancePayablesForGUI(selectedCard,amount)) {
+                    amountField.setText("");
+                    JOptionPane.showMessageDialog(null,"Succesfully repaid " + amount + " Your balance is left with " + bank.getBalance());
+                    return;
+                } 
+
+                JOptionPane.showMessageDialog(null,"Failed to repay " + amount + " from your credit card due to some factors","ERROR", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        });
         payCashAdvancePanel.add(payButton, gbc);
 
         JButton backButton = new JButton("Back");

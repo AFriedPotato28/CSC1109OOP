@@ -338,7 +338,7 @@ public class CreditCard {
             System.out.println("Payment amount is invalid!");
             return false;
         }
-      
+        System.out.println(paymentAmount);
         // Check if payment amount exceed cash advance payable
         if (paymentAmount > this.cashAdvancePayable ) {
             System.out.println("Payment amount exceeds the cash advance payable!");
@@ -356,7 +356,6 @@ public class CreditCard {
         account.withdraw(paymentAmount);
         // Update remainingCredit
         this.remainingCredit += paymentAmount;
-
         return true;
     }
 

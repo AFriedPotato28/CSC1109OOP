@@ -531,7 +531,7 @@ public class BankSystem {
 
             switch (choice) {
                 case 1:
-                    int accountNo = bank.getAccountNo();
+                  
                     int annualIncome = 0;
                     do {
                         try {
@@ -549,7 +549,7 @@ public class BankSystem {
                             System.out.println("Invalid annual income... please try again");
                         }
                     } while (annualIncome < 15000);
-                    bank.applyCreditCard(customerId, accountNo, annualIncome);
+                    bank.applyCreditCard(customerId, annualIncome);
                     break;
                 case 2:
                     if (bank.getCreditCardCount(customerId) == 0) {

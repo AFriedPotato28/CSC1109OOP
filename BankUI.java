@@ -72,6 +72,7 @@ public class BankUI extends JFrame{
         cardPanel.add(transactionModel.depositPanel(), "Deposit");
         cardPanel.add(transactionModel.transferPanel(), "Transfer");
         
+        /*Credit Card Area */
         cardPanel.add(creditCardModel.creditCardPanel(), "Credit Card");
         cardPanel.add(creditCardModel.applyCreditCardPanel(), "Apply Credit Card");
         cardPanel.add(creditCardModel.payCreditBillPanel(), "Pay Credit Card Bill");
@@ -80,18 +81,22 @@ public class BankUI extends JFrame{
         cardPanel.add(creditCardModel.creditWithdrawalPanel(), "Credit - Cash Withdrawal");
         cardPanel.add(creditCardModel.payCashAdvancePanel(), "Pay Cash Advance");
 
+        /*Insurance Area */
         cardPanel.add(insuranceModel.insurancePanel(), "Insurance");
         cardPanel.add(insuranceModel.applyInsurancePanel(), "Apply Insurance");
         cardPanel.add(insuranceModel.viewInsurancePanel(), "View Insurance");
         cardPanel.add(insuranceModel.cancelInsurancePanel(), "Cancel Insurance");
 
+        /*Foreign Exchange */
         cardPanel.add(foreignExchangeModel.foreignExchangePanel(), "Foreign Exchange");
         cardPanel.add(foreignExchangeModel.viewForeignExchangePanel(), "View Foreign Exchange");
 
+        /*Settings */
         cardPanel.add(settingsModel.settingPanel(), "Setting");
         cardPanel.add(settingsModel.resetPasswordPanel(), "Reset Password");
         cardPanel.add(settingsModel.changeTransactionLimitPanel(), "Change Transaction Limit");
-         
+        
+        /*Loans */
         cardPanel.add(loanModel.loanPanel(), "Loan");
         cardPanel.add(loanModel.applyLoanPanel(), "Apply Loan");
         cardPanel.add(loanModel.payLoanPanel(), "Pay Loan");
