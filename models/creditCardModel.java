@@ -28,7 +28,7 @@ public class creditCardModel {
     private CardLayout cardLayout; 
     private JPanel cardPanel; 
     private JTextArea creditTextArea;
-    private JComboBox<String> creditCardDropDown,cardNumbersComboBox,paycardNumbersComboBox;
+    private JComboBox<String> creditCardDropDown,cardNumbersComboBox,paycardNumbersComboBox, cancelCreditCardDrop;
     private JLabel cardCountLabel;
 
 
@@ -70,9 +70,19 @@ public class creditCardModel {
         });
         creditCardPanel.add(ApplyCreditCardButton, gbc);
 
+        JButton CancelCreditCardButton = new JButton("Cancel Credit Card");
+        CancelCreditCardButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 2;
+        CancelCreditCardButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Cancel Credit Card");
+            }
+        });
+        creditCardPanel.add(CancelCreditCardButton, gbc);        
+
         JButton payCreditBillButton = new JButton("Pay Credit Card Bill");
         payCreditBillButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         payCreditBillButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateCreditCardPanel();
@@ -83,7 +93,7 @@ public class creditCardModel {
 
         JButton viewCreditBillButton = new JButton("View Credit Bill");
         viewCreditBillButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         viewCreditBillButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateCreditTextArea();
@@ -94,7 +104,7 @@ public class creditCardModel {
 
         JButton cashWithdrawalButton = new JButton("Credit - Cash Withdrawal");
         cashWithdrawalButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         cashWithdrawalButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateCreditCardWithdrawPanel();
@@ -105,7 +115,7 @@ public class creditCardModel {
 
         JButton cashAdvancePaymentButton = new JButton("Pay Cash Advance");
         cashAdvancePaymentButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         cashAdvancePaymentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 updateCashAdvancePanel();
@@ -116,7 +126,7 @@ public class creditCardModel {
 
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "Main Menu");
@@ -200,6 +210,77 @@ public class creditCardModel {
         return applyCreditCardPanel;
     }
 
+    public void updateCancelDropDown(){
+        new Thread(() -> {
+            try {
+                SwingUtilities.invokeLater(() -> {
+                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+
+                    if(creditCardNumbers.length == 0){
+                        cancelCreditCardDrop.setVisible(false);
+                    } else {
+                        for (String creditCardNumber : creditCardNumbers){
+                            cancelCreditCardDrop.addItem(creditCardNumber);
+                        }
+                        cancelCreditCardDrop.revalidate();
+                        cancelCreditCardDrop.repaint();
+                        cancelCreditCardDrop.setVisible(true);
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    public JPanel cancelCreditCardPanel() {
+        JPanel cancelCreditCardPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets = new Insets(10, 10, 10, 10);
+
+        JLabel messageLabel = new JLabel("Cancel Credit Card:");
+        gbc.gridy = 0;
+        gbc.insets.top = 0;
+        cancelCreditCardPanel.add(messageLabel, gbc);
+
+        cancelCreditCardDrop = new JComboBox<>();
+        gbc.gridy = 1;
+        cancelCreditCardPanel.add(cancelCreditCardDrop, gbc);
+
+        try {
+
+            JButton cancelButton = new JButton("Cancel Card");
+            cancelButton.setPreferredSize(new Dimension(200, 30));
+            gbc.gridy = 2;
+            cancelButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                //
+                }
+            });
+            cancelCreditCardPanel.add(cancelButton, gbc);
+
+        }catch (NoSuchElementException e){
+            System.out.println("No element exists");
+        }
+        
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(200, 30));
+        gbc.gridy = 3;
+        gbc.insets.top = 10;
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(cardPanel, "Credit Card");
+            }
+        });
+        cancelCreditCardPanel.add(backButton, gbc);
+
+        return cancelCreditCardPanel;
+    }
+
     public void updateCreditCardPanel(){
         new Thread(() -> {
             try {
@@ -223,8 +304,7 @@ public class creditCardModel {
             }
         }).start();
     }
-
-    
+ 
     public JPanel payCreditBillPanel() {
         JPanel payCreditBillPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -239,6 +319,7 @@ public class creditCardModel {
         payCreditBillPanel.add(messageLabel, gbc);
 
         creditCardDropDown = new JComboBox<>();
+        gbc.gridy = 1;
         payCreditBillPanel.add(creditCardDropDown, gbc);
 
         JButton submitButton = new JButton("Submit");
@@ -341,7 +422,6 @@ public class creditCardModel {
 
     }
 
-
     public JPanel creditWithdrawalPanel() {
         JPanel creditWithdrawalPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -391,7 +471,6 @@ public class creditCardModel {
 
         return creditWithdrawalPanel;
     }
-
 
     private void updateCashAdvancePanel(){
         new Thread(() -> {
@@ -475,7 +554,5 @@ public class creditCardModel {
 
         return payCashAdvancePanel;
     }
-
-
 
 }

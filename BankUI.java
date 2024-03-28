@@ -71,8 +71,11 @@ public class BankUI extends JFrame{
         cardPanel.add(transactionModel.withdrawPanel(), "Withdraw");
         cardPanel.add(transactionModel.depositPanel(), "Deposit");
         cardPanel.add(transactionModel.transferPanel(), "Transfer");
+        
         cardPanel.add(creditCardModel.creditCardPanel(), "Credit Card");
+        cardPanel.add(creditCardModel.applyCreditCardPanel(), "Apply Credit Card");
         cardPanel.add(creditCardModel.payCreditBillPanel(), "Pay Credit Card Bill");
+        cardPanel.add(creditCardModel.cancelCreditCardPanel(), "Cancel Credit Card");
         cardPanel.add(creditCardModel.viewCreditBillPanel(), "View Credit Bill");
         cardPanel.add(creditCardModel.creditWithdrawalPanel(), "Credit - Cash Withdrawal");
         cardPanel.add(creditCardModel.payCashAdvancePanel(), "Pay Cash Advance");
