@@ -630,6 +630,29 @@ public class Bank {
      *                   card.getCardNumber().substring(card.getCardNumber().length()
      *                   - 4) + " was successful.".
      */
+
+    public boolean payCreditCardBillsForGUI(String cardNo, double paymentAmount){
+        Optional<CreditCard> creditCardExists = this.creditCards.stream()
+        .filter((card) -> card.getCardNumber().equals(cardNo)).findFirst();
+
+        if (creditCardExists.isEmpty()) {
+            System.out.println("Credit card with the specified card number not found.");
+            return false;
+            
+        }
+
+        CreditCard card = creditCardExists.get();
+        Account savingsAccount = getAccountInfo();
+
+        if (card.payCreditBill(savingsAccount,paymentAmount)) {
+            csv_update_help.writeCSVToCreditCard(this.creditList);
+            csv_update_help.updateCSVOfAccount(this.accounts);
+            return true;
+        }
+        
+        return false;
+    }
+
     public void payCreditCardBills(Scanner scanner, int customerId, String username) {
         // Display credit cards for the given customer
         System.out.println("Credit cards for customer " + username + ":");

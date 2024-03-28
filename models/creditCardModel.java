@@ -378,7 +378,13 @@ public class creditCardModel {
                     return;
                 }
 
-                
+                if(bank.payCreditCardBillsForGUI(cardNo,amount)){
+                    JOptionPane.showMessageDialog(null,"Successfully paid " + amount + " for your credit card");
+                    amountField.setText("");
+                    return;
+                }else{
+                    JOptionPane.showMessageDialog(null,"Failed to pay " + amount + " from your credit card due to some factors","ERROR", JOptionPane.ERROR_MESSAGE);
+                }                
             
             }
         });
