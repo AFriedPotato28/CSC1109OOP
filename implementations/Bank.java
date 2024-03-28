@@ -1,3 +1,4 @@
+package implementations;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-
-import implementations.*;
 
 /**
  * Represents a bank with a name, list of customers, accounts, loans, and credit
