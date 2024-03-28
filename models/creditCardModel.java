@@ -7,6 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -34,6 +36,7 @@ public class creditCardModel {
     private JTextArea creditTextArea;
     private JComboBox<String> creditCardDropDown,cardNumbersComboBox,paycardNumbersComboBox, cancelCreditCardDrop;
     private JLabel cardCountLabel;
+    private CreditCard card;
 
 
     public creditCardModel(Bank bank, String userInfo, CardLayout cardLayout, JPanel cardPanel) {
@@ -339,17 +342,30 @@ public class creditCardModel {
         gbc.insets.top = 0;
         payCreditBillPanel.add(messageLabel, gbc);
 
-        creditCardDropDown = new JComboBox<>();
+        JLabel selectedCardBalanceLabel = new JLabel(); // Label to show the selected credit card's balance
         gbc.gridy = 1;
+        payCreditBillPanel.add(selectedCardBalanceLabel, gbc);
+
+        creditCardDropDown = new JComboBox<>();
+        gbc.gridy = 2;
         payCreditBillPanel.add(creditCardDropDown, gbc);
+        creditCardDropDown.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent event) {
+                if(event.getStateChange() == ItemEvent.SELECTED){
+                    // String cardNo = (String) creditCardDropDown.getSelectedItem();
+                    // double balance = card.getBalance();
+                    // selectedCardBalanceLabel.setText("Outstanding balance: $" + balance);
+                }
+            }
+        });
 
         JLabel paymentLabel = new JLabel("Insert your payment amount");
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.insets.top = 2;
         payCreditBillPanel.add(paymentLabel, gbc);
 
         JTextArea amountField = new JTextArea();
-        gbc.gridy = 3;
+        gbc.gridy = 4;
 
         amountField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
@@ -367,7 +383,7 @@ public class creditCardModel {
 
         JButton submitButton = new JButton("Submit");
         submitButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         submitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String cardNo = (String) creditCardDropDown.getSelectedItem();
@@ -386,7 +402,7 @@ public class creditCardModel {
 
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(cardPanel, "Credit Card");
