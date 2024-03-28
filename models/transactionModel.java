@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import implementations.Bank;
+import implementations.Security;
 
 public class transactionModel {
 
@@ -27,6 +28,7 @@ public class transactionModel {
     private CardLayout cardLayout; 
     private JPanel cardPanel; 
     private JLabel balanceLabel;
+    private Security securityInstance;
 
     public transactionModel(Bank bank, String userInfo, CardLayout cardLayout, JPanel cardPanel) {
         this.bank = bank;
@@ -175,10 +177,12 @@ public class transactionModel {
                 bank.withdraw(withdrawAmount, userInfo);
                 JOptionPane.showMessageDialog(null, "Withdrawal successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
+                securityInstance.logActivity(bank.getAccountInfo().getCustomerId(), 5);
                 cardLayout.show(cardPanel, "Transaction");
-                } else {
-                    JOptionPane.showMessageDialog(null,"Withdrawal failed. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                
+            } else {
+                JOptionPane.showMessageDialog(null,"Withdrawal failed. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
+            }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Please enter a valid number", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -245,7 +249,9 @@ public class transactionModel {
             if(depositSuccessful){
                 JOptionPane.showMessageDialog(null, "Deposit Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
+                securityInstance.logActivity(bank.getAccountInfo().getCustomerId(), 4);
                 cardLayout.show(cardPanel, "Transaction");
+                return;
             } else {
                 JOptionPane.showMessageDialog(null, "Deposit Failed. Please try again.", "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -328,10 +334,13 @@ public class transactionModel {
             if (transferSuccessful) {
                 JOptionPane.showMessageDialog(null, "Transfer successful", "Success", JOptionPane.INFORMATION_MESSAGE);
                 updateAccountBalance();
+                securityInstance.logActivity(bank.getAccountInfo().getCustomerId(),2);
                 cardLayout.show(cardPanel, "Transaction");
+                return;
             } else {
                 JOptionPane.showMessageDialog(null, "Transfer failed. Please try again", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                return;    
+            }
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                 }

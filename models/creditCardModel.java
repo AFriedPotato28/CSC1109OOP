@@ -7,8 +7,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -36,7 +34,6 @@ public class creditCardModel {
     private JTextArea creditTextArea;
     private JComboBox<String> creditCardDropDown,cardNumbersComboBox,paycardNumbersComboBox, cancelCreditCardDrop;
     private JLabel cardCountLabel;
-    private CreditCard card;
 
 
     public creditCardModel(Bank bank, String userInfo, CardLayout cardLayout, JPanel cardPanel) {
@@ -192,7 +189,7 @@ public class creditCardModel {
                         JOptionPane.showMessageDialog(null, "You already have 2 credit cards. You cannot apply for more.", "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         updatecardCountLabel();
-                        int annualIncome = 10000; // Hardcoded for now
+                        int annualIncome = (int) bank.getAccountInfo().getAnnualIncome();
                         CreditCard card = bank.applyCreditCard(customerId,annualIncome);
                         JOptionPane.showMessageDialog(null,"Successfully applied a new credit card. Your card no is " + card.getCardNumber());
                         
@@ -349,15 +346,6 @@ public class creditCardModel {
         creditCardDropDown = new JComboBox<>();
         gbc.gridy = 2;
         payCreditBillPanel.add(creditCardDropDown, gbc);
-        creditCardDropDown.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent event) {
-                if(event.getStateChange() == ItemEvent.SELECTED){
-                    // String cardNo = (String) creditCardDropDown.getSelectedItem();
-                    // double balance = card.getBalance();
-                    // selectedCardBalanceLabel.setText("Outstanding balance: $" + balance);
-                }
-            }
-        });
 
         JLabel paymentLabel = new JLabel("Insert your payment amount");
         gbc.gridy = 3;

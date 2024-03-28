@@ -165,12 +165,13 @@ public class BankSystem {
         String name = promptInput("Please enter your name:", scanner);
         String username = promptInput("Please enter your username:", scanner);
         String password = promptInput("Please enter your password:", scanner);
+        Double amount = Double.parseDouble(promptInput("Please enter your amount:", scanner));
         while (!securityInstance.validatePassword(password)) {
             System.out.println("Did not meet password requirements");
             password = promptInput("Please enter your password:", scanner);
         }
 
-        bank.addCustomer(name, username, password);
+        bank.addCustomer(name, username, password,amount);
     }
 
     /**

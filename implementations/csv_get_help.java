@@ -47,8 +47,9 @@ public final class csv_get_help {
                 String accountType = data[2];
                 double balance = Double.parseDouble(data[3]);
                 double transactionLimit = Double.parseDouble(data[4]);
+                double annualIncome = Double.parseDouble(data[5]);
 
-                Account account = new Account(AccountID, customerID, accountType, balance, transactionLimit);
+                Account account = new Account(AccountID, customerID, accountType, balance, transactionLimit,annualIncome);
 
                 if (!accounts.containsKey(customerID)) {
                     accounts.put(customerID, new ArrayList<>());

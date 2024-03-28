@@ -97,16 +97,17 @@ public final class csv_update_help {
         File oldFile = new File(file);
         File newFile = new File(tempFile);
 
-        StringBuilder sb = new StringBuilder("AccountNo, CustomerID, accountType, balance,transactionLimit \n");
+        StringBuilder sb = new StringBuilder("AccountNo, CustomerID, accountType, balance,transactionLimit, Annual Income \n");
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(newFile));) {
             for (Map.Entry<Integer, ArrayList<Account>> entry : accounts.entrySet()) {
                 for (Account account : entry.getValue()) {
                     DecimalFormat df = new DecimalFormat("##.00");
                     double balance = Double.parseDouble(df.format(account.getBalance()));
+    
 
                     sb.append(account.getCustomerId() + "," + account.getCustomerId() + "," + account.getAccountType()
-                            + "," + balance + "," + account.getTransactionLimit() + "\n");
+                            + "," + balance + "," + account.getTransactionLimit() + "," + account.getAnnualIncome() + "\n");
                 }
             }
 
@@ -181,7 +182,8 @@ public final class csv_update_help {
         String[] dataToAppend = { String.valueOf(account.getAccountNo()),
                 String.valueOf(customerID), account.getAccountType(),
                 String.valueOf(account.getBalance()),
-                String.valueOf(account.getTransactionLimit()) };
+                String.valueOf(account.getTransactionLimit()), 
+                String.valueOf(account.getAnnualIncome()) };
 
         String csvLine = Arrays.stream(dataToAppend)
                 .map(csv_update_help::escapeDoubleQuotes)

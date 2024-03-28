@@ -177,7 +177,7 @@ public class Bank {
      *                 Prints amount of customers in the list.
      */
 
-    public void addCustomer(String name, String username, String password) {
+    public void addCustomer(String name, String username, String password, double annualIncome) {
 
         Customer customer = new Customer(name, username, password);
         int customerSize = this.customers.size();
@@ -199,7 +199,8 @@ public class Bank {
         }
 
         int userId = !custOptional.isEmpty() ? custOptional.get().getCustomerId() : this.customers.size();
-        addAccount(userId, "1", 0);
+
+        addAccount(userId, "1", 0, annualIncome);
     }
 
         /**
@@ -238,7 +239,7 @@ public class Bank {
          *                         return true if the account was added successfully,
          *                         else return false.
          */
-        public boolean addAccount(Integer customerID, String accountType, double balance) {
+        public boolean addAccount(Integer customerID, String accountType, double balance, double annualIncome) {
 
             boolean customerIdExists = false;
             boolean accountTypeExists = false;
@@ -259,7 +260,7 @@ public class Bank {
             int sizeOfAccount = (int) this.accounts.values().stream().flatMap(List::stream).count();
 
             int transactionLimit = accountType.equalsIgnoreCase("Savings") ? 500 : 0;
-            Account account = new Account((sizeOfAccount + 1), customerID, accountType, balance, transactionLimit);
+            Account account = new Account((sizeOfAccount + 1), customerID, accountType, balance, transactionLimit,annualIncome);
             if (!customerIdExists) {
                 this.accounts.put(customerID, new ArrayList<>());
             }
@@ -1127,7 +1128,7 @@ public class Bank {
             csv_update_help.updateCSVOfAccount(this.accounts);
 
         } else {
-            addAccount(customerId, "2", loanAmount);
+            addAccount(customerId, "2", loanAmount,0.0);
         }
 
         if (this.loans == null) {

@@ -9,6 +9,7 @@ public class Account {
     private String accountType;
     private double balance;
     private double transactionLimit;
+    private double annualIncome;
 
     /**
      * Constructs a new Account object with the specified account number, customer ID, account type, balance, and transaction limit.
@@ -18,12 +19,13 @@ public class Account {
      * @param balance The current balance of the account.
      * @param transactionLimit The maximum amount that can be withdrawn from the account in a single transaction.
      */
-    public Account(int accountNo, int customerId, String accountType, double balance, double transactionLimit) {
+    public Account(int accountNo, int customerId, String accountType, double balance, double transactionLimit,double AnnualIncome) {
         this.accountNo = accountNo;
         this.customerId = customerId;
         this.accountType = accountType;
         this.balance = balance;
         this.transactionLimit = transactionLimit;
+        this.annualIncome = AnnualIncome;
     }
     /* private intiator */
     /**
@@ -43,6 +45,7 @@ public class Account {
         this.accountType = accounts.accountType;
         this.balance = accounts.balance;
         this.transactionLimit = accounts.transactionLimit;
+        this.annualIncome = accounts.annualIncome;
     }
 
     /**
@@ -137,5 +140,10 @@ public class Account {
            
         }
         return false;
+    }
+
+
+    public double getAnnualIncome(){
+        return this.annualIncome;
     }
 }

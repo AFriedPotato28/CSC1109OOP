@@ -36,6 +36,7 @@ public class BankUI extends JFrame{
     private JTextField nameField, usernameField, passwordField,usernameLoginField,passwordLoginField;
     private JButton createAccountButton, loginButton;
     private JLabel nameLabel, usernameLabel, passwordLabel;
+    private JComboBox<Double> annualIncomeComboBox;
     private CardLayout cardLayout;
     private JPanel cardPanel;
     private boolean isNewAccount = false;
@@ -278,8 +279,8 @@ public class BankUI extends JFrame{
         gbc.gridy = 8;
         registerPanel.add(annualIncomeLabel, gbc);
 
-        Integer[] annualIncome = {15000, 20000, 25000, 30000};
-        JComboBox<Integer> annualIncomeComboBox = new JComboBox<>(annualIncome);
+        Double[] annualIncome = {15000.00, 20000.00, 25000.00, 30000.00};
+        annualIncomeComboBox = new JComboBox<>(annualIncome);
         annualIncomeComboBox.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 9;
         registerPanel.add(annualIncomeComboBox, gbc);
@@ -332,6 +333,7 @@ public class BankUI extends JFrame{
         String name = nameField.getText();
         String username = usernameField.getText();
         String password = passwordField.getText();
+        double annualIncome = Double.parseDouble(String.valueOf(annualIncomeComboBox.getSelectedItem()));
 
         while (name.isBlank()) {
             name = JOptionPane.showInputDialog(this, "Please enter your name");
@@ -365,7 +367,7 @@ public class BankUI extends JFrame{
                 return;
         }
 
-        bank.addCustomer(name, username, password);
+        bank.addCustomer(name, username, password,annualIncome);
         nameField.setText("");
         usernameField.setText("");
         passwordField.setText("");
@@ -442,6 +444,7 @@ public class BankUI extends JFrame{
                         JOptionPane.showMessageDialog(this, "Login successful!");
                         setUserInfo(loginUsername);
                         bank.populateUserInfo(userInfo);
+                        securityInstance.logActivity(bank.getAccountInfo().getCustomerId(), 1);
                         OTPDialog.setVisible(false);
                         cardLayout.show(cardPanel, "Main Menu");
                         return;
