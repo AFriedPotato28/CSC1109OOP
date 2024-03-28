@@ -37,6 +37,10 @@ public class loansModel {
         this.cardPanel = cardPanel;
     }
 
+    public void setUserInfo(String userInfo) {
+        this.userInfo = userInfo;
+    }
+
     
     public JPanel loanPanel() {
         JPanel loanPanel = new JPanel(new GridBagLayout());

@@ -35,10 +35,15 @@ public class transactionModel {
         this.cardPanel = cardPanel;
     }
 
+    public void setUserInfo(String userInfo){
+        this.userInfo = userInfo;
+    }
+
     public void updateAccountBalance() {
         new Thread(() -> {
             try {
                 double accountBalance = bank.getBalance(); // Fetch balance in background thread
+                System.out.println(userInfo);
                 // Now update the GUI on the EDT
                 SwingUtilities.invokeLater(() -> {
                     balanceLabel.setText(String.format("Account Balance: $%.2f", accountBalance));
@@ -138,7 +143,6 @@ public class transactionModel {
         withdrawAmountField.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 1;
        
-
         withdrawAmountField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent event) {
                 if (event.getKeyChar() >= '0' && event.getKeyChar() <= '9'

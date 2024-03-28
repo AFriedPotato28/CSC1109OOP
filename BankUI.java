@@ -40,6 +40,11 @@ public class BankUI extends JFrame{
     private JPanel cardPanel;
     private boolean isNewAccount = false;
     private transactionModel transactionModel;
+    private loansModel loanModel;
+    private creditCardModel creditCardModel;
+    private settingsModel settingsModel;
+    private insuranceModel insuranceModel;
+    private foreignExchangeModel foreignExchangeModel;
     private String userInfo = "";
 
     public BankUI(String title) {
@@ -50,11 +55,11 @@ public class BankUI extends JFrame{
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        loansModel loanModel = new loansModel(bank, userInfo, cardLayout, cardPanel);
-        creditCardModel creditCardModel = new creditCardModel(bank,userInfo,cardLayout,cardPanel);
-        settingsModel settingsModel = new settingsModel(bank,userInfo,cardLayout,cardPanel);
-        insuranceModel insuranceModel = new insuranceModel(bank,userInfo,cardLayout,cardPanel);
-        foreignExchangeModel foreignExchangeModel = new foreignExchangeModel(bank,userInfo,cardLayout,cardPanel);
+        loanModel = new loansModel(bank, userInfo, cardLayout, cardPanel);
+        creditCardModel = new creditCardModel(bank,userInfo,cardLayout,cardPanel);
+        settingsModel = new settingsModel(bank,userInfo,cardLayout,cardPanel);
+        insuranceModel = new insuranceModel(bank,userInfo,cardLayout,cardPanel);
+        foreignExchangeModel = new foreignExchangeModel(bank,userInfo,cardLayout,cardPanel);
         transactionModel  = new transactionModel(bank,userInfo,cardLayout,cardPanel);
 
         JPanel inputPanel = frontPanel();
@@ -95,6 +100,26 @@ public class BankUI extends JFrame{
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void setUserInfo(String loginUsername){
+        this.loanModel.setUserInfo(loginUsername);
+        this.creditCardModel.setUserInfo(loginUsername);
+        this.settingsModel.setUserInfo(loginUsername);
+        this.insuranceModel.setUserInfo(loginUsername);
+        this.foreignExchangeModel.setUserInfo(loginUsername);
+        this.transactionModel.setUserInfo(loginUsername);
+        this.userInfo = loginUsername;
+    }    
+
+    private void clearUserInfo(){
+        this.loanModel.setUserInfo("");
+        this.creditCardModel.setUserInfo("");
+        this.settingsModel.setUserInfo("");
+        this.insuranceModel.setUserInfo("");
+        this.foreignExchangeModel.setUserInfo("");
+        this.transactionModel.setUserInfo("");
+        this.userInfo = "";
     }
 
     private JPanel frontPanel() {
@@ -407,7 +432,7 @@ public class BankUI extends JFrame{
                     if (!OTPField.getText().equals("")
                             && bank.authenticateOTP(loginUsername, Integer.parseInt(OTPField.getText()))) {
                         JOptionPane.showMessageDialog(this, "Login successful!");
-                        userInfo = loginUsername;
+                        setUserInfo(loginUsername);
                         bank.populateUserInfo(userInfo);
                         OTPDialog.setVisible(false);
                         cardLayout.show(cardPanel, "Main Menu");
@@ -522,6 +547,7 @@ public class BankUI extends JFrame{
                 cardLayout.show(cardPanel, "Login");
                 usernameField.setText("");
                 passwordField.setText("");
+                clearUserInfo();
             }
         });
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

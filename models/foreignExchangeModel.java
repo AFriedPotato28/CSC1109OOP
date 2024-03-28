@@ -27,6 +27,10 @@ public class foreignExchangeModel {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
     }
+
+    public void setUserInfo(String userInfo) {
+        this.userInfo = userInfo;
+    }
  
 
     

@@ -33,6 +33,10 @@ public class settingsModel {
         this.cardPanel = cardPanel;
     }
 
+    public void setUserInfo(String userInfo) {
+        this.userInfo = userInfo;
+    }
+
     public JPanel settingPanel() {
         JPanel settingPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();

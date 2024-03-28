@@ -28,7 +28,10 @@ public class insuranceModel{
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
     }
- 
+    
+    public void setUserInfo(String userInfo){
+        this.userInfo = userInfo;
+    }
     
     public JPanel insurancePanel() {
         JPanel insurancePanel = new JPanel(new GridBagLayout());

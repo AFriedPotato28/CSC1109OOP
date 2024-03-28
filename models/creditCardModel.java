@@ -38,6 +38,10 @@ public class creditCardModel {
         this.cardLayout = cardLayout;
         this.cardPanel = cardPanel;
     }
+
+    public void setUserInfo(String userInfo) {
+        this.userInfo = userInfo;
+    }
        
     public JPanel creditCardPanel() {
         JPanel creditCardPanel = new JPanel(new GridBagLayout());
