@@ -1119,5 +1119,16 @@ public class Bank {
         return true;
     }
 
+    public String[] getCreditCardNumbers(){
+        String[] creditCardNumbers = new String[2];
+        int i = 0;
+
+        for (CreditCard card :this.creditCards){
+            creditCardNumbers[i] = card.getCardNumber();
+            i++;
+        }
+
+        return creditCardNumbers;
+    } 
 
 }

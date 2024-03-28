@@ -10,6 +10,7 @@ public class BankUI extends JFrame {
     private Security securityInstance;
     private JTextField nameField, usernameField, passwordField,usernameLoginField,passwordLoginField;
     private JTextArea loanTextArea, creditTextArea;
+    private JComboBox<String> creditCardDropDown,cardNumbersComboBox,paycardNumbersComboBox;
     private JButton createAccountButton, loginButton;
     private JLabel nameLabel, usernameLabel, passwordLabel, balanceLabel, cardCountLabel;
     private CardLayout cardLayout;
@@ -851,6 +852,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 2;
         payCreditBillButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                updateCreditCardPanel();
                 cardLayout.show(cardPanel, "Pay Credit Card Bill");
             }
         });
@@ -872,6 +874,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 4;
         cashWithdrawalButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                updateCreditCardWithdrawPanel();
                 cardLayout.show(cardPanel, "Credit - Cash Withdrawal");
             }
         });
@@ -882,6 +885,7 @@ public class BankUI extends JFrame {
         gbc.gridy = 5;
         cashAdvancePaymentButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                updateCashAdvancePanel();
                 cardLayout.show(cardPanel, "Pay Cash Advance");
             }
         });
@@ -972,6 +976,31 @@ public class BankUI extends JFrame {
 
         return applyCreditCardPanel;
     }
+
+    public void updateCreditCardPanel(){
+        new Thread(() -> {
+            try {
+                SwingUtilities.invokeLater(() -> {
+                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+
+                    if(creditCardNumbers.length == 0){
+                        creditCardDropDown.setVisible(false);
+                    } else {
+                        for (String creditCardNumber : creditCardNumbers){
+                            creditCardDropDown.addItem(creditCardNumber);
+                        }
+                        creditCardDropDown.revalidate();
+                        creditCardDropDown.repaint();
+                        creditCardDropDown.setVisible(true);
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     
     private JPanel payCreditBillPanel() {
         JPanel payCreditBillPanel = new JPanel(new GridBagLayout());
@@ -986,18 +1015,17 @@ public class BankUI extends JFrame {
         gbc.insets.top = 0;
         payCreditBillPanel.add(messageLabel, gbc);
 
-        //String[] creditCardNumbers = getCreditCardNumbers();
-        //JComboBox<String> creditCardDropDown = new JComboBox<>(creditCardNumbers);
-        //payCreditBillPanel.add(creditCardDropDown, gbc);
+        creditCardDropDown = new JComboBox<>();
+        payCreditBillPanel.add(creditCardDropDown, gbc);
 
         JButton submitButton = new JButton("Submit");
         submitButton.setPreferredSize(new Dimension(200, 30));
         gbc.gridy = 2;
-        // submitButton.addActionListener(new ActionListener() {
-        //     public void actionPerformed(ActionEvent e) {
-        //         //submitCreditPayment();
-        //     }
-        // });
+        submitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //submitCreditPayment();
+            }
+        });
         payCreditBillPanel.add(submitButton, gbc);
 
         JButton backButton = new JButton("Back");
@@ -1012,66 +1040,6 @@ public class BankUI extends JFrame {
 
         return payCreditBillPanel;
     }
-
-    // private String[] getCreditCardNumbers(){
-
-    //     return new String[] {"Card 1", "Card 2", "Card 3"};
-    // }
-
-    // private void submitCreditPayment(){
-    // String selectedCard = creditCardDropDown.getSelectedItem();
-    //     int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-    //     List<CreditCard> cards = bank.getCreditCards(customerId);
-    //     boolean hasBills = false;
-    //     for (CreditCard card : cards) {
-    //         if (card.getBalance() > 0) {
-    //             JLabel cardLabel = new JLabel("Card " + card.getCardNumber() + " balance: " + card.getBalance());
-    //             gbc.gridy++;
-    //             payCreditBillPanel.add(cardLabel, gbc);
-
-    //             JButton payButton = new JButton("Pay Bill");
-    //             payButton.setPreferredSize(new Dimension(200, 30));
-    //             payButton.addActionListener(new ActionListener() {
-    //                 public void actionPerformed(ActionEvent e) {
-    //                     String paymentAmountStr = JOptionPane.showInputDialog(null, "Enter the payment amount:", "Payment", JOptionPane.PLAIN_MESSAGE);
-    //                     double paymentAmount = 0.0;
-    //                     try {
-    //                         paymentAmount = Double.parseDouble(paymentAmountStr);
-    //                     } catch (NumberFormatException ex) {
-    //                         JOptionPane.showMessageDialog(null, "Invalid payment amount... please try again.", "Error", JOptionPane.ERROR_MESSAGE);
-    //                         return;
-    //                     }
-
-    //                     if (paymentAmount <= 0.0) {
-    //                         JOptionPane.showMessageDialog(null, "Payment amount cannot be lesser or equals to 0.0...", "Error", JOptionPane.ERROR_MESSAGE);
-    //                         return;
-    //                     }
-
-    //                     // Find the credit card with the specific card number and pay the bill
-    //                     Account savingsAccount = bank.getAccountInfo();
-    //                     if (bank.payCreditBill(card.getCardNumber(), savingsAccount, paymentAmount)) {
-    //                         // Payment successful
-    //                         JOptionPane.showMessageDialog(null, "Payment of $" + paymentAmount + " for card ending in " +
-    //                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) + " was successful.", "Success", JOptionPane.INFORMATION_MESSAGE);
-    //                         cardLayout.show(cardPanel, "Credit Card");
-    //                     } else {
-    //                         // Payment failed
-    //                         JOptionPane.showMessageDialog(null, "Payment of $" + paymentAmount + " for card ending in " +
-    //                                 card.getCardNumber().substring(card.getCardNumber().length() - 4) + " failed.", "Error", JOptionPane.ERROR_MESSAGE);
-    //                     }
-    //                 }
-    //             });
-    //         }
-
-    //         hasBills = true;
-    //     }
-
-    //     if (!hasBills) {
-    //         JLabel noBillsLabel = new JLabel("No existing credit bills.");
-    //         gbc.gridy++;
-    //         payCreditBillPanel.add(noBillsLabel, gbc);
-    //         }
-    // }
 
     private void updateCreditTextArea(){
         new Thread(() -> {
@@ -1112,7 +1080,6 @@ public class BankUI extends JFrame {
         viewCreditBillPanel.add(scrollPane, gbc);
         
 
-
         JButton backButton = new JButton("Back");
         backButton.setPreferredSize(new Dimension(200, 30));
         gbc.gridy =2;
@@ -1126,6 +1093,32 @@ public class BankUI extends JFrame {
         return viewCreditBillPanel;
     }
 
+    private void updateCreditCardWithdrawPanel(){
+        new Thread(() -> {
+            try {
+                SwingUtilities.invokeLater(() -> {
+                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+
+                    if(creditCardNumbers.length == 0){
+                        cardNumbersComboBox.setVisible(false);
+                    } else {
+                        for (String creditCardNumber : creditCardNumbers){
+                            cardNumbersComboBox.addItem(creditCardNumber);
+                        }
+                        cardNumbersComboBox.revalidate();
+                        cardNumbersComboBox.repaint();
+                        cardNumbersComboBox.setVisible(true);
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
+
     private JPanel creditWithdrawalPanel() {
         JPanel creditWithdrawalPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -1134,31 +1127,13 @@ public class BankUI extends JFrame {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-        // List<CreditCard> cards = bank.getCreditCards(customerId);
-        // boolean hasCards = false;
-        // DefaultComboBoxModel<String> cardNumbersModel = new DefaultComboBoxModel<>();
-        // for (CreditCard card : cards) {
-        //     JLabel cardLabel = new JLabel("Card " + card.getCardNumber() + " Cash Advance Limit: " + card.getCashAdvanceLimit());
-        //     gbc.gridy++;
-        //     creditWithdrawalPanel.add(cardLabel, gbc);
-        //     cardNumbersModel.addElement(card.getCardNumber());
-        //     hasCards = true;
-        // }
-
-        // if (!hasCards) {
-        //     JLabel noCardsLabel = new JLabel("No existing credit cards.");
-        //     gbc.gridy++;
-        //     creditWithdrawalPanel.add(noCardsLabel, gbc);
-        // }
-
         JLabel selectCardLabel = new JLabel("Select the card number to withdraw cash from:");
         gbc.gridy++;
         creditWithdrawalPanel.add(selectCardLabel, gbc);
 
-        // JComboBox<String> cardNumbersComboBox = new JComboBox<>(cardNumbersModel);
-        // gbc.gridy++;
-        // creditWithdrawalPanel.add(cardNumbersComboBox, gbc);
+        cardNumbersComboBox = new JComboBox<>();
+        gbc.gridy++;
+        creditWithdrawalPanel.add(cardNumbersComboBox,gbc);
 
         JLabel enterAmountLabel = new JLabel("Enter the amount to withdraw:");
         gbc.gridy++;
@@ -1171,14 +1146,14 @@ public class BankUI extends JFrame {
         JButton withdrawButton = new JButton("Withdraw");
         withdrawButton.setPreferredSize(new Dimension(200, 30));
         gbc.gridy++;
-        // withdrawButton.addActionListener(new ActionListener() {
-        //     public void actionPerformed(ActionEvent e) {
-        //         String cardNumber = (String) cardNumbersComboBox.getSelectedItem();
-        //         double amount = Double.parseDouble(amountField.getText());
-        //         // Call the method to withdraw cash from the credit card
-        //         bank.cashAdvanceWithdrawal(cardNumber, amount);
-        //     }
-        // });
+        withdrawButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // String cardNumber = (String) cardNumbersComboBox.getSelectedItem();
+                // double amount = Double.parseDouble(amountField.getText());
+                // // Call the method to withdraw cash from the credit card
+                // bank.(cardNumber, amount);
+            }
+        });
         creditWithdrawalPanel.add(withdrawButton, gbc);
 
         JButton backButton = new JButton("Back");
@@ -1194,6 +1169,32 @@ public class BankUI extends JFrame {
         return creditWithdrawalPanel;
     }
 
+
+    private void updateCashAdvancePanel(){
+        new Thread(() -> {
+            try {
+                SwingUtilities.invokeLater(() -> {
+                    String[] creditCardNumbers = bank.getCreditCardNumbers();
+
+                    if(creditCardNumbers.length == 0){
+                        paycardNumbersComboBox.setVisible(false);
+                    } else {
+                        for (String creditCardNumber : creditCardNumbers){
+                            paycardNumbersComboBox.addItem(creditCardNumber);
+                        }
+                        paycardNumbersComboBox.revalidate();
+                        paycardNumbersComboBox.repaint();
+                        paycardNumbersComboBox.setVisible(true);
+
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+    }
+
     private JPanel payCashAdvancePanel() {
         JPanel payCashAdvancePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -1207,33 +1208,13 @@ public class BankUI extends JFrame {
         gbc.insets.top = 0;
         payCashAdvancePanel.add(messageLabel, gbc);
 
-        // int customerId = bank.retrieveUserInfo(userInfo).getCustomerId();
-        // List<CreditCard> cards = bank.getCreditCards(customerId);
-        // boolean hasCards = false;
-        // DefaultComboBoxModel<String> cardNumbersModel = new DefaultComboBoxModel<>();
-        // for (CreditCard card : cards) {
-        //     if card.getCashAdvancePayable() > 0 {
-        //         JLabel cardLabel = new JLabel("Card " + card.getCardNumber() + " Cash Advance Payable: " + card.getCashAdvancePayable());
-        //         gbc.gridy++;
-        //         payCashAdvancePanel.add(cardLabel, gbc);
-        //         cardNumbersModel.addItem(card);
-        //         hasCards = true;
-        //     }
-        // }
-
-        // if (!hasCards) {
-        //     JLabel noCardsLabel = new JLabel("No credit cards with cash advance payable.");
-        //     gbc.gridy++;
-        //     payCashAdvancePanel.add(noCardsLabel, gbc);
-        // }
-
         JLabel selectCardLabel = new JLabel("Select the card number to pay for:");
         gbc.gridy++;
         payCashAdvancePanel.add(selectCardLabel, gbc);
 
-        // JComboBox<String> cardNumbersComboBox = new JComboBox<>(cardNumbersModel);
-        // gbc.gridy++;
-        // payCashAdvancePanel.add(cardNumbersComboBox, gbc);
+        paycardNumbersComboBox = new JComboBox<>();
+        gbc.gridy++;
+        payCashAdvancePanel.add(paycardNumbersComboBox, gbc);
 
         JLabel enterAmountLabel = new JLabel("Enter the amount to pay:");
         gbc.gridy++;
